@@ -23,32 +23,45 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
+#ifndef SToGS_GeneralPhysics_h
+#define SToGS_GeneralPhysics_h 1
 
-#include "SToGS_GPSPrimaryGeneratorAction.hh"
+#include "globals.hh"
+#include "G4ios.hh"
 
-#include "G4Event.hh"
-#include "G4GeneralParticleSource.hh"
-#include "G4UImanager.hh"
+#include "G4VPhysicsConstructor.hh"
+#include "G4Decay.hh"
 
-SToGS::GPSPrimaryGeneratorAction::GPSPrimaryGeneratorAction(G4String mac)
-{
-    particleGun = new G4GeneralParticleSource();
-    if ( mac != "" ) {
-        G4String command = "/control/execute ";
-        command += mac;
-        G4UImanager::GetUIpointer()->ApplyCommand(command);
-    }
-}
+//! SToGS namespace to protect SToGS classes
+namespace SToGS {
+    //! General regroups transportation and base decay
+    /*!
+     */
+    class GeneralPhysics : public G4VPhysicsConstructor
+    {
+    public:
+        GeneralPhysics(const G4String& name = "general0");
+        virtual ~GeneralPhysics();
+        
+    public:
+        // This method will be invoked in the Construct() method.
+        // each particle type will be instantiated
+        virtual void ConstructParticle();
+        
+        // This method will be invoked in the Construct() method.
+        // each physics process will be instantiated and
+        // registered to the process manager of each particle type
+        virtual void ConstructProcess();
+        
+    protected:
+        G4Decay* fDecayProcess;
+    };
+} // SToGS Namespace
 
-SToGS::GPSPrimaryGeneratorAction::~GPSPrimaryGeneratorAction()
-{
-    delete particleGun;
-}
 
-void SToGS::GPSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
-{
-    particleGun->GeneratePrimaryVertex(anEvent) ;
-}
+#endif
+
+
 
 
 

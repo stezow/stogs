@@ -304,7 +304,7 @@ void SToGS::MaterialConsultant::SetOpticalProperties(G4Material *mat, G4String w
 		const G4int NUMENTRIES = 3; G4double Energy[NUMENTRIES]    = { 7.0*CLHEP::eV , 7.07*CLHEP::eV, 7.14*CLHEP::eV };
 		G4double RIND[NUMENTRIES]={1.49,1.49,1.49};
 		G4double ABSL[NUMENTRIES]={420.*CLHEP::cm,420.*CLHEP::cm,420.*CLHEP::cm};
-		G4MaterialPropertiesTable *mat_mt = new G4MaterialPropertiesTable();
+		mat_mt = new G4MaterialPropertiesTable();
 		mat_mt->AddProperty("ABSLENGTH",Energy,ABSL,NUMENTRIES);
 		mat_mt->AddProperty("RINDEX",Energy,RIND,NUMENTRIES);
 	}

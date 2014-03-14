@@ -65,9 +65,17 @@ endif()
 #
  
 set(SToGS_SRC
+# Detector related
 	csrc/SToGS_MaterialConsultant.cc
 	csrc/SToGS_DetectorFactory.cc
-    csrc/SToGS_GPSPrimaryGeneratorAction.cc
+# Physics Lists related
+    csrc/SToGS_G4_GeneralPhysics.cc
+    csrc/SToGS_PhysicsList.cc
+# Generator related
+    csrc/SToGS_G4_GPSPrimaryGeneratorAction.cc
+# User's Action related
+#	csrc/SToGS_ActionInitialization.cc
+#
 #	csrc/SToGS_3by3CubicConstruction.cc
 #	csrc/SToGS_Ascii.cc
 #	csrc/SToGS_BaseAscii.cc
@@ -106,10 +114,17 @@ set(SToGS_SRC
 )
 
 set(SToGS_HEADER
+# Detector related
 	csrc/SToGS_MaterialConsultant.hh
 	csrc/SToGS_DetectorFactory.hh
-    csrc/SToGS_GPSPrimaryGeneratorAction.hh
-#	csrc/GPSPrimaryGeneratorAction.hh
+# Physics Lists related
+    csrc/SToGS_G4_GeneralPhysics.hh
+    csrc/SToGS_PhysicsList.hh
+# Generator related
+    csrc/SToGS_G4_GPSPrimaryGeneratorAction.hh
+# User's Action related
+#	csrc/SToGS_ActionInitialization.hh
+#
 #	csrc/SToGS_3by3CubicConstruction.hh
 #	csrc/SToGS_Ascii.hh
 #	csrc/SToGS_BaseAscii.hh

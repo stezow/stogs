@@ -34,20 +34,22 @@
 //
 // --------------------------------------------------------------
 
-#include "G4RunManager.hh"
 #include "G4UImanager.hh"
 #include "G4UIterminal.hh"
 #include "G4UItcsh.hh"
+#include "G4Version.hh"
+
+#ifdef G4MULTITHREADED
+#include "G4MTRunManager.hh"
+#include "SToGS_ActionInitialization.hh"
+#else
+#include "G4RunManager.hh"
+#endif
 
 #ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
 #endif
 
-//#include "ParisOutputManager.hh"
-//#include "ParisPrintOut.hh"
-#include "SToGS_GPSPrimaryGeneratorAction.hh"
-//#include "ParisPhysicsList.hh"
-//#include "ParisLoadDetectorConstruction.hh"
 #include "SToGS_DetectorFactory.hh"
 
 /*! DetectorBuilder helps in building detectors/setup using the Detector Factories
@@ -64,14 +66,25 @@ int main(int argc, char** argv)
     if ( filedfb == "" ) {
         filedfb = "default.dfb";
     }
+    G4cout << G4VERSION_NUMBER << G4endl;
     
     //! Make sure an output manager is set and the main factory is built
     // ParisOutputManager::SetTheOutputManager( new ParisPrintOut("") );
     SToGS::DetectorFactory::theMainFactory()->MakeStore();
 	
 	// Construct the default run manager which is necessary
-	G4RunManager *theRunManager = new G4RunManager();
-	
+#ifdef G4MULTITHREADED
+    G4MTRunManager* theRunManager = new G4MTRunManager;
+    theRunManager->SetNumberOfThreads(2);
+#else
+    G4RunManager* theRunManager = new G4RunManager;
+#endif
+    
+#ifdef G4MULTITHREADED
+    theRunManager->SetUserInitialization( new SToGS::ActionInitialization() );
+#else
+#endif
+    
 	// mandatory initialization G4 classes provided by the user
 	// detector construction
 	// physics  list
@@ -88,6 +101,7 @@ int main(int argc, char** argv)
 		  G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction() == 0x0 ) {
 		exit (-1);
 	}
+
 	// Initialize G4 kernel
 	theRunManager->Initialize();  
 	
