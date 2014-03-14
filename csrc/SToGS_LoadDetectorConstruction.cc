@@ -23,29 +23,45 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
+//
+ 
+// G4 includes
 
-#ifndef SToGS_ActionInitialization_h
-#define SToGS_ActionInitialization_h 1
 
-#include "G4VUserActionInitialization.hh"
-#include "G4String.hh"
+// Paris includes
+#include "ParisLoadDetectorConstruction.hh"
+#include "ParisMaterialConsultant.hh"
+#include "ParisOutputManager.hh"
 
-//! SToGS namespace to protect SToGS classes
-namespace SToGS {
-    //! 
-    /*!
+#include "DetectorFactory.hh"
+
+using namespace std;     	
+
+
+ParisLoadDetectorConstruction::~ParisLoadDetectorConstruction()
+{
+}
+
+virtual G4VPhysicalVolume *Construct()
+{
+    DetectorFactory *where_to_load = DetectorFactory::GetFactory(name_in_factory);
+    if ( where_to_load == 0x0 ) {
+        where_to_load = DetectorFactory::GetFactory("DetectorFactory/MyStore/");
+    }
+    if ( where_to_load ) {
+        physiWorld = where_to_store->MakeAnArrayFromFactory(filename);
+    }
+    else
+        G4cout << "**** Cannot load setup " << name_in_factory << " from Detector Factory " << endl;
+    
+    return physiWorld;
+}
+
+void MyDetectorConstruction::ConstructSDandField()
+{
+    /*
+    MySensitiveDetector* mySD = new MySensitiveDetector(...);
+    SetSensitiveDetector("MySDLV", pMySD);
      */
-    class ActionInitialization : public G4VUserActionInitialization
-    {
-    public:
-        ActionInitialization(G4String /*file*/ = "");
-        virtual ~ActionInitialization();
-        
-        virtual void 	BuildForMaster () const;
-        virtual void 	Build () const;
-    };
-} // SToGS Namespace
-
-#endif
-
+}
 

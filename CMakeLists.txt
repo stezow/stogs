@@ -68,13 +68,14 @@ set(SToGS_SRC
 # Detector related
 	csrc/SToGS_MaterialConsultant.cc
 	csrc/SToGS_DetectorFactory.cc
+    csrc/SToGS_ShellDetectorConstruction.cc
 # Physics Lists related
     csrc/SToGS_G4_GeneralPhysics.cc
-    csrc/SToGS_PhysicsList.cc
+    csrc/SToGS_ModularPhysicsList.cc
 # Generator related
     csrc/SToGS_G4_GPSPrimaryGeneratorAction.cc
 # User's Action related
-#	csrc/SToGS_ActionInitialization.cc
+	csrc/SToGS_ActionInitialization.cc
 #
 #	csrc/SToGS_3by3CubicConstruction.cc
 #	csrc/SToGS_Ascii.cc
@@ -117,13 +118,14 @@ set(SToGS_HEADER
 # Detector related
 	csrc/SToGS_MaterialConsultant.hh
 	csrc/SToGS_DetectorFactory.hh
+    csrc/SToGS_ShellDetectorConstruction.hh
 # Physics Lists related
     csrc/SToGS_G4_GeneralPhysics.hh
-    csrc/SToGS_PhysicsList.hh
+    csrc/SToGS_ModularPhysicsList.hh
 # Generator related
     csrc/SToGS_G4_GPSPrimaryGeneratorAction.hh
 # User's Action related
-#	csrc/SToGS_ActionInitialization.hh
+	csrc/SToGS_ActionInitialization.hh
 #
 #	csrc/SToGS_3by3CubicConstruction.hh
 #	csrc/SToGS_Ascii.hh

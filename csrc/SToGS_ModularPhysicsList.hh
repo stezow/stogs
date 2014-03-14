@@ -23,29 +23,34 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
+//----------------------------------------------------------------------------
 
-#ifndef SToGS_ActionInitialization_h
-#define SToGS_ActionInitialization_h 1
+#ifndef SToGS_PhysicsList_h
+#define SToGS_PhysicsList_h 1
 
-#include "G4VUserActionInitialization.hh"
-#include "G4String.hh"
+#include "G4VModularPhysicsList.hh"
+#include "globals.hh"
+
+class G4VPhysicsConstructor;
+// class PhysicsListMessenger;
 
 //! SToGS namespace to protect SToGS classes
 namespace SToGS {
-    //! 
+    //! This class allows to select different physics using the information stores in the file given to the constructor
     /*!
+        The selected physics could be standard Geant4 or customized for SToGS purposes
      */
-    class ActionInitialization : public G4VUserActionInitialization
+    class ModularPhysicsList: public G4VModularPhysicsList
     {
     public:
-        ActionInitialization(G4String /*file*/ = "");
-        virtual ~ActionInitialization();
+        ModularPhysicsList(const G4String &file = "general0");
+        virtual ~ModularPhysicsList();
         
-        virtual void 	BuildForMaster () const;
-        virtual void 	Build () const;
+        virtual void SetCuts()
+        {
+            SetCutsWithDefault();   
+        }
     };
 } // SToGS Namespace
 
 #endif
-
-

@@ -29,6 +29,9 @@
 
 #include "SToGS_ActionInitialization.hh"
 
+// Primary Generators
+#include "SToGS_G4_GPSPrimaryGeneratorAction.hh"
+
 /*
 #include "SToGS_ActionInitialization.hh"
 #include "SToGS_ActionInitialization.hh"
@@ -36,7 +39,7 @@
 #include "SToGS_ActionInitialization.hh"
  */
 
-SToGS::ActionInitialization::ActionInitialization(G4String file) : G4VUserActionInitialization()
+SToGS::ActionInitialization::ActionInitialization(G4String /*file*/) : G4VUserActionInitialization()
 {
     ;
 }
@@ -52,8 +55,8 @@ void SToGS::ActionInitialization::BuildForMaster() const
 
 void SToGS::ActionInitialization::Build() const
 {
+    SetUserAction( new SToGS::GPSPrimaryGeneratorAction () );
     /*
-    SetUserAction(new MyPrimaryGeneratorAction);
     SetUserAction(new MyRunAction);
     SetUserAction(new MySteppingAction);
      */

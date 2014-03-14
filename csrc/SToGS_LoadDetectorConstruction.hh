@@ -23,34 +23,34 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-//----------------------------------------------------------------------------
 
-#ifndef SToGS_PhysicsList_h
-#define SToGS_PhysicsList_h 1
+#ifndef SToGS_LoadFromDetectorFactory_h
+#define SToGS_LoadFromDetectorFactory_h 1
 
-#include "G4VModularPhysicsList.hh"
-#include "globals.hh"
-
-class G4VPhysicsConstructor;
-// class PhysicsListMessenger;
+#include "G4VUserDetectorConstruction.hh"
 
 //! SToGS namespace to protect SToGS classes
 namespace SToGS {
-    //! This class allows to select different physics using the information stores in the file given to the constructor
+    //! to load a setup from the factory
     /*!
-        The selected physics could be standard Geant4 or customized for SToGS purposes
      */
-    class PhysicsList: public G4VModularPhysicsList
+    class LoadFromDetectorFactory : public G4VUserDetectorConstruction
     {
     public:
-        PhysicsList(const G4String &file = "");
-        virtual ~PhysicsList();
+        LoadFromDetectorFactory(G4String name_in_factory = "default.setup") : G4VUserDetectorConstruction(), fNameInFactory(name_in_factory)
+            {;}
+        virtual ~LoadFromDetectorFactory();
         
-        virtual void SetCuts()
-        {
-            SetCutsWithDefault();   
-        }
+        //! it built only the detector part i.e. load the xml file and the dmap
+        virtual G4VPhysicalVolume *Construct();
+        
+        //! it set the sensitivity, colors and fields here
+        virtual void ConstructSDandField();
+        
+    private:
+        G4String fNameInFactory;
     };
 } // SToGS Namespace
+
 
 #endif

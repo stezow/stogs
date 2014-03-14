@@ -23,9 +23,9 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// 
+//
 // --------------------------------------------------------------
-//      GEANT 4 - 
+//      GEANT 4 -
 //
 //      For information related to this code contact:
 //
@@ -51,9 +51,14 @@
 #endif
 
 #include "SToGS_DetectorFactory.hh"
+#include "SToGS_ModularPhysicsList.hh"
+
+// TMP to test MIGRATION
+#include "SToGS_ShellDetectorConstruction.hh"
+
 
 /*! DetectorBuilder helps in building detectors/setup using the Detector Factories
-*/
+ */
 int main(int argc, char** argv)
 {
     // file to be given on the command line. If not, set a demo
@@ -66,7 +71,6 @@ int main(int argc, char** argv)
     if ( filedfb == "" ) {
         filedfb = "default.dfb";
     }
-    G4cout << G4VERSION_NUMBER << G4endl;
     
     //! Make sure an output manager is set and the main factory is built
     // ParisOutputManager::SetTheOutputManager( new ParisPrintOut("") );
@@ -79,31 +83,15 @@ int main(int argc, char** argv)
 #else
     G4RunManager* theRunManager = new G4RunManager;
 #endif
-    
+    theRunManager->SetUserInitialization ( new SToGS::ShellDetectorConstruction() );
+    theRunManager->SetUserInitialization ( new SToGS::ModularPhysicsList() );
 #ifdef G4MULTITHREADED
     theRunManager->SetUserInitialization( new SToGS::ActionInitialization() );
 #else
 #endif
     
-	// mandatory initialization G4 classes provided by the user
-	// detector construction
-	// physics  list
-	// initialisation of the generator
-
-	// Init from setup file
-    //G4RunManager::GetRunManager()->SetUserInitialization( new ParisLoadDetectorConstruction(filedfb) );
-    //G4RunManager::GetRunManager()->SetUserInitialization( new ParisPhysicsList("general0;ParisStandardEM") );
-    // G4RunManager::GetRunManager()->SetUserAction( new GPSPrimaryGeneratorAction() );
-
-	//
-	if ( G4RunManager::GetRunManager()->GetUserDetectorConstruction() == 0x0 || 
-		  G4RunManager::GetRunManager()->GetUserPhysicsList() == 0x0 || 
-		  G4RunManager::GetRunManager()->GetUserPrimaryGeneratorAction() == 0x0 ) {
-		exit (-1);
-	}
-
 	// Initialize G4 kernel
-	theRunManager->Initialize();  
+	theRunManager->Initialize();
 	
 	// Visualization manager
 	G4VisManager* visManager = new G4VisExecutive();
@@ -112,7 +100,7 @@ int main(int argc, char** argv)
         visManager->SetVerboseLevel(G4VisManager::quiet);
         visManager->Initialize();
     }
-		
+    
     G4UIsession *session = 0;
     //
 #ifdef G4UI_USE_TCSH
@@ -126,12 +114,12 @@ int main(int argc, char** argv)
     G4UImanager::GetUIpointer()->ApplyCommand("/geometry/test/grid_test");
     
     G4cout << "\n A detector/setup has been built using " << filedfb << "\n";
-    G4cout << " To view it through openGL:\n    /control/execute macros/visGL.mac \n";
+    G4cout << " To view it through openGL:\n    /control/execute G4Macros/visGL.mac \n";
     G4cout << " Try also /DetectorFactory commands \n" << G4endl;
-
+    
     session->SessionStart();
     delete session;
-
+    
 	// job termination
 	if ( visManager )
         delete visManager;

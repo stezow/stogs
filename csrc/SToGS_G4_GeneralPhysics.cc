@@ -28,6 +28,8 @@
 
 #include "globals.hh"
 #include "G4ios.hh"
+#include <iomanip>
+
 #include "G4ParticleDefinition.hh"
 #include "G4ProcessManager.hh"
 #include "G4DecayPhysics.hh"
@@ -51,6 +53,7 @@ void SToGS::GeneralPhysics::ConstructParticle()
 
 void SToGS::GeneralPhysics::ConstructProcess()
 {
+    /*
     // Add Decay Process
     fDecayProcess = new G4Decay();
     //
@@ -65,6 +68,7 @@ void SToGS::GeneralPhysics::ConstructProcess()
             pmanager ->SetProcessOrdering(fDecayProcess, idxAtRest);
         }
     }
+     */ 
 }
 
 

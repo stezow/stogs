@@ -29,9 +29,9 @@
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "SToGS_PhysicsList.hh"
+#include "SToGS_ModularPhysicsList.hh"
+#include "SToGS_G4_GeneralPhysics.hh"
 
-#include "SToGS_GeneralPhysics.hh"
 #include "G4EmStandardPhysics.hh"
 #include "G4EmStandardPhysics_option1.hh"
 #include "G4EmStandardPhysics_option2.hh"
@@ -61,7 +61,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-SToGS::PhysicsList::PhysicsList(const G4String &option) : G4VModularPhysicsList()
+SToGS::ModularPhysicsList::ModularPhysicsList(const G4String &option) : G4VModularPhysicsList()
 {
 	// parse option
 	std::vector <G4String> all_opt; G4String lopt = option, tmp = ""; lopt += ';';
@@ -77,7 +77,7 @@ SToGS::PhysicsList::PhysicsList(const G4String &option) : G4VModularPhysicsList(
 	}
 	
 	// default cut value  (1.0mm) 
-	defaultCutValue = 1.0*mm;
+	defaultCutValue = 1.0*CLHEP::mm;
 	
 	// General Physics
 	for (size_t i = 0; i < all_opt.size(); i++) {
@@ -197,7 +197,7 @@ SToGS::PhysicsList::PhysicsList(const G4String &option) : G4VModularPhysicsList(
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-SToGS::PhysicsList::~PhysicsList()
+SToGS::ModularPhysicsList::~ModularPhysicsList()
 {
 }
 

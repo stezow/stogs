@@ -24,8 +24,8 @@
 // ********************************************************************
 //
 
-#ifndef SToGS_GPSPrimaryGeneratorAction_h
-#define SToGS_GPSPrimaryGeneratorAction_h 1
+#ifndef SToGS_G4_GPSPrimaryGeneratorAction_h
+#define SToGS_G4_GPSPrimaryGeneratorAction_h 1
 
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "G4String.hh"

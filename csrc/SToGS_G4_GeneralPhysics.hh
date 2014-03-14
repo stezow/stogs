@@ -23,8 +23,8 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-#ifndef SToGS_GeneralPhysics_h
-#define SToGS_GeneralPhysics_h 1
+#ifndef SToGS_G4_GeneralPhysics_h
+#define SToGS_G4_GeneralPhysics_h 1
 
 #include "globals.hh"
 #include "G4ios.hh"
