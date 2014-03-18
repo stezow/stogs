@@ -68,6 +68,10 @@ set(SToGS_SRC
 # Detector related
 	csrc/SToGS_MaterialConsultant.cc
 	csrc/SToGS_DetectorFactory.cc
+    csrc/SToGS_RoomsDF.cc
+    csrc/SToGS_ArraysDF.cc
+    csrc/SToGS_ScintillatorDF.cc
+    csrc/SToGS_LoadFromDetectorFactory.cc
     csrc/SToGS_ShellDetectorConstruction.cc
 # Physics Lists related
     csrc/SToGS_G4_GeneralPhysics.cc
@@ -75,7 +79,11 @@ set(SToGS_SRC
 # Generator related
     csrc/SToGS_G4_GPSPrimaryGeneratorAction.cc
 # User's Action related
-	csrc/SToGS_ActionInitialization.cc
+	csrc/SToGS_G4_CaloHit.cc
+	csrc/SToGS_G4_CaloSD.cc
+	csrc/SToGS_G4_SingleHit.cc
+	csrc/SToGS_G4_TrackerSD.cc
+	csrc/SToGS_UserActionManager.cc
 #
 #	csrc/SToGS_3by3CubicConstruction.cc
 #	csrc/SToGS_Ascii.cc
@@ -118,6 +126,10 @@ set(SToGS_HEADER
 # Detector related
 	csrc/SToGS_MaterialConsultant.hh
 	csrc/SToGS_DetectorFactory.hh
+    csrc/SToGS_RoomsDF.hh
+    csrc/SToGS_ArraysDF.hh
+    csrc/SToGS_ScintillatorDF.hh
+    csrc/SToGS_LoadFromDetectorFactory.hh
     csrc/SToGS_ShellDetectorConstruction.hh
 # Physics Lists related
     csrc/SToGS_G4_GeneralPhysics.hh
@@ -125,7 +137,11 @@ set(SToGS_HEADER
 # Generator related
     csrc/SToGS_G4_GPSPrimaryGeneratorAction.hh
 # User's Action related
-	csrc/SToGS_ActionInitialization.hh
+	csrc/SToGS_G4_CaloHit.hh
+	csrc/SToGS_G4_CaloSD.hh
+	csrc/SToGS_G4_SingleHit.hh
+	csrc/SToGS_G4_TrackerSD.hh
+	csrc/SToGS_UserActionManager.hh
 #
 #	csrc/SToGS_3by3CubicConstruction.hh
 #	csrc/SToGS_Ascii.hh

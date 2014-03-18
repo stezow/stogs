@@ -24,28 +24,6 @@
 // ********************************************************************
 //
 //
- 
-// G4 includes
-#include "G4Material.hh"
-#include "G4Box.hh"
-#include "G4Tubs.hh"
-#include "G4Polyhedra.hh"
-#include "G4Sphere.hh"
-
-#include "G4LogicalVolume.hh"
-#include "G4AssemblyVolume.hh"
-
-#include "G4PVPlacement.hh"
-#include "G4PVParameterised.hh"
-#include "G4UserLimits.hh"
-#include "G4VisAttributes.hh"
-#include "G4Colour.hh"
-#include "G4ios.hh"
-#include "G4SubtractionSolid.hh"
-#include "G4PhysicalVolumeStore.hh"
-#include "G4LogicalVolumeStore.hh"
-#include "G4SDManager.hh"
-#include "G4UnitsTable.hh"
 
 // Project includes
 #include "SToGS_ArraysDF.hh"
@@ -58,9 +36,9 @@ namespace  {
 
 void SToGS::ArraysDF::MakeStore()
 {
-    //    ParisOutputManager::SetGCopyNb(0);
+    //    SToGS::DetectorFactory::SetGCopyNb(0);
     //    MakeInStore("Chateau2Crystal","bare");
-    ParisOutputManager::SetGCopyNb(0);
+    SToGS::DetectorFactory::SetGCopyNb(0);
     MakeInStore("Chateau2Crystal","");
 }
 

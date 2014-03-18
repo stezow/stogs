@@ -27,7 +27,6 @@
 #ifndef SToGS_ArraysDF_h
 #define SToGS_ArraysDF_h 1
 
-// includes
 #include "SToGS_DetectorFactory.hh"
 
 //! SToGS namespace to protect SToGS classes

@@ -41,7 +41,7 @@
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
-#include "SToGS_ActionInitialization.hh"
+#include "SToGS_UserActionManager.hh"
 #else
 #include "G4RunManager.hh"
 #endif
@@ -86,7 +86,7 @@ int main(int argc, char** argv)
     theRunManager->SetUserInitialization ( new SToGS::ShellDetectorConstruction() );
     theRunManager->SetUserInitialization ( new SToGS::ModularPhysicsList() );
 #ifdef G4MULTITHREADED
-    theRunManager->SetUserInitialization( new SToGS::ActionInitialization() );
+    theRunManager->SetUserInitialization( new SToGS::UserActionManager() );
 #else
 #endif
     

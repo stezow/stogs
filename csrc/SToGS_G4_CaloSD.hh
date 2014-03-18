@@ -23,45 +23,38 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-//
- 
-// G4 includes
+
+#ifndef SToGS_CaloSD_h
+#define SToGS_CaloSD_h 1
+
+#include "G4VSensitiveDetector.hh"
+#include "SToGS_G4_CaloHit.hh"
+
+class G4Step;
+class G4HCofThisEvent;
+class G4TouchableHistory;
+
+//! SToGS namespace to protect SToGS classes
+namespace SToGS {
+    class CaloSD : public G4VSensitiveDetector
+    {
+    public:
+        CaloSD(G4String name);
+        virtual ~CaloSD();
+        
+        void Initialize(G4HCofThisEvent *HCE);
+        G4bool ProcessHits(G4Step *aStep, G4TouchableHistory *ROhist);
+        void EndOfEvent(G4HCofThisEvent *HCE);
+        
+        void clear();
+        void DrawAll();
+        void PrintAll();
+        
+    private:
+        CaloHitsCollection *caloCollection;
+    };
+} // SToGS Namespace
 
 
-// Paris includes
-#include "ParisLoadDetectorConstruction.hh"
-#include "ParisMaterialConsultant.hh"
-#include "ParisOutputManager.hh"
-
-#include "DetectorFactory.hh"
-
-using namespace std;     	
-
-
-ParisLoadDetectorConstruction::~ParisLoadDetectorConstruction()
-{
-}
-
-virtual G4VPhysicalVolume *Construct()
-{
-    DetectorFactory *where_to_load = DetectorFactory::GetFactory(name_in_factory);
-    if ( where_to_load == 0x0 ) {
-        where_to_load = DetectorFactory::GetFactory("DetectorFactory/MyStore/");
-    }
-    if ( where_to_load ) {
-        physiWorld = where_to_store->MakeAnArrayFromFactory(filename);
-    }
-    else
-        G4cout << "**** Cannot load setup " << name_in_factory << " from Detector Factory " << endl;
-    
-    return physiWorld;
-}
-
-void MyDetectorConstruction::ConstructSDandField()
-{
-    /*
-    MySensitiveDetector* mySD = new MySensitiveDetector(...);
-    SetSensitiveDetector("MySDLV", pMySD);
-     */
-}
+#endif
 

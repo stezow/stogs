@@ -23,14 +23,51 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-//
+//----------------------------------------------------------------------------
 
-#include "SToGS_RoomsDF.hh"
+#ifndef SToGS_PrintOut_h
+#define SToGS_PrintOut_h 1
 
-// list of all specific factories
-namespace  {
-    // all rooms
-    SToGS::RoomsDF theRooms("Rooms/");
-}
+#include "SToGS_UserActionManager.hh"
+#include "G4Run.hh"
+
+//! SToGS namespace to protect SToGS classes
+namespace SToGS {
+    
+    class PrintRun : public G4Run
+    {
+    public:
+        PrintRun();
+        virtual ~PrintRun();
+        
+        virtual void RecordEvent(const G4Event* evt);
+        virtual void Merge(const G4Run*);
+    };
+    
+    //! Extract informations from Geant4 and print on the standard output hits informations
+    /*!
+     This class illustrates how to extract some informations from Geant4 and display them
+     on the standard output.
+     
+     It shows first how to define the sensitive detectors (part of the detector for
+     which collects hits in the geometry) and how to implements an EndOfEvent action.
+     
+     The sensitive part are defined in the constructor.
+     */
+    class PrintOut : public UserActionManager
+    {
+    public:
+        PrintOut(G4String conf = "setup/printout");
+        virtual ~PrintOut();
+        
+        virtual void 	BuildForMaster () const;
+        virtual void 	Build () const;
+    };
+    
+} // SToGS Namespace
+
+#endif   /* ParisPrintOut.hh */
+
+
 
 

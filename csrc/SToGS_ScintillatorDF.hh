@@ -24,43 +24,43 @@
 // ********************************************************************
 //
 
-#ifndef ScintillatorDF_h
-#define ScintillatorDF_h 1
+#ifndef SToGS_ScintillatorDF_h
+#define SToGS_ScintillatorDF_h 1
 
 #include "SToGS_DetectorFactory.hh"
 
 //! SToGS namespace to protect SToGS classes
 namespace SToGS {
     //! Base classe to build scintillators
-/*!
- */
-class ScintillatorDF : public DetectorFactory
-{    
-public:
-    //! Should be implemented in any sub factory. It built (C++) a detector and return it
-    virtual G4VPhysicalVolume * Make(G4String /* name */, G4String /* version_string */);
-    
-protected:
-   // make paris PW with/without encapuslation, housing
     /*!
-        Options
-        bare : take into account caps and housing but they are not included in the PW. It allows studies of the impact of encapsulation
      */
-    G4VPhysicalVolume *MakePPW(G4String detname, G4double caps_width = 0.0, G4double housing_width = 0.0, G4String opt = "bare");
-    // make paris cluster
-    G4VPhysicalVolume *MakeCPPW(G4String detname, G4String opt = "bare");
-    // Chateau de Crystal module
-    G4VPhysicalVolume *MakeCdC(G4String detname, G4String opt = "bare");
-    
-public:
-    ScintillatorDF(G4String path) : DetectorFactory(path)
-        {;}
-    virtual ~ScintillatorDF()
-        {;}
-    
-    //! build the default store i.e. all the scintillators detectors. 
-    virtual void MakeStore();
-};
+    class ScintillatorDF : public DetectorFactory
+    {
+    public:
+        //! Should be implemented in any sub factory. It built (C++) a detector and return it
+        virtual G4VPhysicalVolume *Make(G4String /* name */, G4String /* version_string */);
+        
+    protected:
+        // make paris PW with/without encapuslation, housing
+        /*!
+         Options
+         bare : take into account caps and housing but they are not included in the PW. It allows studies of the impact of encapsulation
+         */
+        G4VPhysicalVolume *MakePPW(G4String detname, G4double caps_width = 0.0, G4double housing_width = 0.0, G4String opt = "bare");
+        // make paris cluster
+        G4VPhysicalVolume *MakeCPPW(G4String detname, G4String opt = "bare");
+        // Chateau de Crystal module
+        G4VPhysicalVolume *MakeCdC(G4String detname, G4String opt = "bare");
+        
+    public:
+        ScintillatorDF(G4String path) : DetectorFactory(path)
+            {;}
+        virtual ~ScintillatorDF()
+            {;}
+        
+        //! build the default store i.e. all the scintillators detectors.
+        virtual void MakeStore();
+    };
 } // SToGS Namespace
 
 #endif

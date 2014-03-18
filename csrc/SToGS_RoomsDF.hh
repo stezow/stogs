@@ -24,28 +24,28 @@
 // ********************************************************************
 //
 
-#ifndef RoomsDF_h
-#define RoomsDF_h 1
+#ifndef SToGS_RoomsDF_h
+#define SToGS_RoomsDF_h 1
 
 #include "SToGS_DetectorFactory.hh"
 
 //! SToGS namespace to protect SToGS classes
 namespace SToGS {
-//! Base classe to build rooms and beam lines
-/*!
- */
-class RoomsDF : public DetectorFactory
-{    
-public:
-    RoomsDF(G4String path = "Rooms/") : DetectorFactory(path)
-        {;}
-    virtual ~RoomsDF()
-        {;}
-    
-    //! to be filled with default rooms 
-    virtual void MakeStore()
-        {;}
-};
+    //! Base classe to build virtual/existing rooms and beam lines
+    /*!
+     */
+    class RoomsDF : public DetectorFactory
+    {
+    public:
+        RoomsDF(G4String path = "Rooms/") : DetectorFactory(path)
+            {;}
+        virtual ~RoomsDF()
+            {;}
+        
+        //! to be filled with default rooms
+        virtual void MakeStore()
+            {;}
+    };
 } // SToGS Namespace
 
 #endif
