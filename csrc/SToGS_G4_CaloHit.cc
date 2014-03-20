@@ -32,7 +32,11 @@
 #include "G4VisAttributes.hh"
 #include "G4UnitsTable.hh"
 
+#ifdef G4MULTITHREADED
 G4ThreadLocal G4Allocator<SToGS::CaloHit> *SToGS::CaloHitAllocator = 0;
+#else
+G4Allocator<SToGS::CaloHit> *SToGS::CaloHitAllocator = 0;
+#endif
 
 SToGS::CaloHit::CaloHit():
     detID(-1),

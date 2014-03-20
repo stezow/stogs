@@ -27,78 +27,49 @@
 #ifndef SToGS_UserActionManager_h
 #define SToGS_UserActionManager_h 1
 
-// TOBE DONE : call it UserActionManager
-
-//G4Version.hh
-#include "G4String.hh"
-
-#if G4VERSION_NUMBER < 1000
-#else
-#include "G4VUserUserActionManager.hh"
-#endif
-
-#include <utility>
-
-class G4VSensitiveDetector;
-class G4VUserPrimaryGeneratorAction;
+#include "SToGS_UserActionInitialization.hh"
 
 //! SToGS namespace to protect SToGS classes
 namespace SToGS {
-    //! Base class for SToGS user's actions.
+    //!  Base class for SToGS user's actions.
     /*!
+        
      */
-#if G4VERSION_NUMBER < 1000
-    class UserActionManager
-#else
-    class UserActionManager : public G4VUserUserActionManager
-#endif
+    class UserActionManager : public UserActionInitialization
     {
     private:
+        SToGS::UserActionInitialization *fImplementation;
+        
+    protected:
+        //! In principle in Geant4.10, geometry and physics are golbal so they are not provided by G4VUserActionInitialization
+        /*!
+            We are keeping however here some references in case the user would like to ask the manager to do the job for her/him
+         */
         std::pair < G4String, G4String > fWhichGeometry;
         std::pair < G4String, G4String > fWhichPhysics;
         
-        std::pair < G4String, G4String > fWhichGenerator;
+        //! Real stuff the G4VUserActionInitialization should deal with
         std::pair < G4String, G4String > fWhichActionManager;
         
     protected:
-        //! depending on one string, select a given gun
-        /*!
-            GPS: the gun is realized through the general GPS interface
-         */
-        G4VUserPrimaryGeneratorAction *GetGun(G4String which = "GPS", G4String opt = "G4Macros/GPS_Cs137.mac");
+        SToGS::UserActionInitialization *GetUserActionInitialization();
         
     public:
-        UserActionManager(G4String file = "setup/SToGS.global");
-        virtual ~UserActionManager();
-        
-        virtual void 	BuildForMaster () const;
-        virtual void 	Build () const;
-        
+        UserActionManager(G4String configurationfile = "");
+        virtual ~UserActionManager()
+            {;}
     public:
-        //! to get a general SToGS tracker. In Multi-threading mode, return a new instance otherwise a global one
-        static G4VSensitiveDetector *GetTrackerSD( G4String name = "/SToGS/Track" );
         
-        //! to get a general SToGS Calo. In Multi-threading mode, return a new instance otherwise a global one
-        static G4VSensitiveDetector *GetCaloSD( G4String name = "/SToGS/Calo" );
-    };
-    //! Concrete Base class for SToGS user's actions.
-    /*!
-     */
-    /*
-    class CUserActionManager : public UserActionManager
-    {
-    private:
-        UserActionManager *fImplementation;
+        //! Individual calls in case it is used for Geant4 < 10.0
+        virtual G4UserRunAction *GetRunAction() const;
+        virtual G4UserEventAction *GetEventAction() const;
+        virtual G4UserTrackingAction *GetTrackingAction() const;
+        virtual G4UserSteppingAction *GetSteppingAction() const;
         
-    public:
-        CUserActionManager(G4String file = "");
-        virtual ~CUserActionManager();
-        
+        //! Geant4 > 10.0 interface
         virtual void 	BuildForMaster () const;
         virtual void 	Build () const;
     };
-*/
-    
 } // SToGS Namespace
 
 #endif

@@ -29,35 +29,32 @@
 
 #include "SToGS_UserActionManager.hh"
 #include "G4ios.hh"
-#include "G4SDManager.hh"
 
 #include <fstream>
 
 /*
-#include "SToGS_UserActionManager.hh"
-#include "SToGS_UserActionManager.hh"
-#include "SToGS_UserActionManager.hh"
-#include "SToGS_UserActionManager.hh"
+#include "SToGS_UserActionInitialization.hh"
+#include "SToGS_UserActionInitialization.hh"
+#include "SToGS_UserActionInitialization.hh"
+#include "SToGS_UserActionInitialization.hh"
  */
 
+// includes here all possible actions
+#include "SToGS_PrintOut.hh"
 
 SToGS::UserActionManager::UserActionManager(G4String filename) :
-#if G4VERSION_NUMBER < 1000
-#else
-    G4VUserUserActionManager(),
-#endif
+    UserActionInitialization(),
+    fImplementation(0x0),
     fWhichGeometry(),
     fWhichPhysics(),
-    fWhichGenerator("GPS","G4Macros/GPS_Cs137.mac"),
-    fWhichActionManager()
+    fWhichActionManager("PrintOut","")
 {
     G4cout << G4endl << " ------ INFO ------ from UserActionManager::UserActionManager with " << filename << G4endl << G4endl;
-		
+    
 	// open the ascii file
     std::ifstream file(filename);
 	if ( file.is_open() == false ) {
-		G4cout << " ** WARNING ** cannot open file  (Default parameters are used) "<< G4endl;
-		G4cout << " ** WARNING ** defaults are to be used " << G4endl;
+		G4cout << " ** SToGS WARNING ** Cannot open file, Default parameters to be used "<< G4endl;
     }
 	else {
         std::string aline; getline(file,aline);
@@ -69,118 +66,75 @@ SToGS::UserActionManager::UserActionManager(G4String filename) :
             } // this line is a comment
             
             std::string key, which, option; std::istringstream decode(aline); decode >> key >> which >> option;
-
-            if ( decode.good() > 0 ) {
-                if ( key == "analysis:" ) {
+            
+      //      if ( decode.good() ) {
+                if ( key == "actions:" ) {
                     fWhichActionManager = std::pair<G4String, G4String> (which,option);
                 }
-                if ( key == "geom:" ) {
+                if ( key == "setup:" ) {
                     fWhichGeometry = std::pair<G4String, G4String> (which,option);
                 }
                 if ( key == "physics:" ) {
                     fWhichPhysics = std::pair<G4String, G4String> (which,option);
                 }
-                if ( key == "gene:" ) {
+                if ( key == "generator:" ) {
                     fWhichGenerator = std::pair<G4String, G4String> (which,option);
-                }
+       //         }
             }
             getline(file,aline);
         }
         file.close();
     }
+    
 
-	G4cout << " ActionManager has been initiated with " << G4endl;
-	G4cout << "   + generator      " << fWhichGenerator.first << " " << fWhichGenerator.second << G4endl;
-	G4cout << "   + physics list   " <<   fWhichPhysics.first << " " << fWhichPhysics.second   << G4endl;
-	G4cout << "   + geometry used  " <<  fWhichGeometry.first << " " << fWhichGeometry.second  << G4endl;
-	G4cout << "   + Action manager " << fWhichActionManager.first << " " << fWhichActionManager.second << G4endl;
+    fImplementation = GetUserActionInitialization();
+    if ( fImplementation == 0x0 ) {
+        G4cout << " *** SToGS ERROR *** Action Manager is not known *** SToGS ERROR *** " << G4endl;
+    }
+    else {
+        fImplementation->SetWhichGenerator(fWhichGenerator.first,fWhichGenerator.second);
+    }
+    
+    G4cout << " ActionManager has been initiated with " << G4endl;
+	G4cout << "   + generator        " << fWhichGenerator.first << " " << fWhichGenerator.second << G4endl;
+	G4cout << "   + physics list     " <<   fWhichPhysics.first << " " << fWhichPhysics.second   << G4endl;
+	G4cout << "   + geometry used    " <<  fWhichGeometry.first << " " << fWhichGeometry.second  << G4endl;
+	G4cout << "   + action manager   " << fWhichActionManager.first << " " << fWhichActionManager.second << G4endl;
     
 	G4cout << G4endl << " ------ END ------ from UserActionManager::UserActionManager " << G4endl << G4endl;
 }
 
-SToGS::UserActionManager::~UserActionManager()
+SToGS::UserActionInitialization *SToGS::UserActionManager::GetUserActionInitialization()
 {
-    ;
-}
-
-// Primary Generators
-#include "SToGS_G4_GPSPrimaryGeneratorAction.hh"
-
-G4VUserPrimaryGeneratorAction *SToGS::UserActionManager::GetGun(G4String which, G4String opt)
-{
-    G4VUserPrimaryGeneratorAction *gun = 0x0;
-    if ( which == "GPS" )
-        gun = new SToGS::GPSPrimaryGeneratorAction(opt);
-    
-    return gun;
-}
-
-#include "SToGS_G4_TrackerSD.hh"
-#include "SToGS_G4_CaloSD.hh"
-
-G4VSensitiveDetector *SToGS::UserActionManager::GetTrackerSD( G4String name )
-{
-    G4cout << "[+[SToGS::UserActionManager::GetTrackerSD()]] Creating a tracker SD " << G4endl;
-    G4VSensitiveDetector *aSD = 0x0;
-    
-    G4SDManager *SDman =
-        G4SDManager::GetSDMpointer();
-    
-#ifdef G4MULTITHREADED
-    // TO BE CHECKED IF SHOULD BE LIKE THAT !
-    aSD = new SToGS::TrackerSD(name);
-    if ( aSD )
-        SDman->AddNewDetector(aSD);
-#else
-    aSD = SDman->FindSensitiveDetector(name);
-    if ( aSD == 0x0 ) {
-        aSD = new SToGS::TrackerSD(name);
-        if ( aSD )
-            SDman->AddNewDetector(aSD);
+    if ( fWhichActionManager.first == "PrintOut" ) {
+        fImplementation = new PrintOut(fWhichActionManager.second);
     }
-#endif
-    G4cout << "[_[SToGS::UserActionManager::GetTrackerSD()]] Creating a tracker SD " << G4endl;
-    return aSD;
+    return fImplementation;
 }
-
-G4VSensitiveDetector *SToGS::UserActionManager::GetCaloSD( G4String name )
+G4UserRunAction *SToGS::UserActionManager::GetRunAction() const
 {
-    G4cout << "[+[SToGS::UserActionManager::GetCaloSD()]] Creating a tracker SD " << G4endl;
-    G4VSensitiveDetector *aSD = 0x0;
-    
-    G4SDManager *SDman =
-        G4SDManager::GetSDMpointer();
-    
-#ifdef G4MULTITHREADED
-    // TO BE CHECKED IF SHOULD BE LIKE THAT !
-    aSD = new SToGS::CaloSD(name);
-    if ( aSD )
-        SDman->AddNewDetector(aSD);
-#else
-    aSD = SDman->FindSensitiveDetector(name);
-    if ( aSD == 0x0 ) {
-        aSD = new SToGS::CaloSD(name);
-        if ( aSD )
-            SDman->AddNewDetector(aSD);
-    }
-#endif
-    G4cout << "[_[SToGS::UserActionManager::GetCaloSD()]] Creating a calo SD " << G4endl;
-    return aSD;
+    return fImplementation->GetRunAction();
 }
-
+G4UserEventAction *SToGS::UserActionManager::GetEventAction() const
+{
+    return fImplementation->GetEventAction();
+}
+G4UserTrackingAction *SToGS::UserActionManager::GetTrackingAction() const
+{
+    return fImplementation->GetTrackingAction();
+}
+G4UserSteppingAction *SToGS::UserActionManager::GetSteppingAction() const
+{
+    return fImplementation->GetSteppingAction();
+}
 void SToGS::UserActionManager::BuildForMaster() const
 {
-    //   SetUserAction(new MyRunAction);
     fImplementation->BuildForMaster();
 }
 
 void SToGS::UserActionManager::Build() const
 {
     fImplementation->Build();
-
-   // SetUserAction( new SToGS::GPSPrimaryGeneratorAction () );
-    /*
-    SetUserAction(new MyRunAction);
-    SetUserAction(new MySteppingAction);
-     */
 }
+
+

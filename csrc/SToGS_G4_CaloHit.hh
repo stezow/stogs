@@ -33,6 +33,10 @@
 #include "G4ThreeVector.hh"
 #include "G4Types.hh"
 
+#ifndef G4MULTITHREADED
+#define G4ThreadLocal
+#endif
+
 //! SToGS namespace to protect SToGS classes
 namespace SToGS {
     //! Informations to keep the energy is in a sensitive detector

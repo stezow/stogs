@@ -1,7 +1,7 @@
 #----------------------------------------------------------------------------
 # Setup the project
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
-project(Paris)
+project(SToGS)
 
 #----------------------------------------------------------------------------
 # Find Geant4 package, activating all available UI and Vis drivers by default
@@ -19,9 +19,7 @@ endif()
 # Add specific modules
 #
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-
 MESSAGE("${CMAKE_MODULE_PATH}")
-
 
 #----------------------------------------------------------------------------
 # Try and Find Root. If found, set HAS_ROOT
@@ -83,6 +81,8 @@ set(SToGS_SRC
 	csrc/SToGS_G4_CaloSD.cc
 	csrc/SToGS_G4_SingleHit.cc
 	csrc/SToGS_G4_TrackerSD.cc
+	csrc/SToGS_UserActionInitialization.cc
+    csrc/SToGS_PrintOut.cc
 	csrc/SToGS_UserActionManager.cc
 #
 #	csrc/SToGS_3by3CubicConstruction.cc
@@ -142,6 +142,8 @@ set(SToGS_HEADER
 	csrc/SToGS_G4_SingleHit.hh
 	csrc/SToGS_G4_TrackerSD.hh
 	csrc/SToGS_UserActionManager.hh
+    csrc/SToGS_PrintOut.hh
+	csrc/SToGS_UserActionInitialization.hh
 #
 #	csrc/SToGS_3by3CubicConstruction.hh
 #	csrc/SToGS_Ascii.hh
@@ -197,18 +199,18 @@ endif()
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries
 #
-#add_executable(ParisSource ParisSource.cc ${SToGS_SRC} ${SToGS_HEADER})
+add_executable(SToGS_Source SToGS_Source.cc ${SToGS_SRC} ${SToGS_HEADER})
 add_executable(SToGS_DetectorBuilder SToGS_DetectorBuilder.cc ${SToGS_SRC} ${SToGS_HEADER})
 
 #
-#target_link_libraries(ParisSource ${Geant4_LIBRARIES} ${EXTRA_LIB})
+target_link_libraries(SToGS_Source ${Geant4_LIBRARIES} ${EXTRA_LIB})
 target_link_libraries(SToGS_DetectorBuilder ${Geant4_LIBRARIES} ${EXTRA_LIB})
 
 
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
-#install(TARGETS ParisSource DESTINATION bin)
+install(TARGETS SToGS_Source DESTINATION bin)
 install(TARGETS SToGS_DetectorBuilder DESTINATION bin)
 
 

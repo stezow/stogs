@@ -41,7 +41,6 @@
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
-#include "SToGS_UserActionManager.hh"
 #else
 #include "G4RunManager.hh"
 #endif
@@ -52,6 +51,7 @@
 
 #include "SToGS_DetectorFactory.hh"
 #include "SToGS_ModularPhysicsList.hh"
+#include "SToGS_PrintOut.hh"
 
 // TMP to test MIGRATION
 #include "SToGS_ShellDetectorConstruction.hh"
@@ -72,10 +72,15 @@ int main(int argc, char** argv)
         filedfb = "default.dfb";
     }
     
-    //! Make sure an output manager is set and the main factory is built
-    // ParisOutputManager::SetTheOutputManager( new ParisPrintOut("") );
+//Pure SToGS related
+    // Make sure an output manager is set and the main factory is built
     SToGS::DetectorFactory::theMainFactory()->MakeStore();
-	
+    
+    // simple printout manager enough at the level of detector construction
+    SToGS::UserActionInitialization *user_action_manager = new SToGS::PrintOut("run;event;track;step");
+    // Customization here. Default is geantino through GPS
+    user_action_manager->SetWhichGenerator("GPS","G4Macros/GPSPointLike.mac");
+
 	// Construct the default run manager which is necessary
 #ifdef G4MULTITHREADED
     G4MTRunManager* theRunManager = new G4MTRunManager;
@@ -86,7 +91,7 @@ int main(int argc, char** argv)
     theRunManager->SetUserInitialization ( new SToGS::ShellDetectorConstruction() );
     theRunManager->SetUserInitialization ( new SToGS::ModularPhysicsList() );
 #ifdef G4MULTITHREADED
-    theRunManager->SetUserInitialization( new SToGS::UserActionManager() );
+    theRunManager->SetUserInitialization( user_action_manager );
 #else
 #endif
     

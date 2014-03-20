@@ -34,9 +34,18 @@ SToGS::GPSPrimaryGeneratorAction::GPSPrimaryGeneratorAction(G4String mac)
 {
     particleGun = new G4GeneralParticleSource();
     if ( mac != "" ) {
-        G4String command = "/control/execute ";
-        command += mac;
-        G4UImanager::GetUIpointer()->ApplyCommand(command);
+        G4bool is_mac = false; std::ifstream f(mac.c_str());
+        if (f.good()) {
+            f.close();
+            is_mac = true;
+        } else {
+            f.close();
+        }
+        if ( is_mac ) {
+            G4String command = "/control/execute ";
+            command += mac;
+            G4UImanager::GetUIpointer()->ApplyCommand(command);
+        }
     }
 }
 

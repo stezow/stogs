@@ -33,6 +33,10 @@
 #include "G4ThreeVector.hh"
 #include "G4Types.hh"
 
+#ifndef G4MULTITHREADED
+#define G4ThreadLocal
+#endif
+
 //! SToGS namespace to protect SToGS classes
 namespace SToGS {
     //! Informations to be kept at each step if a positive energy is deposited in a sensitive detector
@@ -215,6 +219,12 @@ namespace SToGS {
     
     typedef G4THitsCollection<SingleHit> SingleHitsCollection;
     extern G4ThreadLocal G4Allocator<SingleHit> *SingleHitAllocator;
+    
+#ifdef G4MULTITHREADED
+//    extern G4ThreadLocal G4Allocator<SingleHit> *SingleHitAllocator;
+#else
+//    extern G4Allocator<SingleHit> *SingleHitAllocator;
+#endif
     
     inline void* SingleHit::operator new(size_t)
     {
