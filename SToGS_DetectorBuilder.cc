@@ -77,6 +77,7 @@ int main(int argc, char** argv)
     SToGS::DetectorFactory::theMainFactory()->MakeStore();
     
     // simple printout manager enough at the level of detector construction
+    // it shows also how it can be directy used without having to go through ActionManager
     SToGS::UserActionInitialization *user_action_manager = new SToGS::PrintOut("run;event;track;step");
     // Customization here. Default is geantino through GPS
     user_action_manager->SetWhichGenerator("GPS","G4Macros/GPSPointLike.mac");

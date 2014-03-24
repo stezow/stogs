@@ -51,36 +51,35 @@
 // Paris includes
 #include "SToGS_DetectorFactory.hh"
 #include "SToGS_MaterialConsultant.hh"
-//#include "DetectorFactory.hh"
+#include "SToGS_UserActionInitialization.hh"
 
 #include "G4GDMLParser.hh"
 
 using namespace std;
 using namespace SToGS;
 
-
 // mother of all factories
-DetectorFactory *DetectorFactory::pMainFactory = 0x0; DFMessenger *DetectorFactory::pMainMessanger = 0x0;
+SToGS::DetectorFactory *SToGS::DetectorFactory::pMainFactory = 0x0; DFMessenger *SToGS::DetectorFactory::pMainMessanger = 0x0;
 // 
-G4int DetectorFactory::gCopyNb = 0;
+G4int SToGS::DetectorFactory::gCopyNb = 0;
 
 // containing the sub factories ...
-std::vector < DetectorFactory * > DetectorFactory::fSubFactory;
+std::vector < SToGS::DetectorFactory * > SToGS::DetectorFactory::fSubFactory;
 
 
-DetectorFactory *DetectorFactory::theMainFactory()
+SToGS::DetectorFactory *SToGS::DetectorFactory::theMainFactory()
 {
     if ( pMainFactory == 0x0 ) {
-        pMainFactory = new DetectorFactory(); pMainMessanger = new DFMessenger();
+        pMainFactory = new SToGS::DetectorFactory(); pMainMessanger = new DFMessenger();
     }
     return pMainFactory;
 }
 
-DetectorFactory *DetectorFactory::GetFactory(G4String path)
+SToGS::DetectorFactory *SToGS::DetectorFactory::GetFactory(G4String path)
 {
-    DetectorFactory *sub_factory = 0x0;
+    SToGS::DetectorFactory *sub_factory = 0x0;
     
-    for (std::vector<DetectorFactory *>::iterator it = fSubFactory.begin() ; it != fSubFactory.end(); ++it){
+    for (std::vector<SToGS::DetectorFactory *>::iterator it = fSubFactory.begin() ; it != fSubFactory.end(); ++it){
         G4String sub_name = (*it)->GetFactoryName();
         if ( path.contains(sub_name) ) {
             sub_factory = (*it);
@@ -91,7 +90,7 @@ DetectorFactory *DetectorFactory::GetFactory(G4String path)
     return sub_factory;
 }
 
-void DetectorFactory::ChangeSD(G4String opt, G4VPhysicalVolume *top)
+void SToGS::DetectorFactory::ChangeSD(G4String opt, G4VPhysicalVolume *top)
 {
     G4VPhysicalVolume *l_top = top;
     if ( top == 0x0
@@ -115,31 +114,33 @@ void DetectorFactory::ChangeSD(G4String opt, G4VPhysicalVolume *top)
 }
 
 
-void DetectorFactory::MakeStore()
+void SToGS::DetectorFactory::MakeStore()
 {
-    for (std::vector<DetectorFactory *>::iterator it = fSubFactory.begin() ; it != fSubFactory.end(); ++it) {
-        G4cout << "BUILDING Store " << (*it)->GetFactoryName() << G4endl;
+    for (std::vector<SToGS::DetectorFactory *>::iterator it = fSubFactory.begin() ; it != fSubFactory.end(); ++it) {
+        G4cout << "[+..] BUILDING Store " << (*it)->GetFactoryName() << G4endl;
         (*it)->MakeStore();
+        G4cout << "[..+] BUILDING Store " << (*it)->GetFactoryName() << G4endl;        
     }
 }
 
-void DetectorFactory::MakeInStore(G4String name, G4String version_string)
+void SToGS::DetectorFactory::MakeInStore(G4String name, G4String version_string)
 {
     // check if already in store    
     std::ifstream gdml_in(GetFileName(GetDetName(name,version_string), "gdml").data());
     if ( gdml_in.is_open() ) {
         gdml_in.close();
-        G4cout << "  [-] Detector " << GetDetName(name,version_string) << " already in store " << G4endl;
+        G4cout << "[===] Detector " << GetDetName(name,version_string) << " already in store " << G4endl;
         return;
     }
-    G4cout << "  [+] Building Detector " << GetDetName(name,version_string) << G4endl;
+    G4cout << "[+..] Building Detector " << GetDetName(name,version_string) << G4endl;
     G4VPhysicalVolume *theDetector = Make(name, version_string);
     if (theDetector) {
         Store(theDetector);
-    }    
+    }
+    G4cout << "[..+] Building Detector " << GetDetName(name,version_string) << G4endl;
 }
 
-G4String DetectorFactory::GetFileName(G4String detname, G4String extention)
+G4String SToGS::DetectorFactory::GetFileName(G4String detname, G4String extention)
 {
     G4String result;
 
@@ -149,18 +150,16 @@ G4String DetectorFactory::GetFileName(G4String detname, G4String extention)
 
 #include <sstream>
 
-void DetectorFactory::StreamTouchable(std::ofstream &dmap, G4String dname)
+void SToGS::DetectorFactory::StreamTouchable(std::ofstream &dmap, G4String dname)
 {
     size_t where = dname.find(":");
     if ( where != std::string::npos ) {
         std::string tmp = dname.substr( where );
         dmap << " " << tmp;
     }
-    
-    
 }
 
-void DetectorFactory::StoreMap(std::ofstream &amap, std::ofstream &dmap,
+void SToGS::DetectorFactory::StoreMap(std::ofstream &amap, std::ofstream &dmap,
                                std::vector<G4LogicalVolume *> &logical_stored, std::vector<G4VPhysicalVolume *> &phycical_stored,
                                G4VPhysicalVolume *theDetector /*,
                                const G4String &mother_name */)
@@ -242,7 +241,8 @@ void DetectorFactory::StoreMap(std::ofstream &amap, std::ofstream &dmap,
     }
 }
 
-void DetectorFactory::CollectVolumes(G4VPhysicalVolume *theDetector, std::vector<G4LogicalVolume *> &logical_stored, std::vector<G4VPhysicalVolume *> &phycical_stored)
+void SToGS::DetectorFactory::CollectVolumes(G4VPhysicalVolume *theDetector,
+                            std::vector<G4LogicalVolume *> &logical_stored, std::vector<G4VPhysicalVolume *> &phycical_stored)
 {
     G4LogicalVolume *alogical = theDetector->GetLogicalVolume(); G4VPhysicalVolume *aphysical = 0x0; G4bool in_the_list;
     
@@ -276,7 +276,7 @@ void DetectorFactory::CollectVolumes(G4VPhysicalVolume *theDetector, std::vector
 
 #include <sstream>
 
-void DetectorFactory::Store(G4VPhysicalVolume *theDetector)
+void SToGS::DetectorFactory::Store(G4VPhysicalVolume *theDetector)
 {
     G4String filename = GetFileName(theDetector->GetName(), "gdml");
 
@@ -307,7 +307,7 @@ void DetectorFactory::Store(G4VPhysicalVolume *theDetector)
     }
 }
 
-G4String DetectorFactory::GetDetName(const G4String &path) const
+G4String SToGS::DetectorFactory::GetDetName(const G4String &path) const
 {
     G4String tmp = path; 
     
@@ -320,7 +320,7 @@ G4String DetectorFactory::GetDetName(const G4String &path) const
     return tmp;
 }
 
-G4String DetectorFactory::GetDetName(G4String name, G4String version_string) const
+G4String SToGS::DetectorFactory::GetDetName(G4String name, G4String version_string) const
 {
     G4String detname = name;
     
@@ -332,7 +332,7 @@ G4String DetectorFactory::GetDetName(G4String name, G4String version_string) con
     return detname;
 }
 
-void DetectorFactory::AssemblyRename(G4AssemblyVolume *assembly, const G4String &volume_to_find) const
+void SToGS::DetectorFactory::AssemblyRename(G4AssemblyVolume *assembly, const G4String &volume_to_find) const
 {
 	std::string tmp; 
 	
@@ -359,7 +359,7 @@ void DetectorFactory::AssemblyRename(G4AssemblyVolume *assembly, const G4String 
 	}    
 }
 
-G4int DetectorFactory::DoMap(G4AssemblyVolume *assembly, G4VPhysicalVolume *volume_used_to_built_assembly, G4int copy_number_offset, G4String opt) const
+G4int SToGS::DetectorFactory::DoMap(G4AssemblyVolume *assembly, G4VPhysicalVolume *volume_used_to_built_assembly, G4int copy_number_offset, G4String opt) const
 {
 
     G4cout << "[+] Results of snapshots of " <<  volume_used_to_built_assembly->GetName() << endl;
@@ -437,7 +437,7 @@ G4int DetectorFactory::DoMap(G4AssemblyVolume *assembly, G4VPhysicalVolume *volu
     
 }
 
-void DetectorFactory::SetActive(G4LogicalVolume *pv, const G4String &opt)
+void SToGS::DetectorFactory::SetActive(G4LogicalVolume *pv, const G4String &opt)
 {
     //
 	std::string lopt = opt, tmp; G4bool ok = false;
@@ -508,11 +508,11 @@ void DetectorFactory::SetActive(G4LogicalVolume *pv, const G4String &opt)
                 }
                 
 				// check sensitivity. extention list of name separted by ; for scorer ?
-				G4VSensitiveDetector *sensdet = pv->GetSensitiveDetector();
+				G4VSensitiveDetector *sensdet = GetSD(sdname);
 				
 				if ( nb_ok == 2 ) { // should be added to the list of sensitive detectors.
-                    if ( G4SDManager::GetSDMpointer()->FindSensitiveDetector(sdname) ) {
-                        sensdet = G4SDManager::GetSDMpointer()->FindSensitiveDetector(sdname);
+                    if ( sensdet ) {
+     //                   if ( G4SDManager::GetSDMpointer()->FindSensitiveDetector(sdname) ) {
                         ok = true;
                     }
 				}
@@ -527,8 +527,30 @@ void DetectorFactory::SetActive(G4LogicalVolume *pv, const G4String &opt)
 	}
 }
 
+G4VSensitiveDetector *SToGS::DetectorFactory::GetSD(G4String sdname, const char sd_type)
+{
+    G4VSensitiveDetector *sensdet = 0x0;
+    
+    // test first if found in SDManager
+    sensdet = G4SDManager::GetSDMpointer()->FindSensitiveDetector(sdname,false);
+    if ( sensdet == 0x0 ) {
+        if ( sd_type == 'S' ) {
+            if ( sdname == "/SToGS/Calo")
+               sensdet = SToGS::UserActionInitialization::GetCaloSD(sdname);
+            if ( sdname == "/SToGS/Track")
+                sensdet = SToGS::UserActionInitialization::GetTrackerSD(sdname);
+        }
+        if ( sd_type == 's' ) {
+        }
+        
+        if (sensdet) {
+            G4cout << "[i] " << sensdet->GetFullPathName() << " has been added to the list of SD detector" << G4endl;
+        }
+    }
+    return sensdet;
+}
 
-G4VPhysicalVolume *DetectorFactory::Import(G4String gdmlfile, G4String detname, const G4String &opt_amap, const G4String &opt_dmap)
+G4VPhysicalVolume *SToGS::DetectorFactory::Import(G4String gdmlfile, G4String detname, const G4String &opt_amap, const G4String &opt_dmap)
 {
     G4VPhysicalVolume *theDetector = 0x0; // G4String detname, fullname;
 
@@ -541,7 +563,7 @@ G4VPhysicalVolume *DetectorFactory::Import(G4String gdmlfile, G4String detname, 
         return theDetector;
     }
     
-    cout << "[+] Importing " << gdmlfile << " in " << GetFactoryName() << detname << endl;
+    cout << "[+..] Importing " << gdmlfile << " in " << GetFactoryName() << detname << endl;
     
     G4GDMLParser parser;
     parser.Read(gdmlfile,false);
@@ -559,14 +581,12 @@ G4VPhysicalVolume *DetectorFactory::Import(G4String gdmlfile, G4String detname, 
         CollectVolumes(theDetector, logical_stored, phycical_stored);
  
         for (size_t i = 0; i < logical_stored.size(); i++) {
-            if ( logical_stored[i]->GetName() == "Outer_0_0" )
-                printf("");
             SetActive(logical_stored[i], opt_amap);
         }
         for (size_t i = 0; i < phycical_stored.size(); i++) {
 
             if ( phycical_stored[i]->GetLogicalVolume()->GetSensitiveDetector() ) {
-                phycical_stored[i]->SetCopyNo( DetectorFactory::AddGCopyNb() );
+                phycical_stored[i]->SetCopyNo( SToGS::DetectorFactory::AddGCopyNb() );
             }
             else
                 phycical_stored[i]->SetCopyNo(-1);
@@ -580,12 +600,23 @@ G4VPhysicalVolume *DetectorFactory::Import(G4String gdmlfile, G4String detname, 
         }
         Store(theDetector);
     }
-    cout << "[-] Importing " << gdmlfile << " in store " << GetFactoryName() << " with name " <<  detname << endl;
+    cout << "[..+] Importing " << gdmlfile << " in store " << GetFactoryName() << " with name " <<  detname << endl;
     
     return theDetector;
 }
 
-G4VPhysicalVolume *DetectorFactory::Get(G4String basename)
+/*
+G4VPhysicalVolume *SToGS::DetectorFactory::Get(G4String basename)
+{
+    G4VPhysicalVolume *theDetector = GetGeometry(basename);
+    if ( theDetector ) {
+        GetAttributes(basename);
+    }
+    return theDetector;
+}
+ */
+
+G4VPhysicalVolume *SToGS::DetectorFactory::Get(G4String basename, G4bool is_full)
 {
     G4VPhysicalVolume *theDetector = 0x0; G4String detname, fullname;
     
@@ -611,7 +642,7 @@ G4VPhysicalVolume *DetectorFactory::Get(G4String basename)
         return theDetector;
     }
 
-    cout << "[+] Loading from store " << basename << endl;
+    cout << "[+..] Loading from store " << basename << endl;
     
     G4GDMLParser parser;
     parser.Read(fullname,false);
@@ -621,20 +652,39 @@ G4VPhysicalVolume *DetectorFactory::Get(G4String basename)
         // should add a warning
         return theDetector;
     }
-    
+
     std::pair < G4String, G4VPhysicalVolume *> p(fullname,theDetector); // add the new loaded detector to the list 
     fLoadedPhysical.push_back(p);
     
-// now apply map
-    fullname  = basename; fullname += ".amap"; std::ifstream amap(fullname.data());
+    if ( is_full ) {
+        GetAttributes(basename);
+    }
+    
+    cout << "[..+] Loading from store " << basename << endl;
+
+    return theDetector;
+}
+
+void SToGS::DetectorFactory::GetAttributes(G4String basename)
+{
+    G4VPhysicalVolume *theDetector; G4String detname, fullname;
+    
+    theDetector = Get(basename,false);
+    if ( theDetector == 0x0 )
+        return;
+    
+    cout << "[+..] Loading Attributes from store " << basename << endl;
+    
+    // now apply map
     fullname  = basename; fullname += ".dmap"; std::ifstream dmap(fullname.data());
+    fullname  = basename; fullname += ".amap"; std::ifstream amap(fullname.data());
     
     std::vector<G4LogicalVolume *> logical_stored; std::vector<G4VPhysicalVolume *> phycical_stored; G4String aline; G4bool has_done_amap = false;
     //
     CollectVolumes(theDetector, logical_stored, phycical_stored);
     //
     if ( amap.is_open() ) {
-    
+        
         // logicals
         getline(amap,aline);
         while ( amap.good() ) {
@@ -643,18 +693,18 @@ G4VPhysicalVolume *DetectorFactory::Get(G4String basename)
             G4String vname, key_sd, sd, key_color, touchable; G4double r,g,b,a;
             
             decode >> vname
-                >> key_color
-                >> r
-                >> g
-                >> b
-                >> a
-                >> key_sd
-                >> sd
-                ;
+            >> key_color
+            >> r
+            >> g
+            >> b
+            >> a
+            >> key_sd
+            >> sd
+            ;
             
             for (size_t i = 0; i < logical_stored.size(); i++) {
                 if ( vname == logical_stored[i]->GetName() ) {
-                    cout << " Change attributes [colors] of " << vname << endl;
+                    cout << " Change attributes [colors] of " << vname << " to " << G4Color(r,g,b,a) << endl;
                     //
                     G4VisAttributes visatt(G4Color(r,g,b,a));
                     if ( key_color == "C" )
@@ -666,9 +716,9 @@ G4VPhysicalVolume *DetectorFactory::Get(G4String basename)
                     
                     // SD
                     if ( sd != "-" ) { // means a sensitive detector so look for it and assign to the volume
-                        G4VSensitiveDetector * sensdet = G4SDManager::GetSDMpointer()->FindSensitiveDetector(sd);
+                        G4VSensitiveDetector * sensdet = GetSD(sd);
                         if (sensdet) {
-                            cout << " + set sensitive to " << sd << endl;
+                            cout << " Change attribute [sensitive] of " << vname << " to " << sd << endl;
                             logical_stored[i]->SetSensitiveDetector(sensdet);
                         }
                     }
@@ -688,9 +738,9 @@ G4VPhysicalVolume *DetectorFactory::Get(G4String basename)
             has_done_amap = true;
             for (size_t i = 0; i < logical_stored.size(); i++) {
                 
- //               if ( logical_stored[i] == theDetector->GetLogicalVolume() ) { // mother is not a
- //                   continue;
- //               }
+                //               if ( logical_stored[i] == theDetector->GetLogicalVolume() ) { // mother is not a
+                //                   continue;
+                //               }
                 
                 amap_ << logical_stored[i]->GetName()
                 << "\t"
@@ -710,6 +760,8 @@ G4VPhysicalVolume *DetectorFactory::Get(G4String basename)
             }
         }
     }
+    
+    //
     if ( dmap.is_open() ) {
         
         for (size_t i = 0; i < phycical_stored.size(); i++) {
@@ -724,12 +776,12 @@ G4VPhysicalVolume *DetectorFactory::Get(G4String basename)
             istringstream decode(aline);
             
             decode >> uid
-                >> pname
-                >> touchable
-                >> x
-                >> y
-                >> z
-                >> unit
+            >> pname
+            >> touchable
+            >> x
+            >> y
+            >> z
+            >> unit
             ;
             //               cout << " Change Copy number of " << pname << phycical_stored.size() << endl;
             
@@ -753,18 +805,18 @@ G4VPhysicalVolume *DetectorFactory::Get(G4String basename)
         if ( !has_done_amap ) { // already an amap, change copy # of active volumes and store results in dmap
             
             fullname  = basename; fullname += ".dmap"; std::ofstream dmap_(fullname.data());
-
+            
             for (size_t i = 0; i < phycical_stored.size(); i++) {
                 if ( phycical_stored[i]->GetLogicalVolume()->GetSensitiveDetector() ) {
                     cout << " Change Name and Copy number of "
-                        << phycical_stored[i]->GetName() << " -> "
-                        << phycical_stored[i]->GetName() << ": " << DetectorFactory::GetGCopyNb() << " "
-                        << DetectorFactory::GetGCopyNb() << endl;
+                    << phycical_stored[i]->GetName() << " -> "
+                    << phycical_stored[i]->GetName() << ": " << SToGS::DetectorFactory::GetGCopyNb() << " "
+                    << SToGS::DetectorFactory::GetGCopyNb() << endl;
                     //
-                    ostringstream tmp; tmp << phycical_stored[i]->GetName(); tmp << ":"; tmp << DetectorFactory::GetGCopyNb();
-
+                    ostringstream tmp; tmp << phycical_stored[i]->GetName(); tmp << ":"; tmp << SToGS::DetectorFactory::GetGCopyNb();
+                    
                     phycical_stored[i]->SetName(tmp.str());
-                    phycical_stored[i]->SetCopyNo( DetectorFactory::AddGCopyNb() );
+                    phycical_stored[i]->SetCopyNo( SToGS::DetectorFactory::AddGCopyNb() );
                     
                     if ( dmap_.is_open() ) {
                         dmap_ << setw(5) << setfill('0')
@@ -794,16 +846,16 @@ G4VPhysicalVolume *DetectorFactory::Get(G4String basename)
             }
         }
     }
-    cout << "[-] Loading from store " << basename << endl;
-
-    return theDetector;
+    
+    cout << "[..+] Loading Attributes from store " << basename << endl;
 }
 
-G4bool DetectorFactory::Set(G4String basename, G4VPhysicalVolume *mother, G4int copy_number_offset, G4ThreeVector *T, G4RotationMatrix *R)
+
+G4bool SToGS::DetectorFactory::Move(G4String basename, G4VPhysicalVolume *mother, G4int copy_number_offset, G4ThreeVector *T, G4RotationMatrix *R)
 {
     G4VPhysicalVolume *thefullDetector = 0x0, *subdetector ; G4LogicalVolume *volume_to_move;
     
-    thefullDetector = Get(basename); // load from factory the detector, remve the envelop and move the content into mother with all its attrivute
+    thefullDetector = Get(basename); // load from factory the detector, remove the envelop and move the content into mother with all its attribute
     if ( thefullDetector == 0x0 ) {
         return false;
     }
@@ -836,7 +888,7 @@ G4bool DetectorFactory::Set(G4String basename, G4VPhysicalVolume *mother, G4int 
     return true;
 }
 
-G4AssemblyVolume *DetectorFactory::GetAssembly(G4String basename)
+G4AssemblyVolume *SToGS::DetectorFactory::GetAssembly(G4String basename)
 {
     G4AssemblyVolume *theAssembly = 0x0;  G4VPhysicalVolume *theDetector = 0x0, *subdetector;  G4String detname, fullname;
     
@@ -872,146 +924,31 @@ G4AssemblyVolume *DetectorFactory::GetAssembly(G4String basename)
 
     }
     return theAssembly;
+}
 
-/*
-    G4VPhysicalVolume *theDetector = 0x0, *subdetector; G4String detname, fullname;
-    
-    fullname  = basename;
-    fullname += ".gdml";
-    
-    // check is already loaded
-    for (size_t i = 0; i < fLoadedAssembly.size(); i++) {
-        if ( fLoadedAssembly[i].first == fullname ) {
-            theAssembly = fLoadedAssembly[i].second;
+void SToGS::DetectorFactory::Clean()
+{    
+    if ( this == DetectorFactory::theMainFactory() ) {
+        for (size_t i = 0; i < fSubFactory.size(); i++) {
+            fSubFactory[i]->Clean();
         }
     }
-    
-    // use gdml parser to load
-    if ( theAssembly == 0x0 ) {
-        
-        G4GDMLParser parser;
-        parser.Read(fullname,false);
+    else {
+        // clean the two inner collection of this factory and call G4 store manager to clean physical and volumes
+        for (size_t i = 0; i < fLoadedPhysical.size(); i++) {
+            fLoadedPhysical[i].second = 0x0;
+        }
+        fLoadedPhysical.resize(0);
+        for (size_t i = 0; i < fLoadedAssembly.size(); i++) {
+            delete fLoadedAssembly[i].second; fLoadedAssembly[i].second = 0x0;
+        }
+        fLoadedAssembly.resize(0);
         //
-        detname = GetDetName(fullname); theDetector = parser.GetWorldVolume(detname); // load geometry from gdml
-        if ( theDetector == 0x0 ) {
-            // should add a warning
-            return theAssembly;
-        }
-        theAssembly = new G4AssemblyVolume();
-        //
-        std::pair < G4String, G4AssemblyVolume *> p(fullname,theAssembly); // add the new assembly to the list of assembly
-        fLoadedAssembly.push_back(p);
-        
-        // now apply map
-        fullname  = basename; fullname += ".amap"; std::ifstream amap(fullname.data());
-        fullname  = basename; fullname += ".dmap"; std::ifstream dmap(fullname.data());
-        
-        if ( amap.is_open() && dmap.is_open() ) {
-            
-            std::vector<G4LogicalVolume *> logical_stored; std::vector<G4VPhysicalVolume *> phycical_stored;
-            G4String touchable, aline;
-            
-            CollectVolumes(theDetector, logical_stored, phycical_stored, touchable);
-            
-            // logicals
-            getline(amap,aline);
-            while ( amap.good() ) {
-                
-                istringstream decode(aline);
-                G4String vname, key_sd, sd, key_color, touchable; G4double r,g,b,a;
-                
-                decode >> vname
-                >> key_color
-                >> r
-                >> g
-                >> b
-                >> a
-                >> key_sd
-                >> sd
-                ;
-                
-                for (size_t i = 0; i < logical_stored.size(); i++) {
-                    if ( vname == logical_stored[i]->GetName() ) {
-                        cout << " Change attributes [colors] of " << vname << endl;
-                        //
-                        G4VisAttributes visatt(G4Color(r,g,b,a));
-                        if ( key_color == "C" )
-                            visatt.SetVisibility(true);
-                        else
-                            visatt.SetVisibility(false);
-                        
-                        logical_stored[i]->SetVisAttributes(visatt);
-                        
-                        // SD
-                        if ( sd != "-" ) { // means a sensitive detector so look for it and assign to the volume
-                            G4VSensitiveDetector * sensdet = G4SDManager::GetSDMpointer()->FindSensitiveDetector(sd);
-                            if (sensdet) {
-                                cout << " + set sensitive to " << sd << endl;
-                                logical_stored[i]->SetSensitiveDetector(sensdet);
-                            }
-                        }
-                        // others ... field etc ...
-                        
-                        break;
-                    }
-                }
-                
-                getline(amap,aline);
-            }
-            
-            // physicals
-            getline(dmap,aline);
-            while ( dmap.good() ) {
-                
-                istringstream decode(aline);
-                G4String pname, unit, touchable; G4double x,y,z; G4int uid;
-                
-                decode >> uid
-                >> touchable
-                >> pname
-                >> x
-                >> y
-                >> z
-                >> unit
-                ;
-                //               cout << " Change Copy number of " << pname << phycical_stored.size() << endl;
-                
-                
-                for (size_t i = 0; i < phycical_stored.size(); i++) {
-                    if ( pname == phycical_stored[i]->GetName() ) {
-                        cout << " Change Copy number of " << pname << " into " << uid << endl;
-                        //
-                        phycical_stored[i]->SetCopyNo(uid);
-                        break;
-                    }
-                }
-                
-                
-                getline(dmap,aline);
-            }
-        }
-        
-        
-        // rebuilt the detector as an assembly
-        for (G4int i = 0; i < theDetector->GetLogicalVolume()->GetNoDaughters(); i++) {
-            subdetector = theDetector->GetLogicalVolume()->GetDaughter(i);
-            cout << " + " << subdetector->GetName() << " " << subdetector->GetCopyNo() << endl;
-            
-            G4Transform3D Tr = G4Transform3D(subdetector->GetObjectRotationValue(),subdetector->GetObjectTranslation());
-            theAssembly->AddPlacedVolume( subdetector->GetLogicalVolume(), Tr );
-        }
+        G4LogicalVolumeStore::Clean(); G4PhysicalVolumeStore::Clean();
     }
-    
-    return theAssembly; */
-
 }
-/*
-G4AssemblyVolume *DetectorFactory::Load(G4String basename)
-{
-}
- */
 
-G4VPhysicalVolume *DetectorFactory::MakeVCR(G4String name, G4double HalfX, G4double HalfY, G4double HalfZ, G4int copy_number)
+G4VPhysicalVolume *SToGS::DetectorFactory::MakeVCR(G4String name, G4double HalfX, G4double HalfY, G4double HalfZ, G4int copy_number)
 {
     G4VPhysicalVolume *theRoom = 0x0; G4LogicalVolume *logicRoom; G4Box *room;
     G4RotationMatrix R;
@@ -1037,7 +974,7 @@ G4VPhysicalVolume *DetectorFactory::MakeVCR(G4String name, G4double HalfX, G4dou
 }
 
 
-G4VPhysicalVolume * DetectorFactory::MakeAnArrayFromFactory(G4String input_file)
+G4VPhysicalVolume * SToGS::DetectorFactory::MakeAnArrayFromFactory(G4String input_file)
 {
     G4VPhysicalVolume *theDetector = 0x0; std::vector< std::pair< G4AssemblyVolume *,G4VPhysicalVolume * > > all_assembly;
 
@@ -1063,21 +1000,23 @@ G4VPhysicalVolume * DetectorFactory::MakeAnArrayFromFactory(G4String input_file)
             getline(g4map,aline);
             continue;
         }
+        // change global copy number
         if ( key == "@" ) {
             G4int offset; decode >> offset >> option_copy_number;
 
-            DetectorFactory::SetGCopyNb(offset);
+            SToGS::DetectorFactory::SetGCopyNb(offset);
             
             getline(g4map,aline);
             continue;
         }
+        // imports an xml file, adds attributes and save
         if ( key == "i" ) {
             G4String gdmlfile, fullfactoryname, option_amap("*|*|*|0.5;0.5;0.5;0.5"), option_dmap("");
             decode >> gdmlfile >> fullfactoryname >> option_amap >> option_dmap;
             
-            DetectorFactory *factory = DetectorFactory::theMainFactory()->GetFactory(fullfactoryname);
+            SToGS::DetectorFactory *factory = SToGS::DetectorFactory::theMainFactory()->GetFactory(fullfactoryname);
             if ( factory ) {
-                detector_name = DetectorFactory::theMainFactory()->GetDetName(fullfactoryname);
+                detector_name = SToGS::DetectorFactory::theMainFactory()->GetDetName(fullfactoryname);
                 theDetector = factory->Import(gdmlfile, detector_name, option_amap, option_dmap);
             }
             getline(g4map,aline);
@@ -1089,14 +1028,14 @@ G4VPhysicalVolume * DetectorFactory::MakeAnArrayFromFactory(G4String input_file)
         if ( key == "w" && decode.good() ) { // this is the name of the new setup/detector
                         
             // use a physical as a container to describe the detector ... should be enough !
-            theDetector = DetectorFactory::theMainFactory()->Get(subdetector_name.data());
+            theDetector = SToGS::DetectorFactory::theMainFactory()->Get(subdetector_name.data());
             if ( theDetector == 0x0 ) {
                 
                 decode >> X >> Y >> Z >> unit1 ;
                 G4double do_unit =
                     G4UnitDefinition::GetValueOf(unit1);
 
-                theDetector = DetectorFactory::MakeVCR(subdetector_name,do_unit*X,do_unit*Y,do_unit*Z,-1);
+                theDetector = SToGS::DetectorFactory::MakeVCR(subdetector_name,do_unit*X,do_unit*Y,do_unit*Z,-1);
             }
         }
         if ( key == "+" && decode.good() && theDetector ) { // simply load the detector and add it
@@ -1128,12 +1067,12 @@ G4VPhysicalVolume * DetectorFactory::MakeAnArrayFromFactory(G4String input_file)
                 what = "";
             }
             
-            Set(subdetector_name, theDetector, DetectorFactory::GetGCopyNb(), &T, R);
+            Move(subdetector_name, theDetector, SToGS::DetectorFactory::GetGCopyNb(), &T, R);
         }
         if ( key == "*" && decode.good() && theDetector ) { // this is a detector going to be replicated in space using the assembly mechanism
             
-            G4VPhysicalVolume *detector = DetectorFactory::theMainFactory()->Get(subdetector_name.data());
-            G4AssemblyVolume  *assembly = DetectorFactory::theMainFactory()->GetAssembly(subdetector_name.data());
+            G4VPhysicalVolume *detector = SToGS::DetectorFactory::theMainFactory()->Get(subdetector_name.data());
+            G4AssemblyVolume  *assembly = SToGS::DetectorFactory::theMainFactory()->GetAssembly(subdetector_name.data());
             
             if ( assembly ) {
                 
@@ -1185,8 +1124,8 @@ G4VPhysicalVolume * DetectorFactory::MakeAnArrayFromFactory(G4String input_file)
     
     // treated @ the end i.e. after already built detector even if not in order in the input file
     for (size_t i = 0; i < all_assembly.size(); i++ ) {
-        G4int nb_active = DoMap(all_assembly[i].first,all_assembly[i].second,DetectorFactory::GetGCopyNb());
-        DetectorFactory::SetGCopyNb(DetectorFactory::GetGCopyNb() + nb_active);
+        G4int nb_active = DoMap(all_assembly[i].first,all_assembly[i].second,SToGS::DetectorFactory::GetGCopyNb());
+        SToGS::DetectorFactory::SetGCopyNb(SToGS::DetectorFactory::GetGCopyNb() + nb_active);
     }
     
     return theDetector;
@@ -1232,11 +1171,11 @@ void DFMessenger::SetNewValue(G4UIcommand* command, G4String newValue)
         std::string modifier(newValue);
         if ( modifier[modifier.length()-1] != '^' )
             modifier += '^';
-        DetectorFactory::ChangeSD(modifier);
+        SToGS::DetectorFactory::ChangeSD(modifier);
 	}
     
 	if( command == cmdToSaveInFactory ) {
-        DetectorFactory *where_to_store = DetectorFactory::GetFactory("DetectorFactory/MyStore/");
+        SToGS::DetectorFactory *where_to_store = SToGS::DetectorFactory::GetFactory("SToGS::DetectorFactory/MyStore/");
         if ( where_to_store ) {
             G4VPhysicalVolume *world = 0x0;
             if ( G4TransportationManager::GetTransportationManager()

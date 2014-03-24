@@ -42,6 +42,7 @@ class G4LogicalVolume;
 class G4VPhysicalVolume;
 class G4Material;
 class G4AssemblyVolume;
+class G4VSensitiveDetector;
 
 //! SToGS namespace to protect SToGS classes
 namespace SToGS {
@@ -80,7 +81,7 @@ namespace SToGS {
     protected:
         //! in case a gdml file has already by loaded, it allows to get the assembly quickly
         std::vector < std::pair < G4String, G4AssemblyVolume *> > fLoadedAssembly;
-        //!
+        //! in case it has been loaded, keep a trace 
         std::vector < std::pair < G4String, G4VPhysicalVolume *> > fLoadedPhysical;
         
     /// METHODS ///
@@ -101,18 +102,21 @@ namespace SToGS {
         //! used only for the main, does not register this in the factory
         DetectorFactory():
             fPath("DetectorFactory/"),
-            fLoadedAssembly(0)
+            fLoadedAssembly(0),
+            fLoadedPhysical(0)
             {;}
         //! used for inheriting classes, it registers this in the factory
         DetectorFactory(G4String path):
             fPath(path),
-            fLoadedAssembly(1000)
+            fLoadedAssembly(1000),
+            fLoadedPhysical(1000)
         {
             fPath.prepend(theMainFactory()->GetFactoryName().data());
             theMainFactory()->Register(this) ;
         }
         
     public:
+// Main factory facilities
         //! global copy number, used to set copy number once building detector. Not protected for MT since in principle init of geom done without MT
         static G4int AddGCopyNb()
         {
@@ -129,7 +133,6 @@ namespace SToGS {
         {
             return gCopyNb;
         }
-
         //! to get the main factory
         static DetectorFactory *theMainFactory();
         
@@ -138,47 +141,42 @@ namespace SToGS {
         
         //! make a cubic world
         static G4VPhysicalVolume *MakeVCR(
-                                G4String name,
-                                G4double HalfX = 5.0*CLHEP::m, G4double HalfY = 5.0*CLHEP::m, G4double HalfZ = 5.0*CLHEP::m, G4int copy = -1);
+                            G4String name,
+                            G4double HalfX = 5.0*CLHEP::m, G4double HalfY = 5.0*CLHEP::m, G4double HalfZ = 5.0*CLHEP::m,
+                            G4int copy = -1);
         
-        //! Check for the option the basic attributs (sensitive, color). used @ the import level
+        //! Set to the given logical volume some attributs (sensitive, color) depending of the given option. used @ the import level
         /*!
          option has the following format : Volumename|material|sensitivedetectorname|color \n
          with color red;green;blue;alpha
          */
-        static void SetActive(G4LogicalVolume *pv, const G4String &opt = "*|*|*|0.5;0.5;0.5;0.5");
+        static void SetActive(G4LogicalVolume *pv, const G4String &option = "*|*|*|0.5;0.5;0.5;0.5");
         
         //! Change some SD detector into an other type of SD. Opt is used eventually to filter on the name of the volume and its material name
         /*!
          if top is 0x0, tries with world
          */
         static void ChangeSD(G4String opt, G4VPhysicalVolume *top = 0x0);
+        //! Get a particular SD. S means a SD while s is for Scorers
+        static G4VSensitiveDetector * GetSD(G4String opt, const char sd_type = 'S' );
         
         //! From a top volume, it collects into collection all logical and physical volumes
         static void CollectVolumes(G4VPhysicalVolume *theDetector,
                                    std::vector<G4LogicalVolume *> &logical_stored, std::vector<G4VPhysicalVolume *> &phycical_stored);
         
-    protected:
+        protected:
+// Methods to be overwritten in particular factory
         //! Should be implemented in any sub factory. It built (C++) a detector and return it
         virtual G4VPhysicalVolume * Make(G4String /* name */, G4String /* version_string */)
         {
             return 0x0;
         }
-        
-        //! Load from gdml file and do an assembly
-        // virtual G4AssemblyVolume * Load(G4String name);
-        
-        //! Should be implemented in each specific factory
-        /*! build the detector as if alone in world and store it i.e. in gdml and .Xmap
-         */
-        virtual void Store(G4String /* name */, G4String /* version_string */)
-            {;}
         //! recursively called in the tree struture
         void StoreMap(std::ofstream &amap, std::ofstream &dmap,
-                      std::vector<G4LogicalVolume *> &logical_stored, std::vector<G4VPhysicalVolume *> &phycical_stored,
+                      std::vector<G4LogicalVolume *> &logical_stored,
+                      std::vector<G4VPhysicalVolume *> &phycical_stored,
                       G4VPhysicalVolume *theDetector /*,
                                                       const G4String &mother_name */);
-        
         
         //! extrac from the name of the detector the touchable part
         void StreamTouchable(std::ofstream &dmap, G4String);
@@ -210,25 +208,36 @@ namespace SToGS {
         //! compute name of the file to store/read information
         G4String GetFileName(G4String detname, G4String extention);
         
-        //! search for a detector in DetectorFactory.
+        //! search for a detector in DetectorFactory
         /*!
+         Get calls GetGeometry + GetAttributes. Separated since geant4.10 requires separation of geometrical part and attributes for Multi-Threading
+         
          it has to start with the subfactory name and then the name of the file. It adds autmoatically .gdml
          Ex:
          
-         Scintillators/ParisPW_2 --> DetectorFactory/Scintillators/ParisPW_2.gdml
+            Scintillators/ParisPW_2 --> DetectorFactory/Scintillators/ParisPW_2.gdml
          */
-        G4VPhysicalVolume *Get(G4String basename);
+        G4VPhysicalVolume *Get(G4String basename, G4bool is_full = true);
         G4AssemblyVolume  *GetAssembly(G4String basename);
+        //! Read the amap file and apply atributes to the detector. if not found, it creates a deefault one from the sensitive detector founds
+        void GetAttributes(G4String basename);
         
-        //! to be used one a detector is fully contructed to simple place it the the world
-        G4bool Set(G4String basename, G4VPhysicalVolume *world, G4int copy_number_offset, G4ThreeVector *T = 0x0, G4RotationMatrix *R = 0x0);
-        
+        //! to be used once a detector is fully contructed to simply place it the the world
+        G4bool Move(G4String basename, G4VPhysicalVolume *world, G4int copy_number_offset, G4ThreeVector *T = 0x0, G4RotationMatrix *R = 0x0);
+
+        //! clear factory i.e. in memory collections of physicals and assemblies
+        void Clean();
+
     protected:
-        //! build in store a particular detector i.e. call for the sub factory Make and then Store
+        //! build in store a particular detector from its names and version. i.e. call th Make method of the sub factory and then Store
+        /*!
+            The most important method is Make which, depending of the name and version calls the correct C++ methods with the right parameters.
+            This methods just check is has not yet been made in store and if not call Make then Store
+         */
         void MakeInStore(G4String name, G4String version_string);
         
     public:
-        //! build the default store i.e. all the detectors. It calls MakeStore for all registered sub factories
+        //! build the default store i.e. all the detectors. Here It calls MakeStore for all registered sub factories
         virtual void MakeStore();
         
         //! Store in the sub-factory the given physical volume

@@ -64,24 +64,32 @@ namespace  {
 void SToGS::ScintillatorDF::MakeStore()
 {
     // PARIS RELATED
+    // SToGS::DetectorFactory::theMainFactory()->Clean();
     SToGS::DetectorFactory::SetGCopyNb(0);
     MakeInStore("ParisPW","2");
+    // SToGS::DetectorFactory::theMainFactory()->Clean();
     SToGS::DetectorFactory::SetGCopyNb(0);
     MakeInStore("ParisPW","2-bare");
     //
+    // SToGS::DetectorFactory::theMainFactory()->Clean();
     SToGS::DetectorFactory::SetGCopyNb(0);
     MakeInStore("ParisPW","3");
+    // SToGS::DetectorFactory::theMainFactory()->Clean();
     SToGS::DetectorFactory::SetGCopyNb(0);
     MakeInStore("ParisPW","3-bare");
     //
+    // SToGS::DetectorFactory::theMainFactory()->Clean();
     SToGS::DetectorFactory::SetGCopyNb(0);
     MakeInStore("CParisPW","2");
+    // SToGS::DetectorFactory::theMainFactory()->Clean();
     SToGS::DetectorFactory::SetGCopyNb(0);
     MakeInStore("CParisPW","2-bare");
     
     // Chateau de Crystal
+    // SToGS::DetectorFactory::theMainFactory()->Clean();
     SToGS::DetectorFactory::SetGCopyNb(0);
     MakeInStore("aChateau2Crystal","bare");
+    // SToGS::DetectorFactory::theMainFactory()->Clean();
     SToGS::DetectorFactory::SetGCopyNb(0);
     MakeInStore("aChateau2Crystal","");
 }

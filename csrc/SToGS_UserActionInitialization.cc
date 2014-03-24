@@ -27,7 +27,7 @@
 //----------------------------------------------------------------------------------
 
 
-#include "SToGS_UserActionManager.hh"
+#include "SToGS_UserActionInitialization.hh"
 #include "G4ios.hh"
 #include "G4SDManager.hh"
 
@@ -97,7 +97,7 @@ G4VSensitiveDetector *SToGS::UserActionInitialization::GetTrackerSD( G4String na
     if ( aSD )
         SDman->AddNewDetector(aSD);
 #else
-    aSD = SDman->FindSensitiveDetector(name);
+    aSD = SDman->FindSensitiveDetector(name,false);
     if ( aSD == 0x0 ) {
         aSD = new SToGS::TrackerSD(name);
         if ( aSD )
@@ -110,7 +110,7 @@ G4VSensitiveDetector *SToGS::UserActionInitialization::GetTrackerSD( G4String na
 
 G4VSensitiveDetector *SToGS::UserActionInitialization::GetCaloSD( G4String name )
 {
-    G4cout << "[+[SToGS::UserActionInitialization::GetCaloSD()]] Creating a tracker SD " << G4endl;
+    G4cout << "[+[SToGS::UserActionInitialization::GetCaloSD()]] Creating a calo SD " << G4endl;
     G4VSensitiveDetector *aSD = 0x0;
     
     G4SDManager *SDman =
@@ -122,7 +122,7 @@ G4VSensitiveDetector *SToGS::UserActionInitialization::GetCaloSD( G4String name 
     if ( aSD )
         SDman->AddNewDetector(aSD);
 #else
-    aSD = SDman->FindSensitiveDetector(name);
+    aSD = SDman->FindSensitiveDetector(name,false);
     if ( aSD == 0x0 ) {
         aSD = new SToGS::CaloSD(name);
         if ( aSD )

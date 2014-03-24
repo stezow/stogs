@@ -36,21 +36,23 @@ namespace SToGS {
      */
     class ScintillatorDF : public DetectorFactory
     {
-    public:
-        //! Should be implemented in any sub factory. It built (C++) a detector and return it
-        virtual G4VPhysicalVolume *Make(G4String /* name */, G4String /* version_string */);
-        
     protected:
-        // make paris PW with/without encapuslation, housing
+// All individual methods to build some detector units
+        // make PARIS PW with/without encapuslation, housing
         /*!
-         Options
+         Options \n
          bare : take into account caps and housing but they are not included in the PW. It allows studies of the impact of encapsulation
          */
         G4VPhysicalVolume *MakePPW(G4String detname, G4double caps_width = 0.0, G4double housing_width = 0.0, G4String opt = "bare");
-        // make paris cluster
+        // make paris cluster from
         G4VPhysicalVolume *MakeCPPW(G4String detname, G4String opt = "bare");
-        // Chateau de Crystal module
+        
+        // make CHATEAU DE CRYTSAL module
         G4VPhysicalVolume *MakeCdC(G4String detname, G4String opt = "bare");
+        
+    public:
+        //! Should be implemented in any sub factory. It built (C++) a detector and return it
+        virtual G4VPhysicalVolume *Make(G4String /* name */, G4String /* version_string */);
         
     public:
         ScintillatorDF(G4String path) : DetectorFactory(path)

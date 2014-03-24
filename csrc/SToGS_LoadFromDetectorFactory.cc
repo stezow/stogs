@@ -41,7 +41,8 @@ G4VPhysicalVolume *SToGS::LoadFromDetectorFactory::Construct()
         where_to_load = SToGS::DetectorFactory::GetFactory("DetectorFactory/MyStore/");
     }
     if ( where_to_load ) {
-        physiWorld = where_to_load->MakeAnArrayFromFactory(fNameInFactory);
+//        physiWorld = where_to_load->MakeGeometry(fNameInFactory);
+        physiWorld = where_to_load->Get(fNameInFactory,false);
     }
     else
         G4cout << "**** Cannot load setup " << fNameInFactory << " from Detector Factory " << G4endl;
@@ -55,5 +56,15 @@ void SToGS::LoadFromDetectorFactory::ConstructSDandField()
     MySensitiveDetector* mySD = new MySensitiveDetector(...);
     SetSensitiveDetector("MySDLV", pMySD);
      */
+    SToGS::DetectorFactory *where_to_load = SToGS::DetectorFactory::GetFactory(fNameInFactory);
+    if ( where_to_load == 0x0 ) {
+        where_to_load = SToGS::DetectorFactory::GetFactory("DetectorFactory/MyStore/");
+    }
+    if ( where_to_load ) {
+        where_to_load->GetAttributes(fNameInFactory); // assign amap, dmap
+    }
+    else
+        G4cout << "**** Cannot load setup " << fNameInFactory << " from Detector Factory " << G4endl;
+    
 }
 

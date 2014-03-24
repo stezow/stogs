@@ -38,6 +38,7 @@ void SToGS::ArraysDF::MakeStore()
 {
     //    SToGS::DetectorFactory::SetGCopyNb(0);
     //    MakeInStore("Chateau2Crystal","bare");
+    // SToGS::DetectorFactory::theMainFactory()->Clean();
     SToGS::DetectorFactory::SetGCopyNb(0);
     MakeInStore("Chateau2Crystal","");
 }
