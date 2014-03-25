@@ -23,11 +23,11 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-// $Id: SToGS_ShellDetectorConstruction.hh,v 1.8 2006/06/29 17:47:30 gunter Exp $
+// $Id: SToGS_TwoShellsDetectorConstruction.hh,v 1.8 2006/06/29 17:47:30 gunter Exp $
 // GEANT4 tag $Name: geant4-08-02 $
 //
-#ifndef SToGS_ShellDetectorConstruction_h
-#define SToGS_ShellDetectorConstruction_h 1
+#ifndef SToGS_TwoShellsDetectorConstruction_h
+#define SToGS_TwoShellsDetectorConstruction_h 1
 
 #include "globals.hh"
 #include "G4VUserDetectorConstruction.hh"
@@ -51,7 +51,7 @@ namespace SToGS {
      which is expected in the setup directory. An example of such a file is available in the package (shells.geo.demo). Here is a snapshot:
      \code
      #
-     # Ascii file that described a collection of perfect shells for HermeShellDetectorConstruction
+     # Ascii file that described a collection of perfect shells for HermeTwoShellsDetectorConstruction
      # You must write from the smallest radius to the largest !!
      # Two shells are mandatory one named Inner and a second one named Outer.
      # In case you want to work with only one active shell the second is composed of Air and set inative
@@ -91,7 +91,7 @@ namespace SToGS {
      \image html shells.png
      
      */
-    class ShellDetectorConstruction : public G4VUserDetectorConstruction
+    class TwoShellsDetectorConstruction : public G4VUserDetectorConstruction
     {
     public:
         //! constructor
@@ -102,9 +102,9 @@ namespace SToGS {
          #	Outer	BGO 	25.	40.	0.	360.	0.	180.	1
          \endcode
          */
-        ShellDetectorConstruction();
-        ShellDetectorConstruction(G4String filename);
-        virtual ~ShellDetectorConstruction();
+        TwoShellsDetectorConstruction();
+        TwoShellsDetectorConstruction(G4String filename);
+        virtual ~TwoShellsDetectorConstruction();
         
         //! One of the mandatory class to be implemented in order to have G4 working properly
         virtual G4VPhysicalVolume* Construct();
@@ -147,12 +147,15 @@ namespace SToGS {
          - if the two shells overlap. In this case, the inner one is kept are the outer one truncated
          - if there are errors while reading the file. In this case, the properties are not modified	
          */	     
-        void ComputeParameters(G4String filename = "setup/shells.geo");    
+        void ComputeParameters(G4String filename = "DetectorFactory/Generics/Builders/Shells.geo");
         
     private:
         G4Box*             solidWorld;  // pointer to the solid envelope 
         G4LogicalVolume*   logicWorld;  // pointer to the logical envelope
         G4VPhysicalVolume* physiWorld;  // pointer to the physical envelope
+        
+        G4LogicalVolume*   logicInner;  // pointer to the logical envelope
+        G4LogicalVolume*   logicOuter;  // pointer to the logical envelope
     };
 } // SToGS Namespace
 

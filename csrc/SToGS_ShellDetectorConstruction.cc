@@ -40,11 +40,11 @@
 // SToGS:: includes
 #include "SToGS_ShellDetectorConstruction.hh"
 #include "SToGS_MaterialConsultant.hh"
-//#include "SToGS::OutputManager.hh"
+#include "SToGS_DetectorFactory.hh"
 
 using namespace std;
 
-SToGS::ShellDetectorConstruction::aShell::aShell()
+SToGS::TwoShellsDetectorConstruction::aShell::aShell()
 {
 	Name		= "";
 	MatName		= "";
@@ -57,7 +57,7 @@ SToGS::ShellDetectorConstruction::aShell::aShell()
 	IsActive	= 0;
 }
 
-SToGS::ShellDetectorConstruction::aShell::aShell(const aShell &from)
+SToGS::TwoShellsDetectorConstruction::aShell::aShell(const aShell &from)
 {
 	Name		= from.Name;
 	MatName		= from.MatName;
@@ -70,19 +70,19 @@ SToGS::ShellDetectorConstruction::aShell::aShell(const aShell &from)
 	IsActive	= from.IsActive;
 }
 
-void SToGS::ShellDetectorConstruction::aShell::Print(std::ostream &out)
+void SToGS::TwoShellsDetectorConstruction::aShell::Print(std::ostream &out)
 {
 	out << Name << " " << MatName << " "
         << RMin/CLHEP::cm << " " << RMax/CLHEP::cm << " "
         << PhiStart<< " " << PhiDelta/CLHEP::deg << " " << ThetaStart/CLHEP::deg << " " << ThetaDelta/CLHEP::deg << " " << IsActive << endl;
 }
 
-SToGS::ShellDetectorConstruction::ShellDetectorConstruction():
+SToGS::TwoShellsDetectorConstruction::TwoShellsDetectorConstruction():
     solidWorld(0),
     logicWorld(0),
     physiWorld(0)
 {
-	Inner.Name		= "Inner";
+	Inner.Name		= "Shell:0";
 	Inner.MatName	= "NaI";
 	
 	Inner.RMin          = 10.*CLHEP::cm;
@@ -93,7 +93,7 @@ SToGS::ShellDetectorConstruction::ShellDetectorConstruction():
 	Inner.ThetaDelta	= 180.*CLHEP::deg;
 	Inner.IsActive		= 1;
 	
-	Outer.Name		= "Outer";
+	Outer.Name		= "Shell:1";
 	Outer.MatName	= "BGO";
 	
 	Outer.RMin          = 25.*CLHEP::cm;
@@ -108,12 +108,12 @@ SToGS::ShellDetectorConstruction::ShellDetectorConstruction():
 	ComputeParameters();
 }
 
-SToGS::ShellDetectorConstruction::ShellDetectorConstruction(G4String filename):
+SToGS::TwoShellsDetectorConstruction::TwoShellsDetectorConstruction(G4String filename):
     solidWorld(0),
     logicWorld(0),
     physiWorld(0)
 {
-	Inner.Name		= "Inner";
+	Inner.Name		= "Shell:0";
 	Inner.MatName	= "NaI";
 	
 	Inner.RMin          = 10.*CLHEP::cm;
@@ -124,7 +124,7 @@ SToGS::ShellDetectorConstruction::ShellDetectorConstruction(G4String filename):
 	Inner.ThetaDelta	= 180.*CLHEP::deg;
 	Inner.IsActive		= 1;
 	
-	Outer.Name		= "Outer";
+	Outer.Name		= "Shell:1";
 	Outer.MatName	= "BGO";
 	
 	Outer.RMin          = 25.*CLHEP::cm;
@@ -139,16 +139,16 @@ SToGS::ShellDetectorConstruction::ShellDetectorConstruction(G4String filename):
 	ComputeParameters(filename);
 }
 
-SToGS::ShellDetectorConstruction::~ShellDetectorConstruction()
+SToGS::TwoShellsDetectorConstruction::~TwoShellsDetectorConstruction()
 {
 	for(unsigned int i = 0; i < otherShells.size() ; i++ ) {
         delete  otherShells[i];
     }
 }
 
-void SToGS::ShellDetectorConstruction::ComputeParameters(G4String filename)
+void SToGS::TwoShellsDetectorConstruction::ComputeParameters(G4String filename)
 {
-	G4cout << G4endl << " ------ INFO ------ from SToGS::ShellDetectorConstruction::ComputeParameters with " << filename << G4endl;
+	G4cout << G4endl << " ------ INFO ------ from SToGS::TwoShellsDetectorConstruction::ComputeParameters with " << filename << G4endl;
 	
 	// init the MaterialConsultant to check the materials defined
 	SToGS::MaterialConsultant *materialFactory = SToGS::MaterialConsultant::theConsultant();
@@ -229,14 +229,14 @@ void SToGS::ShellDetectorConstruction::ComputeParameters(G4String filename)
             
 			rlastmin = tmp.RMin; rlastmax = tmp.RMax; // keep the radius of the last shell
 			
-			if ( tmp.Name == "Inner" ) {
+			if ( tmp.Name == "Shell:0" ) {
 				if ( tmp.MatName == "Air" )
 					tmp.IsActive = 0; // Air cannot be a detector
 				
 				Inner = tmp; nb_mandatory++; if ( tmp.IsActive ) nb_active++;
 			}
 			else {
-				if ( tmp.Name == "Outer" ) {
+				if ( tmp.Name == "Shell:1" ) {
 					if ( tmp.MatName == "Air" )
 						tmp.IsActive = 0;
                     
@@ -270,10 +270,10 @@ void SToGS::ShellDetectorConstruction::ComputeParameters(G4String filename)
 		G4cout << " List of passive materials: " << G4endl;
 		for(unsigned int i = 0; i < otherShells.size() ; i++ ) { G4cout << "\t"; otherShells[i]->Print(G4cout); }
 	}
-	G4cout << " ------ END ------ from SToGS::ShellDetectorConstruction::ComputeParameters " << G4endl << G4endl;
+	G4cout << " ------ END ------ from SToGS::TwoShellsDetectorConstruction::ComputeParameters " << G4endl << G4endl;
 }
 
-G4VPhysicalVolume* SToGS::ShellDetectorConstruction::Construct()
+G4VPhysicalVolume* SToGS::TwoShellsDetectorConstruction::Construct()
 {
     // Clean old geometry, if any
     //
@@ -291,7 +291,7 @@ G4VPhysicalVolume* SToGS::ShellDetectorConstruction::Construct()
             HalfWorldLength = 1.5*otherShells[i]->RMax;
 	}
 	
-	solidWorld= new G4Box("TheWorld",HalfWorldLength,HalfWorldLength,HalfWorldLength);
+	solidWorld= new G4Box("TwoShells",HalfWorldLength,HalfWorldLength,HalfWorldLength);
 	logicWorld= new G4LogicalVolume(solidWorld, SToGS::MaterialConsultant::theConsultant()->GetMaterial("Air"), "TheWorld", 0, 0, 0);
 	
 	logicWorld->SetVisAttributes(G4VisAttributes::Invisible); // hide the world
@@ -300,42 +300,42 @@ G4VPhysicalVolume* SToGS::ShellDetectorConstruction::Construct()
 	physiWorld = new G4PVPlacement(0,         // no rotation
                                    G4ThreeVector(), // at (0,0,0)
                                    logicWorld,      // its logical volume
-                                   "TheWorld",      // its name
+                                   "TwoShells",      // its name
                                    0,               // its mother  volume
                                    false,           // no boolean operations
-                                   0);              // copy number
+                                   -1);              // copy number
 	
     // Inner and outer are built
 	G4Sphere *asolidShell; G4LogicalVolume *alogicShell; G4VPhysicalVolume *aphysiShell; G4VisAttributes *visatt;
 	
 	asolidShell = new G4Sphere(Inner.Name, Inner.RMin, Inner.RMax, Inner.PhiStart, Inner.PhiDelta, Inner.ThetaStart, Inner.ThetaDelta);
-	alogicShell = new G4LogicalVolume(asolidShell,
+	logicInner = new G4LogicalVolume(asolidShell,
                                       SToGS::MaterialConsultant::theConsultant()->GetMaterial(Inner.MatName),
                                       Inner.Name,0,0,0);
 	visatt = new G4VisAttributes( G4Colour(0.0, 0.0, 1.0) );  visatt->SetVisibility(true);
-  	alogicShell->SetVisAttributes( visatt );
+  	logicInner->SetVisAttributes( visatt );
 	aphysiShell = new G4PVPlacement(0,        // no rotation
                                     G4ThreeVector(), // at (0,0,0)
-                                    alogicShell,     // its logical volume
+                                    logicInner,     // its logical volume
                                     Inner.Name,      // its name
                                     logicWorld,      // its mother  volume
                                     false,           // no boolean operations
-                                    1);              // copy number
+                                    0);              // copy number
     
     
 	asolidShell = new G4Sphere(Outer.Name, Outer.RMin, Outer.RMax, Outer.PhiStart, Outer.PhiDelta, Outer.ThetaStart, Outer.ThetaDelta);
-	alogicShell = new G4LogicalVolume(asolidShell,
+	logicOuter = new G4LogicalVolume(asolidShell,
                                       SToGS::MaterialConsultant::theConsultant()->GetMaterial(Outer.MatName),
                                       Outer.Name,0,0,0);
 	visatt = new G4VisAttributes( G4Colour(1.0, 0.0, 0.) ); visatt->SetVisibility(true);
-  	alogicShell->SetVisAttributes( visatt );
+  	logicOuter->SetVisAttributes( visatt );
 	aphysiShell = new G4PVPlacement(0,        // no rotation
                                     G4ThreeVector(), // at (0,0,0)
-                                    alogicShell,     // its logical volume
+                                    logicOuter,     // its logical volume
                                     Outer.Name,      // its name
                                     logicWorld,      // its mother  volume
                                     false,           // no boolean operations
-                                    2);              // copy number
+                                    1);              // copy number
     
     // do the same for other shells
 	for (unsigned int i = 0; i < otherShells.size() ; i++ ) {
@@ -353,29 +353,28 @@ G4VPhysicalVolume* SToGS::ShellDetectorConstruction::Construct()
                                         tmp->Name,      // its name
                                         logicWorld,      // its mother  volume
                                         false,           // no boolean operations
-                                        0);              // copy number		 
+                                        -1);              // copy number
 	}
 	
     // the world is returned
 	return physiWorld;
 }
 
-void SToGS::ShellDetectorConstruction::ConstructSDandField()
+void SToGS::TwoShellsDetectorConstruction::ConstructSDandField()
 {
-    /*
-    // sensitive part. Because the sensitive part depends on what we would to extract
+    // sensitive part. Because the sensitive part depends on what we would to extrac
 	// for analysis, it asks th OutputManager to give it the sensitive part
-	if ( SToGS::OutputManager::GetTheOutputManager()->GetCaloSD() && Inner.IsActive ) {
-  		alogicShell->SetSensitiveDetector(
-                                          SToGS::OutputManager::GetTheOutputManager()->GetCaloSD() );
+    G4VSensitiveDetector *sd = SToGS::DetectorFactory::GetSD("/SToGS/Tracker");
+	if ( sd && Inner.IsActive ) {
+        //SetSensitiveDetector("Shell:0", sd);
+  		logicInner->SetSensitiveDetector( sd );
 	}
 	// sensitive part. Because the sensitive part depends on what we would to extract
 	// for analysis, it asks th OutputManager to give it the sensitive part
-	if ( SToGS::OutputManager::GetTheOutputManager()->GetCaloSD() && Outer.IsActive ) {
-  		alogicShell->SetSensitiveDetector(
-                                          SToGS::OutputManager::GetTheOutputManager()->GetCaloSD() );
+	if ( sd && Outer.IsActive ) {
+        // SetSensitiveDetector("Shell:1", sd);
+  		logicOuter->SetSensitiveDetector( sd );
 	}
-    */
 }
 
 
