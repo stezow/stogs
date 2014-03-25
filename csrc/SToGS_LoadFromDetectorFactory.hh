@@ -50,6 +50,22 @@ namespace SToGS {
     private:
         G4String fNameInFactory;
     };
+    //! to load a setup from the factory
+    /*!
+     */
+    class BuildFromDetectorFactory : public G4VUserDetectorConstruction
+    {
+    public:
+        BuildFromDetectorFactory(G4String file_to_build = "default.setup") : G4VUserDetectorConstruction(), fInputFile(file_to_build)
+            {;}
+        virtual ~BuildFromDetectorFactory();
+        
+        //! it built only the detector part i.e. load the xml file and the amap, dmap
+        virtual G4VPhysicalVolume *Construct();
+        
+    private:
+        G4String fInputFile;
+    };
 } // SToGS Namespace
 
 

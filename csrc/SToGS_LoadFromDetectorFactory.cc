@@ -68,3 +68,25 @@ void SToGS::LoadFromDetectorFactory::ConstructSDandField()
     
 }
 
+SToGS::BuildFromDetectorFactory::~BuildFromDetectorFactory()
+{
+}
+
+G4VPhysicalVolume *SToGS::BuildFromDetectorFactory::Construct()
+{
+    G4VPhysicalVolume *physiWorld = 0x0;
+    
+    SToGS::DetectorFactory *where_to_load = SToGS::DetectorFactory::GetFactory(fInputFile);
+    if ( where_to_load == 0x0 ) {
+        where_to_load = SToGS::DetectorFactory::GetFactory("DetectorFactory/MyStore/");
+    }
+    if ( where_to_load ) {
+        physiWorld = where_to_load->MakeAnArrayFromFactory(fInputFile);
+    }
+    else
+        G4cout << "**** Cannot open file " << fInputFile << " Detector Factory " << G4endl;
+    
+    return physiWorld;
+}
+
+
