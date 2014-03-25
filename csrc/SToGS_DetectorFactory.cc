@@ -1175,7 +1175,7 @@ void DFMessenger::SetNewValue(G4UIcommand* command, G4String newValue)
 	}
     
 	if( command == cmdToSaveInFactory ) {
-        SToGS::DetectorFactory *where_to_store = SToGS::DetectorFactory::GetFactory("SToGS::DetectorFactory/MyStore/");
+        SToGS::DetectorFactory *where_to_store = SToGS::DetectorFactory::GetFactory("DetectorFactory/MyStore/");
         if ( where_to_store ) {
             G4VPhysicalVolume *world = 0x0;
             if ( G4TransportationManager::GetTransportationManager()
@@ -1196,11 +1196,7 @@ void DFMessenger::SetNewValue(G4UIcommand* command, G4String newValue)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-//#include "ScintillatorDF.cc"
-//#include "SemiConductorGeDF.cc"
-//#include "RoomsDF.cc"
-//#include "ArraysDF.cc"
-//#include "MyStoreDF.cc"
+
 
 
 
