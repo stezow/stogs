@@ -30,7 +30,7 @@
 #include "G4UnitsTable.hh"
 
 // Project includes
-#include "SToGS_SpecialsDF.hh"
+#include "SToGS_GenericsDF.hh"
 //
 #include "SToGS_TwoShellsDetectorConstruction.hh"
 
@@ -38,10 +38,10 @@
 // list of all specific factories
 namespace  {
     // all scintillators
-    SToGS::SpecialsDF theGenericFactory("Generics/");
+    SToGS::GenericsDF theGenericFactory("Generics/");
 }
 
-G4VPhysicalVolume *SToGS::SpecialsDF::Get(G4String basename, G4bool is_full)
+G4VPhysicalVolume *SToGS::GenericsDF::Get(G4String basename, G4bool is_full)
 {
     G4VUserDetectorConstruction *theConstructor = 0x0; G4VPhysicalVolume *theDetector = 0x0;
     
@@ -57,7 +57,7 @@ G4VPhysicalVolume *SToGS::SpecialsDF::Get(G4String basename, G4bool is_full)
     }
     // load using the g4 facility
     if ( basename.contains("TwoShells") ) {
-        theConstructor = new SToGS::TwoShellsDetectorConstruction();
+        theConstructor = new SToGS::TwoShellsDetectorConstruction("DetectorFactory/Generics/TwoShells.geo");
         theDetector = theConstructor->Construct();
     }
     if ( theDetector ) {
@@ -77,7 +77,7 @@ G4VPhysicalVolume *SToGS::SpecialsDF::Get(G4String basename, G4bool is_full)
     return theDetector;
 }
 
-void SToGS::SpecialsDF::GetAttributes(G4String basename)
+void SToGS::GenericsDF::GetAttributes(G4String basename)
 {
     // check is already loaded
 #if G4VERSION_NUMBER < 1000

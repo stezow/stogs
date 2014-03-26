@@ -72,7 +72,7 @@ set(SToGS_SRC
     csrc/SToGS_MyStoreDF.cc
     csrc/SToGS_LoadFromDetectorFactory.cc
     csrc/SToGS_TwoShellsDetectorConstruction.cc
-    csrc/SToGS_SpecialsDF.cc
+    csrc/SToGS_GenericsDF.cc
 # Physics Lists related
     csrc/SToGS_G4_GeneralPhysics.cc
     csrc/SToGS_ModularPhysicsList.cc
@@ -134,7 +134,7 @@ set(SToGS_HEADER
     csrc/SToGS_MyStoreDF.hh
     csrc/SToGS_LoadFromDetectorFactory.hh
     csrc/SToGS_TwoShellsDetectorConstruction.hh
-    csrc/SToGS_SpecialsDF.hh
+    csrc/SToGS_GenericsDF.hh
 # Physics Lists related
     csrc/SToGS_G4_GeneralPhysics.hh
     csrc/SToGS_ModularPhysicsList.hh

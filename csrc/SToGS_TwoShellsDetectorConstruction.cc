@@ -264,7 +264,7 @@ void SToGS::TwoShellsDetectorConstruction::ComputeParameters(G4String filename)
 		G4cout << " ** WARNING **, " << 2 - nb_mandatory << " shell(s) missing " << G4endl;
 	}
 	// print oout the final geometry loaded
-	G4cout << " Inner and outer shell definition: " << G4endl;
+	G4cout << " Shell0 and Shell:1 definitions: " << G4endl;
 	G4cout << "\t"; Inner.Print(G4cout); G4cout << "\t"; Outer.Print(G4cout);
 	if ( otherShells.size() ) {
 		G4cout << " List of passive materials: " << G4endl;

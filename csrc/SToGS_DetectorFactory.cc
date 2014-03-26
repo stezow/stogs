@@ -1069,8 +1069,10 @@ G4VPhysicalVolume * SToGS::DetectorFactory::MakeAnArrayFromFactory(G4String inpu
                 }
                 what = "";
             }
-            
-            Set(subdetector_name, theDetector, SToGS::DetectorFactory::GetGCopyNb(), &T, R);
+            SToGS::DetectorFactory *where_to_load = SToGS::DetectorFactory::GetFactory(subdetector_name);
+            if ( where_to_load ) {
+                where_to_load->Set(subdetector_name, theDetector, SToGS::DetectorFactory::GetGCopyNb(), &T, R);
+            }
         }
         if ( key == "*" && decode.good() && theDetector ) { // this is a detector going to be replicated in space using the assembly mechanism
             

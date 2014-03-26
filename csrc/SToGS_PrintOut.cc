@@ -115,18 +115,18 @@ G4int printModuloEvt = 1;
 void SToGS::PrintOutEventAction::BeginOfEventAction(const G4Event *evt)
 {
     G4int evtNb = evt->GetEventID();
-    if (evtNb%printModuloEvt == 0)
-    {
+//    if (evtNb%printModuloEvt == evtNb)
+//    {
         G4cout << ">>>> Begin of Event: " << evtNb + 1 << G4endl;
-    }
+//    }
 }
 void SToGS::PrintOutEventAction::EndOfEventAction(const G4Event *evt)
 {
     G4int evtNb = evt->GetEventID();
-    if (evtNb%printModuloEvt == 0)
-    {
+//    if (evtNb%printModuloEvt == evtNb)
+//    {
         G4cout << ">>>> End of Event: " << evtNb + 1 << G4endl;
-    }
+//    }
 }
 
 void SToGS::PrintOutTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
@@ -154,31 +154,21 @@ void SToGS::PrintOutTrackingAction::PostUserTrackingAction(const G4Track* aTrack
 void SToGS::PrintOutSteppingAction::UserSteppingAction(const G4Step* aStep)
 {
     G4cout << ">>>> A Step: " << G4endl;
-
-    // protection against out of world case
-    if(!aStep->GetTrack()->GetTouchable()->GetVolume())
-        return;
-    
-    // check if it is the same particle and the same event
-    // if it is not -> clear vector of volumes of the previous particle and assign new values for the variables
-    const G4int id_track = aStep->GetTrack()->GetTrackID();
-    const G4int id_event = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
-    if( trackID != id_track || id_event != eventID ){
-        trackID = id_track;
-        eventID = id_event;
-        volumesName.clear();
-    }
-    const G4String currentVolumeName = aStep->GetTrack()->GetTouchable()->GetVolume()->GetName();
-    // check if it is the first time inside this volume
-    if( std::find(volumesName.begin(), volumesName.end(), currentVolumeName) != volumesName.end())
-        return;
-    
-    volumesName.push_back(currentVolumeName);
-    
-    const G4double stepLength = aStep->GetStepLength();
-    const G4String volumeName = aStep->GetTrack()->GetTouchable()->GetVolume()->GetName();
-    
-    G4cout << " FIRST STEP IN VOLUME \"" << volumeName << "\" WITH A STEP LENGTH OF " << G4BestUnit(stepLength, "Length") << G4endl ;
+	G4cout << "trackID: " << aStep->GetTrack()->GetTrackID()
+    << ", parentID: " << aStep->GetTrack()->GetParentID()
+//    << ", primaryID: " << primaryID
+    << ", particleName: " << aStep->GetTrack()->GetDefinition()->GetParticleName()
+    << ", PDG: " << aStep->GetTrack()->GetDefinition()->GetPDGEncoding ()
+    << ", processName: " << aStep->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName()
+    << G4endl
+    << "detID: " << aStep->GetTrack()->GetVolume()->GetCopyNo()
+    << ", detName: " << aStep->GetTrack()->GetVolume()->GetName()
+    << ", motherID: " << aStep->GetPreStepPoint()->GetTouchableHandle()->GetReplicaNumber(1)
+    << ", motherDetName: " /* << motherDetName */ << G4endl;
+	G4cout << "edep: " <<  aStep->GetTotalEnergyDeposit() / CLHEP::keV << " keV"
+    << ", pos: " << aStep->GetPostStepPoint()->GetPosition()
+    << ", ToF: " << aStep->GetPostStepPoint()->GetGlobalTime()  / CLHEP::ns << " ns" << G4endl;
+    G4cout << "<<<<< A Step: " << G4endl;
 }
 
 SToGS::PrintOut::~PrintOut()

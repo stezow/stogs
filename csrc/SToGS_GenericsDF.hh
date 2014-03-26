@@ -24,8 +24,8 @@
 // ********************************************************************
 //
 
-#ifndef SToGS_SpecialsDF_h
-#define SToGS_SpecialsDF_h 1
+#ifndef SToGS_GenericsDF_h
+#define SToGS_GenericsDF_h 1
 
 #include "SToGS_DetectorFactory.hh"
 
@@ -36,23 +36,23 @@ namespace SToGS {
     //! Factory which is an interface to G4VUserDetectorConstruction
     /*!
      */
-    class SpecialsDF : public DetectorFactory
+    class GenericsDF : public DetectorFactory
     {
     protected:
         std::vector < std::pair < G4String, G4VUserDetectorConstruction *> > fLoadedUserDetectorConstruction;
 
     public:
-        SpecialsDF(G4String path) : DetectorFactory(path), fLoadedUserDetectorConstruction()
+        GenericsDF(G4String path) : DetectorFactory(path), fLoadedUserDetectorConstruction()
             {;}
-        virtual ~SpecialsDF()
+        virtual ~GenericsDF()
             {;}
         
-        //! overwritte. 
+        //! overwrite the Get method to retrieve the detector from the standard G4 way i.e. by calling Construct
         virtual G4VPhysicalVolume *Get(G4String basename, G4bool is_full = true);
-        //! Read the amap file and apply atributes to the detector. if not found, it creates a deefault one from the sensitive detector founds
+        //! Read attrbiutes by calling COnstructSDandFileds
         virtual void GetAttributes(G4String basename);
 
-        //! build the default store i.e. all the scintillators detectors.
+        //! build the default store i.e. nothing here
         virtual void MakeStore()
             {;}
     };

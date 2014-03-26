@@ -107,13 +107,8 @@ namespace SToGS {
      */
     class PrintOutSteppingAction : public G4UserSteppingAction
     {
-    private:
-        std::vector<G4String> volumesName;
-        G4int trackID;
-        G4int eventID;
-        
     public:
-        PrintOutSteppingAction() : volumesName(), trackID(-1), eventID(-1)
+        PrintOutSteppingAction() : G4UserSteppingAction()
             {;}
         virtual ~PrintOutSteppingAction()
             {;}

@@ -146,7 +146,7 @@ namespace SToGS {
          - if the two shells overlap. In this case, the inner one is kept are the outer one truncated
          - if there are errors while reading the file. In this case, the properties are not modified	
          */	     
-        void ComputeParameters(G4String filename = "DetectorFactory/Generics/Builders/Shells.geo");
+        void ComputeParameters(G4String filename = "DetectorFactory/Generics/TwoShells.geo");
         
     private:
         G4Box*             solidWorld;  // pointer to the solid envelope 
