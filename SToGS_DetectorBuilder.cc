@@ -39,11 +39,7 @@
 #include "G4UItcsh.hh"
 #include "G4Version.hh"
 
-#ifdef G4MULTITHREADED
-#include "G4MTRunManager.hh"
-#else
 #include "G4RunManager.hh"
-#endif
 
 #ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
@@ -52,21 +48,28 @@
 #include "SToGS_DetectorFactory.hh"
 #include "SToGS_ModularPhysicsList.hh"
 #include "SToGS_PrintOut.hh"
+#include "SToGS_LoadFromDetectorFactory.hh"
 
 // TMP to test MIGRATION
-#include "SToGS_ShellDetectorConstruction.hh"
+//#include "SToGS_ShellDetectorConstruction.hh"
 
 
 /*! DetectorBuilder helps in building detectors/setup using the Detector Factories
+ 
+    Construction is done through the Detector Factory using the
  */
 int main(int argc, char** argv)
 {
     // file to be given on the command line. If not, set a demo
-    G4String filedfb = "";
+    G4int what_detector = -1; G4String filedfb = "";
     for( G4int i = 1; i < argc ; i++) {
 		G4String arg = argv[i];
-		if ( arg == "-b" && i < argc - 1 )
+		if ( arg == "-dfb" && i < argc - 1 ) {
 			filedfb = argv[i+1];
+        }
+        if ( arg == "-myd" ) {
+            what_detector = 0;
+        }
 	}
     if ( filedfb == "" ) {
         filedfb = "default.dfb";
@@ -75,7 +78,6 @@ int main(int argc, char** argv)
 //Pure SToGS related
     // Make sure an output manager is set and the main factory is built
     SToGS::DetectorFactory::theMainFactory()->MakeStore();
-    
     // simple printout manager enough at the level of detector construction
     // it shows also how it can be directy used without having to go through ActionManager
     SToGS::UserActionInitialization *user_action_manager = new SToGS::PrintOut("run;event;track;step");
@@ -83,17 +85,25 @@ int main(int argc, char** argv)
     user_action_manager->SetWhichGenerator("GPS","G4Macros/GPSPointLike.mac");
 
 	// Construct the default run manager which is necessary
-#ifdef G4MULTITHREADED
-    G4MTRunManager* theRunManager = new G4MTRunManager;
-    theRunManager->SetNumberOfThreads(2);
-#else
     G4RunManager* theRunManager = new G4RunManager;
-#endif
-    theRunManager->SetUserInitialization ( new SToGS::ShellDetectorConstruction() );
+    //
+//    theRunManager->SetUserInitialization ( new SToGS::ShellDetectorConstruction() );
+    switch ( what_detector ) {
+        case 0:
+            break;
+        default:
+            theRunManager->SetUserInitialization ( new SToGS::BuildFromDetectorFactory(filedfb) );
+            break;
+    }
     theRunManager->SetUserInitialization ( new SToGS::ModularPhysicsList() );
-#ifdef G4MULTITHREADED
-    theRunManager->SetUserInitialization( user_action_manager );
+#if G4VERSION_NUMBER < 1000
+    theRunManager->SetUserAction( user_action_manager->GetGun() );
+    theRunManager->SetUserAction( user_action_manager->GetRunAction() );
+    theRunManager->SetUserAction( user_action_manager->GetEventAction() );
+    theRunManager->SetUserAction( user_action_manager->GetTrackingAction() );
+    theRunManager->SetUserAction( user_action_manager->GetSteppingAction() );
 #else
+    theRunManager->SetUserInitialization( user_action_manager );   
 #endif
     
 	// Initialize G4 kernel

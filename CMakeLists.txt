@@ -69,8 +69,10 @@ set(SToGS_SRC
     csrc/SToGS_RoomsDF.cc
     csrc/SToGS_ArraysDF.cc
     csrc/SToGS_ScintillatorDF.cc
+    csrc/SToGS_MyStoreDF.cc
     csrc/SToGS_LoadFromDetectorFactory.cc
-    csrc/SToGS_ShellDetectorConstruction.cc
+    csrc/SToGS_TwoShellsDetectorConstruction.cc
+    csrc/SToGS_SpecialsDF.cc
 # Physics Lists related
     csrc/SToGS_G4_GeneralPhysics.cc
     csrc/SToGS_ModularPhysicsList.cc
@@ -129,8 +131,10 @@ set(SToGS_HEADER
     csrc/SToGS_RoomsDF.hh
     csrc/SToGS_ArraysDF.hh
     csrc/SToGS_ScintillatorDF.hh
+    csrc/SToGS_MyStoreDF.hh
     csrc/SToGS_LoadFromDetectorFactory.hh
-    csrc/SToGS_ShellDetectorConstruction.hh
+    csrc/SToGS_TwoShellsDetectorConstruction.hh
+    csrc/SToGS_SpecialsDF.hh
 # Physics Lists related
     csrc/SToGS_G4_GeneralPhysics.hh
     csrc/SToGS_ModularPhysicsList.hh
@@ -193,7 +197,16 @@ if ( EXISTS "${PROJECT_SOURCE_DIR}/csrc/MyDetectorConstruction.hh" AND EXISTS "$
 	set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/csrc/MyDetectorConstruction.cc) 
 	set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/csrc/MyDetectorConstruction.hh) 
 	#
-	MESSAGE(" --> ADD MyDetectorConstruction, # 100 in global.paris")
+	MESSAGE(" --> ADD MyDetectorConstruction ")
+endif()
+if ( EXISTS "${PROJECT_SOURCE_DIR}/csrc/MyDetectorConstruction.hh" AND EXISTS "${PROJECT_SOURCE_DIR}/csrc/MyDetectorConstruction.cc" )
+	#
+	ADD_DEFINITIONS(-DHAS_MYDETECTOR)
+	#
+	set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/csrc/MyDetectorConstruction.cc) 
+	set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/csrc/MyDetectorConstruction.hh) 
+	#
+	MESSAGE(" --> ADD MyDetectorConstruction ")
 endif()
 
 #----------------------------------------------------------------------------

@@ -28,163 +28,273 @@
 
 #include "SToGS_MaterialConsultant.hh"
 #include "G4MaterialTable.hh"
+#include "G4NistManager.hh"
+
 #include "globals.hh"
 
 SToGS::MaterialConsultant *SToGS::MaterialConsultant::theMaterialConsultant = 0x0;
 
-SToGS::MaterialConsultant::MaterialConsultant()
+SToGS::MaterialConsultant::MaterialConsultant() :
+    theElements(),
+    theMaterials(),
+    fIsSToGDBSSearchedFirst(true)
 {
-    G4double z,density; G4String name,symbol; G4int nel,natoms;
+}
+
+G4Element *SToGS::MaterialConsultant::BuildElement(G4String name_element)
+{
+    G4double z, a; G4String name, symbol;
     
+    // first search the already created elements
+    G4Element *element = 0x0;
+    for (size_t i = 0; i < theElements.size(); i++) {
+        if ( theElements[i]->GetName() == name_element ) {
+            return theElements[i];
+        }
+    }
+    size_t size_before = theElements.size();
+    
+    // not found so add it
+    if ( name_element == "SToGS_H" ) {
+        a=1.01*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_H",symbol="H",z=1.,a));
+    }
+    if ( name_element == "SToGS_Deuterium" ) {
+        a=2.01*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_Deuterium",symbol="D",z=1.,a));
+    }
+    if ( name_element == "SToGS_He" ) {
+        a=4.*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_He",symbol="He",z=2.,a));
+    }
+    if ( name_element == "SToGS_Li" ) {
+        a=6.94*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_Li",symbol="Li",z=3.,a));
+    }
+    if ( name_element == "SToGS_Be" ) {
+        a=9.01*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_Be",symbol="Be",z=4.,a));
+    }
+    if ( name_element == "SToGS_C" ) {
+        a=12.01*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_C",symbol="C",z=6.,a));
+    }
+    if ( name_element == "SToGS_N" ) {
+        a=14.00674*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_N",symbol="N",z=7.,a));
+    }
+    if ( name_element == "SToGS_O" ) {
+        a=15.9994*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_O",symbol="O",z=8.,a));
+    }
+    if ( name_element == "SToGS_Ne" ) {
+        a=20.18*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_Ne",symbol="Ne",z=10.,a));
+    }
+    if ( name_element == "SToGS_Na" ) {
+        a=22.99*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_Na",symbol="Na",z=11.,a));
+    }
+    if ( name_element == "SToGS_Mg" ) {
+        a=24.305*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_Mg",symbol="Mg",z=12.,a));
+    }
+    if ( name_element == "SToGS_Al" ) {
+        a=26.98154*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_Al",symbol="Al",z=13.,a));
+    }
+    if ( name_element == "SToGS_Si" ) {
+        a=28.085*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_Si",symbol="Si",z=14.,a));
+    }
+    if ( name_element == "SToGS_Cl" ) {
+        a=35.453*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_Cl",symbol="Cl",z=17.,a));
+    }
+    if ( name_element == "SToGS_Fe" ) {
+        a=55.850*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_Fe",symbol="Fe",z=26.,a));
+    }
+    if ( name_element == "SToGS_Cu" ) {
+        a=63.546*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_Cu",symbol="Cu",z=29.,a));
+    }
+    if ( name_element == "SToGS_Ba" ) {
+        a=137.327*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_Ba",symbol="Ba",z=56.,a));
+    }
+    if ( name_element == "SToGS_F" ) {
+        a=18.9984032*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_F",symbol="F",z=9.,a));
+    }
+    if ( name_element == "SToGS_Ge" ) {
+        // Germanium isotopes
+        G4Isotope* Ge70 = new G4Isotope(name="SToGS_Ge70", 32, 70, 69.9242*CLHEP::g/CLHEP::mole);
+        G4Isotope* Ge72 = new G4Isotope(name="SToGS_Ge72", 32, 72, 71.9221*CLHEP::g/CLHEP::mole);
+        G4Isotope* Ge73 = new G4Isotope(name="SToGS_Ge73", 32, 73, 72.9235*CLHEP::g/CLHEP::mole);
+        G4Isotope* Ge74 = new G4Isotope(name="SToGS_Ge74", 32, 74, 73.9212*CLHEP::g/CLHEP::mole);
+        G4Isotope* Ge76 = new G4Isotope(name="SToGS_Ge76", 32, 76, 75.9214*CLHEP::g/CLHEP::mole);
+        // germanium defined via its isotopes
+        G4Element* elGe = new G4Element(name="SToGS_Germanium",symbol="Ge", 5);
+        elGe->AddIsotope(Ge70, 0.2123);
+        elGe->AddIsotope(Ge72, 0.2766);
+        elGe->AddIsotope(Ge73, 0.0773);
+        elGe->AddIsotope(Ge74, 0.3594);
+        elGe->AddIsotope(Ge76, 0.0744);
+        theElements.push_back(elGe);
+    }
+    if ( name_element == "SToGS_Br" ) {
+        a=79.904*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_Br",symbol="Br",z=35.,a));
+    }
+    if ( name_element == "SToGS_I" ) {
+        a=126.90477*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_I",symbol="I",z=53.,a));
+    }
+    if ( name_element == "SToGS_Cs" ) {
+        a=132.90545*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_Cs",symbol="Cs",z=55.,a));
+    }
+    if ( name_element == "SToGS_La" ) {
+        a=138.9055*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_La",symbol="La",z=57.,a));
+    }
+    if ( name_element == "SToGS_W" ) {
+        a=183.85*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_W",symbol="W",z=74.,a));
+    }
+    if ( name_element == "SToGS_Pb" ) {
+        a=207.19*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_Pb",symbol="Pb",z=82.,a));
+    }
+    if ( name_element == "SToGS_Bi" ) {
+        a=208.98038*CLHEP::g/CLHEP::mole;
+        theElements.push_back(new G4Element(name="SToGS_Bi",symbol="Bi",z=83.,a));
+    }
+    // to be checked ..
+    if ( name_element == "SToGS_Calcium" ) {
+        // a=40.08*CLHEP::g/CLHEP::mole;
+        // theElements.push_back(new G4Element(name="SToGS_Calcium",symbol="Ca",z=20.,a));
+    }
+    if ( name_element == "SToGS_Manganese" ) {
+        // a=54.938*CLHEP::g/CLHEP::mole;
+        // theElements.push_back(new G4Element(name="SToGS_Manganese",symbol="Mn",z=25.,a));
+    }
+    if ( name_element == "SToGS_Uranium" ) {
+        // a=238.03*CLHEP::g/CLHEP::mole;
+        // theElements.push_back(new G4Element(name="SToGS_Uranium",symbol="U",z=92.,a));
+    }
+    if ( theElements.size() != size_before ) {
+        element = theElements.back();
+    }
+    return element;
+}
+
+G4Material *SToGS::MaterialConsultant::BuildMaterial(G4String name_material)
+{
+    G4double z,density, a; G4int nel,natoms; G4String name;
+    
+    // first search the already created elements
+    G4Material *mat = 0x0;
+    for (size_t i = 0; i < theMaterials.size(); i++) {
+        if ( theMaterials[i]->GetName() == name_material ) {
+            return theMaterials[i];
+        }
+    }
+    size_t size_before = theMaterials.size();
+    
+    //-------------------
+    // simple materials
+    //-------------------
+    if ( name_material == "SToGS_Al" ) {
+        density = 2.7*CLHEP::g/CLHEP::cm3;
+        a = 26.98*CLHEP::g/CLHEP::mole;
+        theMaterials.push_back(new G4Material(name="SToGS_Al",z=13.,a,density));
+    }
+    if ( name_material == "SToGS_Fe" ) {
+        density = 7.87*CLHEP::g/CLHEP::cm3;
+        a = 55.85*CLHEP::g/CLHEP::mole;
+        theMaterials.push_back(new G4Material(name="SToGS_Fe",z=26.,a,density));
+    }
+    if ( name_material == "SToGS_Ni" ) {
+        density = 8.96*CLHEP::g/CLHEP::cm3;
+        a = 58.69*CLHEP::g/CLHEP::mole;
+        theMaterials.push_back(new G4Material(name="SToGS_Ni",z=28.,a,density));
+    }
+    if ( name_material == "SToGS_Cu" ) {
+        density = 8.96*CLHEP::g/CLHEP::cm3;
+        a = 63.54*CLHEP::g/CLHEP::mole;
+        theMaterials.push_back(new G4Material(name="SToGS_Cu",z=29.,a,density));
+    }
+    if ( name_material == "SToGS_W" ) {
+        density = 19.3*CLHEP::g/CLHEP::cm3;
+        a = 183.85*CLHEP::g/CLHEP::mole;
+        theMaterials.push_back(new G4Material(name="SToGS_W",z=74.,a,density));
+    }
+    if ( name_material == "SToGS_Pb" ) {
+        density = 11.35*CLHEP::g/CLHEP::cm3;
+        a = 207.19*CLHEP::g/CLHEP::mole;
+        theMaterials.push_back(new G4Material(name="SToGS_Pb",z=82.,a,density));
+    }
+    // TO BE CHECKED
+    if ( name_material == "" ) {
+        //  density = 1.4*CLHEP::g/CLHEP::cm3;
+        //  a = 39.95*CLHEP::g/CLHEP::mole;
+        //  theMaterials.push_back(new G4Material(name="LiquidArgon",z=18.,a,density));
+    }
+    if ( name_material == "" ) {
+        //  density = 0.002*CLHEP::g/CLHEP::cm3;
+        //  a = 39.95*CLHEP::g/CLHEP::mole;
+        //  theMaterials.push_back(new G4Material(name="ArgonGas",z=18.,a,density));
+    }
+
     //------------
     // Registering of all the needed element. Don't forget to do it if you use one
     // element to build a composite material
     //------------
-    G4double a;
-    
-    a=1.01*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Hydrogen",symbol="H",z=1.,a));
-    a=2.01*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Deuterium",symbol="D",z=1.,a));
-    a=4.*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Helium",symbol="He",z=2.,a));
-    a=6.94*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Lithium",symbol="Li",z=3.,a));
-    a=9.01*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Berillium",symbol="Be",z=4.,a));
-    a=12.01*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Carbon",symbol="C",z=6.,a));
-    a=14.00674*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Nitrogen",symbol="N",z=7.,a));
-    a=15.9994*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Oxygen",symbol="O",z=8.,a));
-    a=20.18*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Neon",symbol="Ne",z=10.,a));
-    a=22.99*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Sodium",symbol="Na",z=11.,a));
-    a=24.305*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Magnesium",symbol="Mg",z=12.,a));
-    a=26.98154*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Aluminium",symbol="Al",z=13.,a));
-    a=28.085*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Silicon",symbol="Si",z=14.,a));
-    a=35.453*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Chlorine",symbol="Cl",z=17.,a));
-    // a=40.08*CLHEP::g/CLHEP::mole;
-    // theElements.push_back(new G4Element(name="Calcium",symbol="Ca",z=20.,a));
-    // a=54.938*CLHEP::g/CLHEP::mole;
-    // theElements.push_back(new G4Element(name="Manganese",symbol="Mn",z=25.,a));
-    a=55.850*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Iron",symbol="Fe",z=26.,a));
-    a=63.546*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Copper",symbol="Cu",z=29.,a));
-    a=137.327*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Barium",symbol="Ba",z=56.,a));
-    a=18.9984032*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Fluorine",symbol="F",z=9.,a));
-    
-    // Germanium isotopes
-    G4Isotope* Ge70 = new G4Isotope(name="Ge70", 32, 70, 69.9242*CLHEP::g/CLHEP::mole);
-    G4Isotope* Ge72 = new G4Isotope(name="Ge72", 32, 72, 71.9221*CLHEP::g/CLHEP::mole);
-    G4Isotope* Ge73 = new G4Isotope(name="Ge73", 32, 73, 72.9235*CLHEP::g/CLHEP::mole);
-    G4Isotope* Ge74 = new G4Isotope(name="Ge74", 32, 74, 73.9212*CLHEP::g/CLHEP::mole);
-    G4Isotope* Ge76 = new G4Isotope(name="Ge76", 32, 76, 75.9214*CLHEP::g/CLHEP::mole);
-    // germanium defined via its isotopes
-    G4Element* elGe = new G4Element(name="Germanium",symbol="Ge", 5);
-    elGe->AddIsotope(Ge70, 0.2123);
-    elGe->AddIsotope(Ge72, 0.2766);
-    elGe->AddIsotope(Ge73, 0.0773);
-    elGe->AddIsotope(Ge74, 0.3594);
-    elGe->AddIsotope(Ge76, 0.0744);
-    theElements.push_back(elGe);
-    a=79.904*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Bromine",symbol="Br",z=35.,a));
-    a=126.90477*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Iodine",symbol="I",z=53.,a));
-    a=132.90545*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Cesium",symbol="Cs",z=55.,a));
-    a=138.9055*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Lanthanum",symbol="La",z=57.,a));
-    a=183.85*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Tungsten",symbol="W",z=74.,a));
-    a=207.19*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Lead",symbol="Pb",z=82.,a));
-    a=208.98038*CLHEP::g/CLHEP::mole;
-    theElements.push_back(new G4Element(name="Bismuth",symbol="Bi",z=83.,a));
-    // a=238.03*CLHEP::g/CLHEP::mole;
-    // theElements.push_back(new G4Element(name="Uranium",symbol="U",z=92.,a));
-    
-    //-------------------
-    // simple materials, mainly for absorbers
-    //-------------------
-    
-    density = 2.7*CLHEP::g/CLHEP::cm3;
-    a = 26.98*CLHEP::g/CLHEP::mole;
-    theMaterials.push_back(new G4Material(name="Aluminium",z=13.,a,density));
-    density = 7.87*CLHEP::g/CLHEP::cm3;
-    a = 55.85*CLHEP::g/CLHEP::mole;
-    theMaterials.push_back(new G4Material(name="Iron",z=26.,a,density));
-    density = 8.96*CLHEP::g/CLHEP::cm3;
-    a = 63.54*CLHEP::g/CLHEP::mole;
-    theMaterials.push_back(new G4Material(name="Copper",z=29.,a,density));
-    density = 19.3*CLHEP::g/CLHEP::cm3;
-    a = 183.85*CLHEP::g/CLHEP::mole;
-    theMaterials.push_back(new G4Material(name="Tungsten",z=74.,a,density));
-    density = 11.35*CLHEP::g/CLHEP::cm3;
-    a = 207.19*CLHEP::g/CLHEP::mole;
-    theMaterials.push_back(new G4Material(name="Lead",z=82.,a,density));
-    density = 8.96*CLHEP::g/CLHEP::cm3;
-    a = 58.69*CLHEP::g/CLHEP::mole;
-    theMaterials.push_back(new G4Material(name="Nickel",z=28.,a,density));
-    
-    //  density = 1.4*CLHEP::g/CLHEP::cm3;
-    //  a = 39.95*CLHEP::g/CLHEP::mole;
-    //  theMaterials.push_back(new G4Material(name="LiquidArgon",z=18.,a,density));
-    //  density = 0.002*CLHEP::g/CLHEP::cm3;
-    //  a = 39.95*CLHEP::g/CLHEP::mole;
-    //  theMaterials.push_back(new G4Material(name="ArgonGas",z=18.,a,density));
-    
-    //------------------
-    // mixtures
-    //------------------
-    
-    G4Material *mix;
-    
-    density = 1.290*CLHEP::g/CLHEP::cm3; nel = 2; mix = new G4Material(name="Air",density,nel);
-    mix->AddElement(GetElement("Nitrogen"), 70);
-    mix->AddElement(GetElement("Oxygen"), 30);
-    theMaterials.push_back(mix);
-    
-    density = 3.67*CLHEP::g/CLHEP::cm3, nel = 2; mix = new G4Material(name="NaI",density,nel);
-    mix->AddElement(GetElement("Sodium"), natoms = 1);
-    mix->AddElement(GetElement("Iodine"), natoms = 1);
-    theMaterials.push_back(mix);
-    
-    density = 3.79*CLHEP::g/CLHEP::cm3, nel = 2; mix = new G4Material(name="LaCl3",density,nel);
-    mix->AddElement(GetElement("Lanthanum"), natoms = 1);
-    mix->AddElement(GetElement("Chlorine"), natoms = 3);
-    theMaterials.push_back(mix);
-    
-    density  = 4.51*CLHEP::g/CLHEP::cm3, nel = 2; mix = new G4Material(name="CsI", density, nel);
-    mix->AddElement(GetElement("Cesium"), natoms = 1);
-    mix->AddElement(GetElement("Iodine"), natoms = 1);
-    theMaterials.push_back(mix);
-    
-    density = 5.29*CLHEP::g/CLHEP::cm3, nel = 2; mix = new G4Material(name="LaBr3",density,nel);
-    mix->AddElement(GetElement("Lanthanum"), natoms = 1);
-    mix->AddElement(GetElement("Bromine"), natoms = 3);
-    theMaterials.push_back(mix);
-    
-    density = 7.13*CLHEP::g/CLHEP::cm3, nel = 3; mix = new G4Material(name="BGO", density, nel);
-    mix->AddElement(GetElement("Bismuth"), natoms = 4);
-    mix->AddElement(GetElement("Germanium"), natoms = 3);
-    mix->AddElement(GetElement("Oxygen"), natoms = 12);
-    theMaterials.push_back(mix);
-    
-    density = 4.89*CLHEP::g/CLHEP::cm3, nel = 2; mix = new G4Material(name="BaF2", density, nel);
-    mix->AddElement(GetElement("Barium"), natoms = 1);
-    mix->AddElement(GetElement("Fluorine"), natoms = 2);
-    
+    if ( name_material == "SToGS_AIR" ) {
+        density = 1.290*CLHEP::g/CLHEP::cm3; nel = 2; mat = new G4Material(name="SToGS_AIR",density,nel);
+        mat->AddElement(BuildElement("SToGS_N"), 70);
+        mat->AddElement(BuildElement("SToGS_O"), 30);
+        theMaterials.push_back(mat);
+    }
+    if ( name_material == "SToGS_NaI" ) {
+        density = 3.67*CLHEP::g/CLHEP::cm3, nel = 2; mat = new G4Material(name="SToGS_NaI",density,nel);
+        mat->AddElement(BuildElement("SToGS_Na"), natoms = 1);
+        mat->AddElement(BuildElement("SToGS_I"), natoms = 1);
+        theMaterials.push_back(mat);
+    }
+    if ( name_material == "SToGS_LaCl3" ) {
+        density = 3.79*CLHEP::g/CLHEP::cm3, nel = 2; mat = new G4Material(name="SToGS_LaCl3",density,nel);
+        mat->AddElement(BuildElement("SToGS_La"), natoms = 1);
+        mat->AddElement(BuildElement("SToGS_Cl"), natoms = 3);
+        theMaterials.push_back(mat);
+    }
+    if ( name_material == "SToGS_CsI" ) {
+        density  = 4.51*CLHEP::g/CLHEP::cm3, nel = 2; mat = new G4Material(name="SToGS_CsI", density, nel);
+        mat->AddElement(BuildElement("SToGS_Cs"), natoms = 1);
+        mat->AddElement(BuildElement("SToGS_I"), natoms = 1);
+        theMaterials.push_back(mat);
+    }
+    if ( name_material == "SToGS_LaBr3" ) {
+        density = 5.29*CLHEP::g/CLHEP::cm3, nel = 2; mat = new G4Material(name="SToGS_LaBr3",density,nel);
+        mat->AddElement(BuildElement("SToGS_La"), natoms = 1);
+        mat->AddElement(BuildElement("SToGS_Br"), natoms = 3);
+        theMaterials.push_back(mat);
+    }
+    if ( name_material == "SToGS_BGO" ) {
+        density = 7.13*CLHEP::g/CLHEP::cm3, nel = 3; mat = new G4Material(name="SToGS_BGO", density, nel);
+        mat->AddElement(BuildElement("SToGS_Bi"), natoms = 4);
+        mat->AddElement(BuildElement("SToGS_Ge"), natoms = 3);
+        mat->AddElement(BuildElement("SToGS_O"), natoms = 12);
+        theMaterials.push_back(mat);
+    }
+    if ( name_material == "SToGS_BaF2" ) {
+        density = 4.89*CLHEP::g/CLHEP::cm3, nel = 2; mat = new G4Material(name="SToGS_BaF2", density, nel);
+        mat->AddElement(BuildElement("SToGS_Ba"), natoms = 1);
+        mat->AddElement(BuildElement("SToGS_F"), natoms = 2);
+        theMaterials.push_back(mat);
+    }
     // must have the right composition for stainless steel
     
     //  density = 8.96*CLHEP::g/CLHEP::cm3;
@@ -198,7 +308,12 @@ SToGS::MaterialConsultant::MaterialConsultant()
     //				    kStateGas,temperature,pressure);
     //  Vacuum->AddMaterial(Air, fractionmass=1.);
     
+    if ( theMaterials.size() != size_before ) {
+        mat = theMaterials.back();
+    }
+    return mat;
 }
+
 
 SToGS::MaterialConsultant *SToGS::MaterialConsultant::theConsultant()
 {
@@ -208,23 +323,79 @@ SToGS::MaterialConsultant *SToGS::MaterialConsultant::theConsultant()
     return theMaterialConsultant;
 }
 
-G4Material *SToGS::MaterialConsultant::GetMaterial(G4String what) const
+G4Material *SToGS::MaterialConsultant::FindOrBuildMaterial(G4String what)
 {
-    G4Material* material = G4Material::GetMaterial(what);
-    /*
-     for(unsigned int i = 0; i < theMaterials.size() ; i++ ){
-     if ( what == theMaterials[i]->GetName() ) { material = theMaterials[i]; break; }
-     } */
+    // to be sure the inner table is built
+    G4Material* material = G4Material::GetMaterial(what,false); G4String lwhat = what;
+    
+    if ( material == 0x0 ) { // try to look for in Nist or by adding G4_ or StoGS_ to material
+        if ( fIsSToGDBSSearchedFirst ) {
+            material = SToGS::MaterialConsultant::theConsultant()->BuildMaterial(lwhat);
+            if ( material == 0x0 ) {
+                lwhat  = "SToGS_";
+                lwhat += what;
+                material = SToGS::MaterialConsultant::theConsultant()->BuildMaterial(lwhat);
+                if ( material == 0x0 ) {
+                    lwhat = what;
+                    material = G4NistManager::Instance()->FindOrBuildMaterial(lwhat);
+                    if ( material == 0x0 ) {
+                        lwhat  = "G4_";
+                        lwhat += what;
+                        material = G4NistManager::Instance()->FindOrBuildMaterial(lwhat);
+                    }
+                }
+            }
+        }
+        else {
+            material = G4NistManager::Instance()->FindOrBuildMaterial(lwhat);
+            if ( material == 0x0 ) {
+                lwhat  = "G4_";
+                lwhat += what;
+                material = G4NistManager::Instance()->FindOrBuildMaterial(lwhat);
+                if ( material == 0x0 ) {
+                    lwhat = what;
+                    SToGS::MaterialConsultant::theConsultant()->BuildMaterial(lwhat);
+                    if ( material == 0x0 ) {
+                        lwhat  = "SToGS_";
+                        lwhat += what;
+                        material = SToGS::MaterialConsultant::theConsultant()->BuildMaterial(lwhat);
+                    }
+                }
+            }
+        }
+    }
+    if ( material && what != lwhat )
+        G4cout << "[W] in SToGS::MaterialConsultant::FindOrBuildMaterial " << what << " replaced by " << lwhat << G4endl;
+    if ( material == 0x0 )
+        G4cout << "[E] in SToGS::MaterialConsultant::FindOrBuildMaterial, material " << what << " not found " << G4endl;
+    
     return material;
 }
+
+
+/*
+G4Material *SToGS::MaterialConsultant::GetMaterial(G4String what) const
+{
+    // to be sure the inner table is built
+    SToGS::MaterialConsultant::theConsultant(); G4Material* material = G4Material::GetMaterial(what,false); G4String lwhat = what;
+    
+    if ( material == 0x0 ) { // try NIST first else add
+        material = G4NistManager::Instance()->FindOrBuildMaterial(lwhat);
+        
+        if ( material == 0x0 ) {
+            G4String tmp = "SToGS_";
+            tmp+=what;
+            material = G4Material::GetMaterial(tmp);
+        }
+    }
+    
+    return material;
+}
+*/
 
 G4Element *SToGS::MaterialConsultant::GetElement(G4String what) const
 {
     G4Element *element = G4Element::GetElement(what);
-    /*
-     for(unsigned int i = 0; i < theElements.size() ; i++ ){
-     if ( what == theElements[i]->GetName() ) { element = theElements[i]; break; }
-     } */
     return element;
 }
 
@@ -288,7 +459,7 @@ void SToGS::MaterialConsultant::SetOpticalProperties(G4Material *mat, G4String w
 		//mat->GetIonisation()->SetBirksConstant(0.126*CLHEP::mm/CLHEP::MeV);
 	}
 	//
-	if ( which_properties == G4String("Air") || which_properties == G4String("Vacuum") ) {
+	if ( which_properties == G4String("AIR") || which_properties == G4String("Vacuum") ) {
 		
 		const G4int NUMENTRIES = 3; G4double Energy[NUMENTRIES]={2.0*CLHEP::eV,7.0*CLHEP::eV,9*CLHEP::eV};
 		

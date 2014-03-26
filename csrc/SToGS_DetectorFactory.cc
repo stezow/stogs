@@ -70,7 +70,10 @@ std::vector < SToGS::DetectorFactory * > SToGS::DetectorFactory::fSubFactory;
 SToGS::DetectorFactory *SToGS::DetectorFactory::theMainFactory()
 {
     if ( pMainFactory == 0x0 ) {
-        pMainFactory = new SToGS::DetectorFactory(); pMainMessanger = new DFMessenger();
+        pMainFactory = new SToGS::DetectorFactory();
+        pMainMessanger = new DFMessenger();
+        
+        SToGS::MaterialConsultant::theConsultant(); // just to be sure SToGS materials are built 
     }
     return pMainFactory;
 }
@@ -851,7 +854,7 @@ void SToGS::DetectorFactory::GetAttributes(G4String basename)
 }
 
 
-G4bool SToGS::DetectorFactory::Move(G4String basename, G4VPhysicalVolume *mother, G4int copy_number_offset, G4ThreeVector *T, G4RotationMatrix *R)
+G4bool SToGS::DetectorFactory::Set(G4String basename, G4VPhysicalVolume *mother, G4int copy_number_offset, G4ThreeVector *T, G4RotationMatrix *R)
 {
     G4VPhysicalVolume *thefullDetector = 0x0, *subdetector ; G4LogicalVolume *volume_to_move;
     
@@ -957,7 +960,7 @@ G4VPhysicalVolume *SToGS::DetectorFactory::MakeVCR(G4String name, G4double HalfX
     
     // use a physical as a container to describe the detector
 	room= new G4Box(name,HalfX,HalfY,HalfZ);
-	logicRoom= new G4LogicalVolume(room, MaterialConsultant::theConsultant()->GetMaterial("Air"), name, 0, 0, 0);
+	logicRoom= new G4LogicalVolume(room, MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"), name, 0, 0, 0);
 	
 	logicRoom->SetVisAttributes(G4VisAttributes::Invisible); // hide the world
 	
@@ -1067,7 +1070,7 @@ G4VPhysicalVolume * SToGS::DetectorFactory::MakeAnArrayFromFactory(G4String inpu
                 what = "";
             }
             
-            Move(subdetector_name, theDetector, SToGS::DetectorFactory::GetGCopyNb(), &T, R);
+            Set(subdetector_name, theDetector, SToGS::DetectorFactory::GetGCopyNb(), &T, R);
         }
         if ( key == "*" && decode.good() && theDetector ) { // this is a detector going to be replicated in space using the assembly mechanism
             

@@ -99,7 +99,7 @@ G4VPhysicalVolume * SemiConductorGeDF::MakeEURO_PI(G4String detname, G4String op
     
     // use a physical as a container to describe the detector
 	detWorld= new G4Box(detname,10.*cm,10.*cm,50.*cm);
-	detlogicWorld= new G4LogicalVolume(detWorld, ParisMaterialConsultant::theConsultant()->GetMaterial("Air"), detname, 0, 0, 0);
+	detlogicWorld= new G4LogicalVolume(detWorld, ParisMaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"), detname, 0, 0, 0);
 	
 	detlogicWorld->SetVisAttributes(G4VisAttributes::Invisible); // hide the world
 	//  Must place the World Physical volume unrotated at (0,0,0).

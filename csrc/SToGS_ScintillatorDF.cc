@@ -163,7 +163,7 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakeCdC(G4String detname, G4String opt
     
     // use a physical as a container to describe the detector
 	detWorld= new G4Box(detname,15.*CLHEP::cm,15.*CLHEP::cm,25.*CLHEP::cm);
-	detlogicWorld= new G4LogicalVolume(detWorld, SToGS::MaterialConsultant::theConsultant()->GetMaterial("Air"), detname, 0, 0, 0);
+	detlogicWorld= new G4LogicalVolume(detWorld, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"), detname, 0, 0, 0);
 	
 	detlogicWorld->SetVisAttributes(G4VisAttributes::Invisible); // hide the world
 	//  Must place the World Physical volume unrotated at (0,0,0).
@@ -180,7 +180,7 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakeCdC(G4String detname, G4String opt
         = new G4Polyhedra("C2CCrys",0.,360.1*CLHEP::deg,numSide,numZPlanes,z,rInner,rOuter);
 	//Setting a logical volume
 	G4LogicalVolume *a_log
-        = new G4LogicalVolume(a_solid,SToGS::MaterialConsultant::theConsultant()->GetMaterial("BaF2"),"C2CCrys",0,0,0);
+        = new G4LogicalVolume(a_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("BaF2"),"C2CCrys",0,0,0);
 	
 	G4VisAttributes *visatt = new G4VisAttributes( G4Colour(0.0, 0.6, 0.0) );
 	visatt->SetVisibility(true);
@@ -202,7 +202,7 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakeCdC(G4String detname, G4String opt
         a_solid = new G4Polyhedra("C2CCapsSide",0.,360.*CLHEP::deg,numSide,numZPlanes,z_caps,rInner_caps,rOuter_caps);
         //Setting a logical volume
         a_log
-            = new G4LogicalVolume(a_solid,SToGS::MaterialConsultant::theConsultant()->GetMaterial("Aluminium"),"C2CCapsSide",0,0,0);
+            = new G4LogicalVolume(a_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"),"C2CCapsSide",0,0,0);
         
         // grey for all passive part
 		G4VisAttributes *Capsule_visatt = new G4VisAttributes( G4Colour(0.8, 0.8, 0.8, 0.75) );
@@ -218,7 +218,7 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakeCdC(G4String detname, G4String opt
         a_solid = new G4Polyhedra("C2CCapsFront",0.,360.*CLHEP::deg,numSide,numZPlanes,z_caps_front,rInner_caps_front,rOuter_caps_front);
         //Setting a logical volume
         a_log
-            = new G4LogicalVolume(a_solid,SToGS::MaterialConsultant::theConsultant()->GetMaterial("Aluminium"),"C2CCapsFront",0,0,0);
+            = new G4LogicalVolume(a_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"),"C2CCapsFront",0,0,0);
         
         // grey for all passive part
         a_log->SetVisAttributes( Capsule_visatt );
@@ -257,7 +257,7 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakePPW(G4String detname, G4double cap
     
     // use a physical as a container to describe the detector
 	detWorld= new G4Box(detname,10.*CLHEP::cm,10.*CLHEP::cm,50.*CLHEP::cm);
-	detlogicWorld= new G4LogicalVolume(detWorld, SToGS::MaterialConsultant::theConsultant()->GetMaterial("Air"), detname, 0, 0, 0);
+	detlogicWorld= new G4LogicalVolume(detWorld, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"), detname, 0, 0, 0);
 	
 	detlogicWorld->SetVisAttributes(G4VisAttributes::Invisible); // hide the world
 	//  Must place the World Physical volume unrotated at (0,0,0).
@@ -270,7 +270,7 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakePPW(G4String detname, G4double cap
                                     -1);              // copy number
     
 	// material for first and second layer
-	const char *matInner = "LaBr3", *matOuter = "NaI", *matCapsule = "Aluminium", *matHousing = "Aluminium";
+	const char *matInner = "LaBr3", *matOuter = "NaI", *matCapsule = "Al", *matHousing = "Al";
 	
 	// full lenght in X,Y,Z
 	G4double
@@ -284,7 +284,7 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakePPW(G4String detname, G4double cap
 	// Stage 0
 	G4Box *Inner_solid = new G4Box(matInner, InnerX/2., InnerY/2., InnerZ/2.);
 	G4LogicalVolume *Inner_logic =
-        new G4LogicalVolume(Inner_solid, SToGS::MaterialConsultant::theConsultant()->GetMaterial(matInner),"PW:0",0,0,0);
+        new G4LogicalVolume(Inner_solid, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matInner),"PW:0",0,0,0);
 	G4VisAttributes *Inner_visatt = new G4VisAttributes( G4Colour(0.0, 0.0, 1.0) );
 	Inner_visatt->SetVisibility(true);
 	Inner_logic->SetVisAttributes( Inner_visatt );
@@ -299,7 +299,7 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakePPW(G4String detname, G4double cap
 	// Stage 1
 	G4Box *Outer_solid = new G4Box(matOuter, OuterX/2., OuterY/2., OuterZ/2.);
 	G4LogicalVolume *Outer_logic =
-        new G4LogicalVolume(Outer_solid,SToGS::MaterialConsultant::theConsultant()->GetMaterial(matOuter), "PW:1",0,0,0);
+        new G4LogicalVolume(Outer_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matOuter), "PW:1",0,0,0);
 	G4VisAttributes *Outer_visatt = new G4VisAttributes( G4Colour(1.0, 0.0, 0.0) );
 	Outer_visatt->SetVisibility(true);
 	Outer_logic->SetVisAttributes( Outer_visatt );
@@ -335,7 +335,7 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakePPW(G4String detname, G4double cap
         Ro->rotateZ(45.0*CLHEP::deg);
         
  		G4LogicalVolume *Capsule_logic_side =
-        new G4LogicalVolume(side_part,SToGS::MaterialConsultant::theConsultant()->GetMaterial(matCapsule),"PWCaps",0,0,0);
+        new G4LogicalVolume(side_part,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matCapsule),"PWCaps",0,0,0);
         
 		Capsule_logic_side->SetVisAttributes( Capsule_visatt );
         new G4PVPlacement(Ro,T,Capsule_logic_side,"PwCaps",detlogicWorld,false,-1);
@@ -358,7 +358,7 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakePPW(G4String detname, G4double cap
          G4SubtractionSolid *Capsule_solid =
          new G4SubtractionSolid("PWCapsule", capsule_full, tot_crys, Tr);
          G4LogicalVolume *Capsule_logic =
-         new G4LogicalVolume(Capsule_solid,SToGS::MaterialConsultant::theConsultant()->GetMaterial(matCapsule),"PWCapsule",0,0,0);
+         new G4LogicalVolume(Capsule_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matCapsule),"PWCapsule",0,0,0);
          
          // grey for all passive part
          G4VisAttributes *Capsule_visatt = new G4VisAttributes( G4Colour(0.8, 0.8, 0.8) );
@@ -393,7 +393,7 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakePPW(G4String detname, G4double cap
 		G4SubtractionSolid *Housing_solid =
             new G4SubtractionSolid("PWHousing", Housing_full, tot_crys, Tr);
 		G4LogicalVolume *Housing_logic =
-            new G4LogicalVolume(Housing_solid,SToGS::MaterialConsultant::theConsultant()->GetMaterial(matHousing),"PWHousing",0,0,0);
+            new G4LogicalVolume(Housing_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matHousing),"PWHousing",0,0,0);
         
 		// grey for all passive part
 		G4VisAttributes *Housing_visatt = new G4VisAttributes( G4Colour(0.8, 0.8, 0.8, 0.75) );
@@ -427,7 +427,7 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakeCPPW(G4String detname, G4String op
     
     // use a physical as a container to describe the detector
 	detWorld= new G4Box(detname,20.*CLHEP::cm,20.*CLHEP::cm,25.*CLHEP::cm);
-	detlogicWorld= new G4LogicalVolume(detWorld, SToGS::MaterialConsultant::theConsultant()->GetMaterial("Air"), detname, 0, 0, 0);
+	detlogicWorld= new G4LogicalVolume(detWorld, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"), detname, 0, 0, 0);
 	
 	detlogicWorld->SetVisAttributes(G4VisAttributes::Invisible); // hide the world
 	

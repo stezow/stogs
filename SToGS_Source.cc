@@ -51,7 +51,7 @@
 #include "SToGS_UserActionManager.hh"
 
 // TMP to test MIGRATION
-#include "SToGS_ShellDetectorConstruction.hh"
+//#include "SToGS_ShellDetectorConstruction.hh"
 #include "SToGS_ModularPhysicsList.hh"
 #include "SToGS_PrintOut.hh"
 
@@ -128,7 +128,7 @@ int main(int argc,char** argv)
 #else
     G4RunManager* theRunManager = new G4RunManager;
 #endif
-    theRunManager->SetUserInitialization ( new SToGS::ShellDetectorConstruction() );
+//    theRunManager->SetUserInitialization ( new SToGS::LoadFromDetectorFactory(filedfb) );
     theRunManager->SetUserInitialization ( new SToGS::ModularPhysicsList("general0;emstandard_opt0;") );
 #ifdef G4MULTITHREADED
     theRunManager->SetUserInitialization( user_action_manager );

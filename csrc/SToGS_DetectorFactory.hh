@@ -158,7 +158,7 @@ namespace SToGS {
          */
         static void ChangeSD(G4String opt, G4VPhysicalVolume *top = 0x0);
         //! Get a particular SD. S means a SD while s is for Scorers
-        static G4VSensitiveDetector * GetSD(G4String opt, const char sd_type = 'S' );
+        static G4VSensitiveDetector * GetSD(G4String opt, const char sd_type = 'S');
         
         //! From a top volume, it collects into collection all logical and physical volumes
         static void CollectVolumes(G4VPhysicalVolume *theDetector,
@@ -217,13 +217,13 @@ namespace SToGS {
          
             Scintillators/ParisPW_2 --> DetectorFactory/Scintillators/ParisPW_2.gdml
          */
-        G4VPhysicalVolume *Get(G4String basename, G4bool is_full = true);
+        virtual G4VPhysicalVolume *Get(G4String basename, G4bool is_full = true);
         G4AssemblyVolume  *GetAssembly(G4String basename);
         //! Read the amap file and apply atributes to the detector. if not found, it creates a deefault one from the sensitive detector founds
-        void GetAttributes(G4String basename);
+        virtual void GetAttributes(G4String basename);
         
         //! to be used once a detector is fully contructed to simply place it the the world
-        G4bool Move(G4String basename, G4VPhysicalVolume *world, G4int copy_number_offset, G4ThreeVector *T = 0x0, G4RotationMatrix *R = 0x0);
+        G4bool Set(G4String basename, G4VPhysicalVolume *world, G4int copy_number_offset, G4ThreeVector *T = 0x0, G4RotationMatrix *R = 0x0);
 
         //! clear factory i.e. in memory collections of physicals and assemblies
         void Clean();

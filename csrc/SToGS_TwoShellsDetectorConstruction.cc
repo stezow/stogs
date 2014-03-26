@@ -38,7 +38,7 @@
 #include "G4ios.hh"
 
 // SToGS:: includes
-#include "SToGS_ShellDetectorConstruction.hh"
+#include "SToGS_TwoShellsDetectorConstruction.hh"
 #include "SToGS_MaterialConsultant.hh"
 #include "SToGS_DetectorFactory.hh"
 
@@ -211,7 +211,7 @@ void SToGS::TwoShellsDetectorConstruction::ComputeParameters(G4String filename)
             tmp.Print(G4cout);
 		}
 		// check if the material is known
-		if ( materialFactory->GetMaterial(tmp.MatName) == NULL ) {
+		if ( materialFactory->FindOrBuildMaterial(tmp.MatName) == NULL ) {
 			G4cout << " ** WARNING ** the material of the following shell is unknown: "; tmp.Print(G4cout);
 			G4cout << *(G4Material::GetMaterialTable()) << G4endl;
 			check++;
@@ -230,14 +230,14 @@ void SToGS::TwoShellsDetectorConstruction::ComputeParameters(G4String filename)
 			rlastmin = tmp.RMin; rlastmax = tmp.RMax; // keep the radius of the last shell
 			
 			if ( tmp.Name == "Shell:0" ) {
-				if ( tmp.MatName == "Air" )
+				if ( tmp.MatName == "AIR" )
 					tmp.IsActive = 0; // Air cannot be a detector
 				
 				Inner = tmp; nb_mandatory++; if ( tmp.IsActive ) nb_active++;
 			}
 			else {
 				if ( tmp.Name == "Shell:1" ) {
-					if ( tmp.MatName == "Air" )
+					if ( tmp.MatName == "AIR" )
 						tmp.IsActive = 0;
                     
 					Outer = tmp; nb_mandatory++; if ( tmp.IsActive ) nb_active++;
@@ -292,7 +292,7 @@ G4VPhysicalVolume* SToGS::TwoShellsDetectorConstruction::Construct()
 	}
 	
 	solidWorld= new G4Box("TwoShells",HalfWorldLength,HalfWorldLength,HalfWorldLength);
-	logicWorld= new G4LogicalVolume(solidWorld, SToGS::MaterialConsultant::theConsultant()->GetMaterial("Air"), "TheWorld", 0, 0, 0);
+	logicWorld= new G4LogicalVolume(solidWorld, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"), "TheWorld", 0, 0, 0);
 	
 	logicWorld->SetVisAttributes(G4VisAttributes::Invisible); // hide the world
 	
@@ -310,7 +310,7 @@ G4VPhysicalVolume* SToGS::TwoShellsDetectorConstruction::Construct()
 	
 	asolidShell = new G4Sphere(Inner.Name, Inner.RMin, Inner.RMax, Inner.PhiStart, Inner.PhiDelta, Inner.ThetaStart, Inner.ThetaDelta);
 	logicInner = new G4LogicalVolume(asolidShell,
-                                      SToGS::MaterialConsultant::theConsultant()->GetMaterial(Inner.MatName),
+                                      SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(Inner.MatName),
                                       Inner.Name,0,0,0);
 	visatt = new G4VisAttributes( G4Colour(0.0, 0.0, 1.0) );  visatt->SetVisibility(true);
   	logicInner->SetVisAttributes( visatt );
@@ -325,7 +325,7 @@ G4VPhysicalVolume* SToGS::TwoShellsDetectorConstruction::Construct()
     
 	asolidShell = new G4Sphere(Outer.Name, Outer.RMin, Outer.RMax, Outer.PhiStart, Outer.PhiDelta, Outer.ThetaStart, Outer.ThetaDelta);
 	logicOuter = new G4LogicalVolume(asolidShell,
-                                      SToGS::MaterialConsultant::theConsultant()->GetMaterial(Outer.MatName),
+                                      SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(Outer.MatName),
                                       Outer.Name,0,0,0);
 	visatt = new G4VisAttributes( G4Colour(1.0, 0.0, 0.) ); visatt->SetVisibility(true);
   	logicOuter->SetVisAttributes( visatt );
@@ -343,7 +343,7 @@ G4VPhysicalVolume* SToGS::TwoShellsDetectorConstruction::Construct()
 		
 		asolidShell = new G4Sphere(tmp->Name, tmp->RMin, tmp->RMax, tmp->PhiStart, tmp->PhiDelta, tmp->ThetaStart, tmp->ThetaDelta);
 		alogicShell = new G4LogicalVolume(asolidShell,
-                                          SToGS::MaterialConsultant::theConsultant()->GetMaterial(tmp->MatName),
+                                          SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(tmp->MatName),
                                           tmp->Name,0,0,0);
 		visatt = new G4VisAttributes( G4Colour(0.3, 0.3, 0.3) ); visatt->SetVisibility(true);
   		alogicShell->SetVisAttributes( visatt );

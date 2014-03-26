@@ -39,11 +39,11 @@ namespace SToGS {
      This class is the central point to define all the materials that will be needed to build
      your detector. This is a kind of material factory. To initialised the factory:
      
-     \code MaterialConsultant *materialFactory = MaterialConsultant::theConsultant();
+     \code MaterialConsultant *materialconsultant = MaterialConsultant::theConsultant();
      
      Once the factory is initialised, you can ask for a specific material with:
      
-     \code G4Material *mymat = materialFactory->GetMaterial("Air")
+     \code G4Material *mymat = materialconsultant->GetMaterial("AIR")
      
      if this material does not exist, a WARNING is issued and mymat is equal to NULL.
      
@@ -71,21 +71,32 @@ namespace SToGS {
         static MaterialConsultant *theConsultant();
         
     public:
-        //! attached to the pointer some optical properties
+        //! attached to the given material some optical properties
         void SetOpticalProperties(G4Material *, G4String which_properties);
         
-        //! It returns a G4Element
+        //! It looks into the different DATABASE and returns a G4Element
         G4Element  *GetElement(G4String)  const;
+        //! It looks into the different DATABASE and returns a G4Material
+        // G4Material *GetMaterial(G4String) const;
         
-        //! It returns a G4Material
-        G4Material *GetMaterial(G4String) const;
+        //!
+        G4Material *FindOrBuildMaterial(G4String what);
         
     private:
         static SToGS::MaterialConsultant *theMaterialConsultant;
         
+    protected:
+        //! methods to be completed in case one would like to define differently some elements/materials
+        G4Element  *BuildElement(G4String name);
+        //! methods to be completed in case one would like to define differently some elements/materials
+        G4Material *BuildMaterial(G4String name);
+       
     private:
         std::vector<G4Element*>  theElements;    // save pointers here to avoid
-        std::vector<G4Material*> theMaterials;   // warnings of unused variables 
+        std::vector<G4Material*> theMaterials;   // warnings of unused variables
+        
+        //! if true (default) try and look in SToGS DB for new objects in FindOrBuidMaterial. Otherwise is is NIST used first
+        G4bool fIsSToGDBSSearchedFirst;
     };
 } // SToGS Namespace
 
