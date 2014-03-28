@@ -79,12 +79,13 @@ set(SToGS_SRC
 # Generator related
     csrc/SToGS_G4_GPSPrimaryGeneratorAction.cc
 # User's Action related
-	csrc/SToGS_G4_CaloHit.cc
-	csrc/SToGS_G4_CaloSD.cc
-	csrc/SToGS_G4_SingleHit.cc
+	csrc/SToGS_G4_CopClusterHit.cc
+	csrc/SToGS_G4_CopClusterSD.cc
+	csrc/SToGS_G4_TrackerHit.cc
 	csrc/SToGS_G4_TrackerSD.cc
 	csrc/SToGS_UserActionInitialization.cc
     csrc/SToGS_PrintOut.cc
+    csrc/SToGS_Ascii.cc
 	csrc/SToGS_UserActionManager.cc
 #
 #	csrc/SToGS_3by3CubicConstruction.cc
@@ -95,8 +96,8 @@ set(SToGS_SRC
 #	csrc/SToGS_BasicPrimaryGeneratorAction.cc
 #	csrc/SToGS_BasicRunAction.cc
 #	csrc/SToGS_BasicSteppingAction.cc
-#	csrc/SToGS_CaloHit.cc
-#	csrc/SToGS_CaloSD.cc
+#	csrc/SToGS_CopClusterHit.cc
+#	csrc/SToGS_CopClusterSD.cc
 #	csrc/SToGS_GDRPrimaryGeneratorAction.cc
 #	csrc/SToGS_GeneralPhysics.cc
 #	csrc/SToGS_LoadDetectorConstruction.cc
@@ -113,7 +114,7 @@ set(SToGS_SRC
 #	csrc/SToGS_SegmentedShellDetectorConstruction.cc
 #	csrc/SToGS_SemiSphe2LayersConstruction.cc
 #	csrc/SToGS_ShellDetectorConstruction.cc
-#	csrc/SToGS_SingleHit.cc
+#	csrc/SToGS_TrackerHit.cc
 #	csrc/SToGS_StandardEMPhysicsList.cc
 #	csrc/SToGS_TrackerSD.cc
 #	csrc/SToGS_Tree.cc
@@ -141,12 +142,13 @@ set(SToGS_HEADER
 # Generator related
     csrc/SToGS_G4_GPSPrimaryGeneratorAction.hh
 # User's Action related
-	csrc/SToGS_G4_CaloHit.hh
-	csrc/SToGS_G4_CaloSD.hh
-	csrc/SToGS_G4_SingleHit.hh
+	csrc/SToGS_G4_CopClusterHit.hh
+	csrc/SToGS_G4_CopClusterSD.hh
+	csrc/SToGS_G4_TrackerHit.hh
 	csrc/SToGS_G4_TrackerSD.hh
 	csrc/SToGS_UserActionManager.hh
     csrc/SToGS_PrintOut.hh
+    csrc/SToGS_Ascii.hh
 	csrc/SToGS_UserActionInitialization.hh
 #
 #	csrc/SToGS_3by3CubicConstruction.hh
@@ -157,8 +159,8 @@ set(SToGS_HEADER
 #	csrc/SToGS_BasicPrimaryGeneratorAction.hh
 #	csrc/SToGS_BasicRunAction.hh
 #	csrc/SToGS_BasicSteppingAction.hh
-#	csrc/SToGS_CaloHit.hh
-#	csrc/SToGS_CaloSD.hh
+#	csrc/SToGS_CopClusterHit.hh
+#	csrc/SToGS_CopClusterSD.hh
 #	csrc/SToGS_GDRPrimaryGeneratorAction.hh
 #	csrc/SToGS_GeneralPhysics.hh
 #	csrc/SToGS_IonPhysList.hh
@@ -177,7 +179,7 @@ set(SToGS_HEADER
 #	csrc/SToGS_SegmentedShellDetectorConstruction.hh
 #	csrc/SToGS_SemiSphe2LayersConstruction.hh
 #	csrc/SToGS_ShellDetectorConstruction.hh
-#	csrc/SToGS_SingleHit.hh
+#	csrc/SToGS_TrackerHit.hh
 #	csrc/SToGS_StandardEMPhysicsList.hh
 #	csrc/SToGS_TrackerSD.hh
 #	csrc/SToGS_Tree.hh

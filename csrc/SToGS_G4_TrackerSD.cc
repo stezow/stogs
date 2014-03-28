@@ -25,7 +25,7 @@
 //
 
 #include "SToGS_G4_TrackerSD.hh"
-#include "SToGS_G4_SingleHit.hh"
+#include "SToGS_G4_TrackerHit.hh"
 
 #include "G4Step.hh"
 #include "G4HCofThisEvent.hh"
@@ -36,7 +36,7 @@
 
 SToGS::TrackerSD::TrackerSD(G4String name): G4VSensitiveDetector(name)
 {
-	G4String HCname = "singleCollection";
+	G4String HCname = "TrackerHits";
     collectionName.insert(HCname);
 	
 }
@@ -48,7 +48,7 @@ void SToGS::TrackerSD::Initialize(G4HCofThisEvent* HCE)
 {
 //	G4cout << " In SToGS::TrackerSD::Initialize " << G4endl;
 	static int HCID = -1;
-	trackerCollection = new SToGS::SingleHitsCollection(SensitiveDetectorName,collectionName[0]); 
+	trackerCollection = new SToGS::TrackerHitsCollection(SensitiveDetectorName,collectionName[0]); 
 	
 	if ( HCID < 0 ) 
 		HCID = GetCollectionID(0);
@@ -64,26 +64,8 @@ G4bool SToGS::TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory * /*touch
 	
 	// avoid keeping optical
 	G4Track* theTrack = aStep->GetTrack();
-	if ( theTrack && theTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() )
+	if ( theTrack && theTrack->GetParticleDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() )
 		return false ;
-	
-/*		G4cout << "OPTICAL1 " << G4endl;
-	
-	if ( edep == 0. ) {
-	
-		if ( aStep->GetPreStepPoint()->GetProcessDefinedStep() )
-			G4cout << "OPTICAL2 " << aStep->GetPreStepPoint()->GetProcessDefinedStep()->GetProcessName() << G4endl;
-		
-		G4cout << "OPTICAL3 " << aStep->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() << G4endl; 
-
-		
-
-		return false;
-	}
-
-	if (aStep->GetPostStepPoint()->GetStepStatus() == fGeomBoundary) {
-		G4cout << "Reflexion " << G4endl;
-	} */
 	
 	// nothing to be stored if no energy 
 	G4double edep = aStep->GetTotalEnergyDeposit();  
@@ -92,7 +74,7 @@ G4bool SToGS::TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory * /*touch
 	}
 	
 	// a new hit is created
-	SToGS::SingleHit *newHit = new SToGS::SingleHit();
+	SToGS::TrackerHit *newHit = new SToGS::TrackerHit();
 	
 	// set hit properties  
 	newHit->SetTrackID(aStep->GetTrack()->GetTrackID());

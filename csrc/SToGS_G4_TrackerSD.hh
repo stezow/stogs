@@ -28,7 +28,7 @@
 #define SToGS_TrackerSD_h 1
 
 #include "G4VSensitiveDetector.hh"
-#include "SToGS_G4_SingleHit.hh"
+#include "SToGS_G4_TrackerHit.hh"
 
 class G4Step;
 class G4HCofThisEvent;
@@ -54,9 +54,8 @@ namespace SToGS {
         void PrintAll();
         
     private:
-        SingleHitsCollection *trackerCollection;
+        TrackerHitsCollection *trackerCollection;
     };
-    
 } // SToGS Namespace
 
 #endif

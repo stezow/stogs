@@ -1,0 +1,52 @@
+# Particle type
+#
+/gps/particle gamma
+# Energy. For some reasons type mono sticks the application (infinite loop ?)
+# Solution is Lin with a very narrow window 
+#
+#
+/gps/ene/type Lin
+/gps/ene/min  1173.19 keV
+/gps/ene/max  1173.21 keV
+/gps/ene/gradient  0 
+/gps/ene/intercept  1 
+# Position
+#
+/gps/pos/type Point
+/gps/pos/centre 0. 0. 0. cm
+# Angular distribution: 
+#
+/gps/ang/type iso
+/gps/ang/minphi     0. deg
+/gps/ang/maxphi   360. deg
+/gps/ang/mintheta   0. deg
+/gps/ang/maxtheta 180. deg
+#
+#
+/gps/source/intensity 1.
+
+# Second 60Co line at 1.33 MeV 
+/gps/source/add 1.
+# Particle type
+#
+/gps/particle gamma
+# Energy
+#
+/gps/ene/type Lin
+/gps/ene/min  1332.49 keV
+/gps/ene/max  1332.51 keV
+/gps/ene/gradient  0 
+/gps/ene/intercept  1 
+# Position
+#
+/gps/pos/type Point
+/gps/pos/centre 0. 0. 0. cm
+# Angular distribution: 
+#
+/gps/ang/type iso
+/gps/ang/minphi     0. deg
+/gps/ang/maxphi   360. deg
+/gps/ang/mintheta   0. deg
+/gps/ang/maxtheta 180. deg
+# uncommented, two lines emitted in one event. 
+/gps/source/multiplevertex true

@@ -24,75 +24,77 @@
 // ********************************************************************
 //
 
-#include "SToGS_G4_SingleHit.hh"
+#include "SToGS_G4_CopClusterHit.hh"
+
 #include "G4VVisManager.hh"
 #include "G4Circle.hh"
 #include "G4Colour.hh"
 #include "G4VisAttributes.hh"
 #include "G4UnitsTable.hh"
 
-G4ThreadLocal G4Allocator<SToGS::SingleHit> *SToGS::SingleHitAllocator = 0x0;
+#ifdef G4MULTITHREADED
+G4ThreadLocal G4Allocator<SToGS::CopClusterHit> *SToGS::CopClusterHitAllocator = 0;
+#else
+G4Allocator<SToGS::CopClusterHit> *SToGS::CopClusterHitAllocator = 0;
+#endif
 
-SToGS::SingleHit::SingleHit()
+SToGS::CopClusterHit::CopClusterHit():
+    detID(-1),
+    motherID(-1),
+    edep(0.0),
+    ToF(0.0),
+    pos(0.0,0.0,0.0),
+    detName("-"),
+    motherDetName("-")
+{
+}
+
+SToGS::CopClusterHit::~CopClusterHit()
 {
     ;
 }
 
-SToGS::SingleHit::~SingleHit()
+SToGS::CopClusterHit::CopClusterHit(const SToGS::CopClusterHit &from) : G4VHit()
 {
-    ;
-}
-
-SToGS::SingleHit::SingleHit(const SToGS::SingleHit &from) : G4VHit()
-{
-	if ( this == &from )
-        return;
+	if ( this == &from ) return;
 
 	edep = from.edep;	
 	pos  = from.pos;
-	trackID = from.trackID;
-	parentID = from.parentID;
-	primaryID = from.primaryID;		
+
 	detID = from.detID;
 	motherID = from.motherID;
 
 	ToF = from.ToF;
-	processName  = from.processName;
-	particleName = from.particleName;	
+		
 	detName = from.detName;
 	motherDetName = from.motherDetName;
-	PDGcode = from.PDGcode;
 }
 
-const SToGS::SingleHit& SToGS::SingleHit::operator=(const SToGS::SingleHit &from)
+const SToGS::CopClusterHit& SToGS::CopClusterHit::operator=(const SToGS::CopClusterHit &from)
 {
 	if ( this == &from )
         return (*this);
 	
 	edep = from.edep;
 	pos  = from.pos;
-	trackID = from.trackID;
-	parentID = from.parentID;
-	primaryID = from.primaryID;			
+
 	detID = from.detID;
 	motherID = from.motherID;
 
 	ToF = from.ToF;
-	processName = from.processName;
-	particleName = from.particleName;	
+	
 	detName = from.detName;
 	motherDetName = from.motherDetName;
-	PDGcode = from.PDGcode;
-	
+		
 	return (*this);
 }
 
-G4int SToGS::SingleHit::operator==(const SToGS::SingleHit &from) const
+G4int SToGS::CopClusterHit::operator==(const SToGS::CopClusterHit &from) const
 {
 	return (this==&from) ? 1 : 0;
 }
 
-void SToGS::SingleHit::Draw()
+void SToGS::CopClusterHit::Draw()
 {
 	G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
 	if(pVVisManager)
@@ -106,18 +108,10 @@ void SToGS::SingleHit::Draw()
 	}
 }
 
-void SToGS::SingleHit::Print()
+void SToGS::CopClusterHit::Print()
 {
-
-	G4cout << "--------------- SToGS::SingleHit::Print() --------------------- " << G4endl;
-	G4cout << "trackID: " << trackID 
-		<< ", parentID: " << parentID
-		<< ", primaryID: " << primaryID	
-	 	<< ", particleName: " << particleName 
-		<< ", PDG: " << PDGcode
-	 	<< ", processName: " << processName 
-		<< G4endl
-	 	<< "detID: " << detID 
+	G4cout << "--------------- SToGS::CopClusterHit::Print() --------------------- " << G4endl;
+	G4cout  << "detID: " << detID 
 	 	<< ", detName: " << detName 
 		<< ", motherID: " << motherID 
 	 	<< ", motherDetName: " << motherDetName << G4endl; 
@@ -126,5 +120,18 @@ void SToGS::SingleHit::Print()
 	 	<< ", ToF: " << ToF  / CLHEP::ns << " ns" << G4endl; 
 	G4cout << "--------------------------------------------------------------" << G4endl;
 }
+
+void SToGS::CopClusterHit::EndOfEvent()
+{
+	if ( edep == 0.0 ) return;
+    ToF /= edep;
+    pos /= edep;
+}
+
+
+
+
+
+
 
 

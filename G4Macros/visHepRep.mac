@@ -1,0 +1,8 @@
+/vis/open HepRepFile 
+/vis/drawVolume
+/vis/viewer/set/viewpointThetaPhi 90 180 deg
+/vis/scene/add/axes 0 0 0 1. m
+/vis/viewer/zoom 1.4
+/vis/scene/add/trajectories smooth
+/vis/scene/add/hits
+/vis/scene/endOfEventAction accumulate 100

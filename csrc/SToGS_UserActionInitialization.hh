@@ -81,9 +81,9 @@ namespace SToGS {
         std::pair < G4String, G4String > SetWhichGenerator(G4String which_gene, G4String option);
         
         //! to get a general SToGS tracker. In Multi-threading mode, return a new instance otherwise a global one
-        static G4VSensitiveDetector *GetTrackerSD( G4String name = "/SToGS/Track" );
-        //! to get a general SToGS Calo. In Multi-threading mode, return a new instance otherwise a global one
-        static G4VSensitiveDetector *GetCaloSD( G4String name = "/SToGS/Calo" );
+        static G4VSensitiveDetector *GetTrackerSD( G4String name = "/SToGS/SD/Tracker" );
+        //! to get a general SToGS Calorimeter. In Multi-threading mode, return a new instance otherwise a global one
+        static G4VSensitiveDetector *GetCopClusterSD( G4String name = "/SToGS/SD/CopCluster" );
         
 // INTERFACE provided for Geant4 < 10.0
     public:

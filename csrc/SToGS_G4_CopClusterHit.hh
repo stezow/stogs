@@ -24,8 +24,8 @@
 // ********************************************************************
 //
 
-#ifndef SToGS_CaloHit_h
-#define SToGS_CaloHit_h 1
+#ifndef SToGS_CopClusterHit_h
+#define SToGS_CopClusterHit_h 1
 
 #include "G4VHit.hh"
 #include "G4THitsCollection.hh"
@@ -43,7 +43,7 @@ namespace SToGS {
     /*!
      In G4, one have to define a class (a hit) that inherits from G4VHit to keep informations during the tracking.
      This one is dedicated for tracking since it kept infomations of any single impact in sensitive detectors. Here is
-     the list of the available informations for each ParisCaloHit. Use Get/Set methods to obtain/change these values.
+     the list of the available informations for each ParisCopClusterHit. Use Get/Set methods to obtain/change these values.
      
      - G4int primaryID: Primary vertex from which this hit is coming
      
@@ -55,15 +55,15 @@ namespace SToGS {
      
      - G4ThreeVector pos: Position of the impact
      */
-    class CaloHit : public G4VHit
+    class CopClusterHit : public G4VHit
     {
     public:
-        CaloHit();
-        virtual ~CaloHit();
-        CaloHit(const CaloHit &right);
+        CopClusterHit();
+        virtual ~CopClusterHit();
+        CopClusterHit(const CopClusterHit &right);
         
-        const CaloHit& operator=(const CaloHit &right);
-        G4int operator==(const CaloHit &right) const;
+        const CopClusterHit& operator=(const CopClusterHit &right);
+        G4int operator==(const CopClusterHit &right) const;
         
         inline void *operator new(size_t);
         inline void operator delete(void *aHit);
@@ -165,18 +165,18 @@ namespace SToGS {
         G4int NbHits;
     };
 
-    typedef G4THitsCollection<CaloHit> CaloHitsCollection;
-    extern G4ThreadLocal G4Allocator<CaloHit> *CaloHitAllocator;
+    typedef G4THitsCollection<CopClusterHit> CopClusterHitsCollection;
+    extern G4ThreadLocal G4Allocator<CopClusterHit> *CopClusterHitAllocator;
     
-    inline void* CaloHit::operator new(size_t)
+    inline void* CopClusterHit::operator new(size_t)
     {
-        if( !CaloHitAllocator )
-            CaloHitAllocator = new G4Allocator<CaloHit>;
-        return CaloHitAllocator->MallocSingle();
+        if( !CopClusterHitAllocator )
+            CopClusterHitAllocator = new G4Allocator<CopClusterHit>;
+        return CopClusterHitAllocator->MallocSingle();
     }
-    inline void CaloHit::operator delete(void *aHit)
+    inline void CopClusterHit::operator delete(void *aHit)
     {
-        CaloHitAllocator->FreeSingle((CaloHit*) aHit);
+        CopClusterHitAllocator->FreeSingle((CopClusterHit*) aHit);
     }
 } // SToGS Namespace
 

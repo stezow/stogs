@@ -26,7 +26,7 @@
 
 #include "SToGS_PrintOut.hh"
 #include "SToGS_G4_TrackerSD.hh"
-#include "SToGS_G4_CaloSD.hh"
+#include "SToGS_G4_CopClusterSD.hh"
 
 #include "G4SDManager.hh"
 #include "G4RunManager.hh"
@@ -41,10 +41,10 @@ SToGS::PrintOutRun::PrintOutRun() :
    	G4SDManager* SDman = G4SDManager::GetSDMpointer();
     if ( SDman ) {
         // keep the collection ID associated to this collection
-        colltrackerID = SDman->GetCollectionID("/SToGS/Track");
+        colltrackerID = SDman->GetCollectionID("/SToGS/SD/Tracker");
         
         // keep the collection ID associated to this collection
-        collcaloID = SDman->GetCollectionID("/SToGS/Calo");
+        collcaloID = SDman->GetCollectionID("/SToGS/SD/CopCluster");
     }
 }
 SToGS::PrintOutRun::~PrintOutRun()
@@ -53,7 +53,7 @@ SToGS::PrintOutRun::~PrintOutRun()
 }
 void SToGS::PrintOutRun::RecordEvent(const G4Event* evt)
 {
-    SToGS::SingleHitsCollection *THC = 0x0; SToGS::CaloHitsCollection *CHC = 0x0;
+    SToGS::TrackerHitsCollection *THC = 0x0; SToGS::CopClusterHitsCollection *CHC = 0x0;
 	
 	if( colltrackerID < 0 || collcaloID < 0 )
 		return;
@@ -62,8 +62,8 @@ void SToGS::PrintOutRun::RecordEvent(const G4Event* evt)
     
 	if(HCE)
 	{
-        THC = (SToGS::SingleHitsCollection *)(HCE->GetHC(colltrackerID));
-		CHC = (SToGS::CaloHitsCollection*)(HCE->GetHC(collcaloID));
+        THC = (SToGS::TrackerHitsCollection *)(HCE->GetHC(colltrackerID));
+		CHC = (SToGS::CopClusterHitsCollection*)(HCE->GetHC(collcaloID));
   	}
     
 	if(THC)
@@ -103,11 +103,11 @@ SToGS::PrintOutRunAction::~PrintOutRunAction()
 }
 void SToGS::PrintOutRunAction::BeginOfRunAction(const G4Run *aRun)
 {
-    G4cout  << ">>>> Begin of Run: " <<  aRun->GetRunID() << " " << aRun->GetNumberOfEventToBeProcessed() << G4endl ;
+    G4cout  << "Begin of Run: " <<  aRun->GetRunID() << " " << aRun->GetNumberOfEventToBeProcessed() << G4endl ;
 }
 void SToGS::PrintOutRunAction::EndOfRunAction(const G4Run* aRun)
 {
-    G4cout  << ">>>> End of Run: " <<  aRun->GetRunID() << " " << aRun->GetNumberOfEvent() << G4endl ;
+    G4cout  << "End of Run: " <<  aRun->GetRunID() << " " << aRun->GetNumberOfEvent() << G4endl ;
 }
 
 G4int printModuloEvt = 1;
@@ -115,60 +115,53 @@ G4int printModuloEvt = 1;
 void SToGS::PrintOutEventAction::BeginOfEventAction(const G4Event *evt)
 {
     G4int evtNb = evt->GetEventID();
-//    if (evtNb%printModuloEvt == evtNb)
-//    {
-        G4cout << ">>>> Begin of Event: " << evtNb + 1 << G4endl;
-//    }
+    G4cout << "  Begin of Event: " << evtNb + 1 << G4endl;
 }
 void SToGS::PrintOutEventAction::EndOfEventAction(const G4Event *evt)
 {
     G4int evtNb = evt->GetEventID();
-//    if (evtNb%printModuloEvt == evtNb)
-//    {
-        G4cout << ">>>> End of Event: " << evtNb + 1 << G4endl;
-//    }
+    G4cout << "  End of Event: " << evtNb + 1 << G4endl;
 }
 
 void SToGS::PrintOutTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
 {
-    G4cout << ">>>> Begin of Track: (PreUserTrackingAction) " << G4endl;
-    G4cout << "  PARTICLE: " << aTrack->GetDefinition()->GetParticleName() << G4endl;
-    G4cout << "  TRACK ID: " << aTrack->GetTrackID() << G4endl;
-    G4cout << "  PARENT ID: " << aTrack->GetParentID() << G4endl;
-    G4cout << "  TOTAL ENERGY: " << G4BestUnit(aTrack->GetTotalEnergy(), "Energy") << G4endl;
-    G4cout << "  KINETIC ENERGY: " << G4BestUnit(aTrack->GetKineticEnergy(), "Energy") << G4endl;
-    G4cout << "  VELOCITY: " << aTrack->GetVelocity() << G4endl;
+    G4cout << "    Begin of Track: (PreUserTrackingAction) " << G4endl;
+    G4cout << "     PARTICLE: " << aTrack->GetDefinition()->GetParticleName() << G4endl;
+    G4cout << "     TRACK ID: " << aTrack->GetTrackID() << G4endl;
+    G4cout << "     PARENT ID: " << aTrack->GetParentID() << G4endl;
+    G4cout << "     TOTAL ENERGY: " << G4BestUnit(aTrack->GetTotalEnergy(), "Energy") << G4endl;
+    G4cout << "     KINETIC ENERGY: " << G4BestUnit(aTrack->GetKineticEnergy(), "Energy") << G4endl;
+    G4cout << "     VELOCITY: " << aTrack->GetVelocity() << G4endl;
 }
 
 void SToGS::PrintOutTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
 {
-    G4cout << ">>>> End of Track: (PostUserTrackingAction) " << G4endl;
+    G4cout << "    End of Track: (PostUserTrackingAction) " << G4endl;
     
     // verify if next volume exist -> if it does not exist it means that the particle went out of the world volume
     if(aTrack->GetNextVolume())
-        G4cout << " VOLUME WHERE THE PARTICLE WAS KILLED: " << aTrack->GetTouchable()->GetVolume()->GetName() << G4endl;
+        G4cout << "     VOLUME WHERE THE PARTICLE WAS KILLED: " << aTrack->GetTouchable()->GetVolume()->GetName() << G4endl;
     else
-        G4cout << " THE PARTICLE WAS KILLED BECAUSE IT WENT OUT OF THE WORLD VOLUME" << G4endl;
+        G4cout << "     THE PARTICLE WAS KILLED BECAUSE IT WENT OUT OF THE WORLD VOLUME" << G4endl;
 }
 
 void SToGS::PrintOutSteppingAction::UserSteppingAction(const G4Step* aStep)
 {
-    G4cout << ">>>> A Step: " << G4endl;
-	G4cout << "trackID: " << aStep->GetTrack()->GetTrackID()
-    << ", parentID: " << aStep->GetTrack()->GetParentID()
+    G4cout << "        A Step: " << G4endl;
+	G4cout << "         trackID: " << aStep->GetTrack()->GetTrackID()
+        << ", parentID: " << aStep->GetTrack()->GetParentID()
 //    << ", primaryID: " << primaryID
-    << ", particleName: " << aStep->GetTrack()->GetDefinition()->GetParticleName()
-    << ", PDG: " << aStep->GetTrack()->GetDefinition()->GetPDGEncoding ()
-    << ", processName: " << aStep->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName()
-    << G4endl
-    << "detID: " << aStep->GetTrack()->GetVolume()->GetCopyNo()
-    << ", detName: " << aStep->GetTrack()->GetVolume()->GetName()
-    << ", motherID: " << aStep->GetPreStepPoint()->GetTouchableHandle()->GetReplicaNumber(1)
-    << ", motherDetName: " /* << motherDetName */ << G4endl;
-	G4cout << "edep: " <<  aStep->GetTotalEnergyDeposit() / CLHEP::keV << " keV"
-    << ", pos: " << aStep->GetPostStepPoint()->GetPosition()
-    << ", ToF: " << aStep->GetPostStepPoint()->GetGlobalTime()  / CLHEP::ns << " ns" << G4endl;
-    G4cout << "<<<<< A Step: " << G4endl;
+        << ", particleName: " << aStep->GetTrack()->GetDefinition()->GetParticleName()
+        << ", PDG: " << aStep->GetTrack()->GetDefinition()->GetPDGEncoding ()
+        << ", processName: " << aStep->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName()
+        << G4endl
+        << "         detID: " << aStep->GetTrack()->GetVolume()->GetCopyNo()
+        << ", detName: " << aStep->GetTrack()->GetVolume()->GetName()
+        << ", motherID: " << aStep->GetPreStepPoint()->GetTouchableHandle()->GetReplicaNumber(1)
+        << ", motherDetName: " /* << motherDetName */ << G4endl;
+    G4cout << "         edep: " <<  aStep->GetTotalEnergyDeposit() / CLHEP::keV << " keV"
+        << ", pos: " << aStep->GetPostStepPoint()->GetPosition()
+        << ", ToF: " << aStep->GetPostStepPoint()->GetGlobalTime()  / CLHEP::ns << " ns" << G4endl;
 }
 
 SToGS::PrintOut::~PrintOut()

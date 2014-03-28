@@ -24,11 +24,11 @@
 // ********************************************************************
 //
 
-#ifndef SToGS_CaloSD_h
-#define SToGS_CaloSD_h 1
+#ifndef SToGS_CopClusterSD_h
+#define SToGS_CopClusterSD_h 1
 
 #include "G4VSensitiveDetector.hh"
-#include "SToGS_G4_CaloHit.hh"
+#include "SToGS_G4_CopClusterHit.hh"
 
 class G4Step;
 class G4HCofThisEvent;
@@ -36,11 +36,11 @@ class G4TouchableHistory;
 
 //! SToGS namespace to protect SToGS classes
 namespace SToGS {
-    class CaloSD : public G4VSensitiveDetector
+    class CopClusterSD : public G4VSensitiveDetector
     {
     public:
-        CaloSD(G4String name);
-        virtual ~CaloSD();
+        CopClusterSD(G4String name);
+        virtual ~CopClusterSD();
         
         void Initialize(G4HCofThisEvent *HCE);
         G4bool ProcessHits(G4Step *aStep, G4TouchableHistory *ROhist);
@@ -51,7 +51,7 @@ namespace SToGS {
         void PrintAll();
         
     private:
-        CaloHitsCollection *caloCollection;
+        CopClusterHitsCollection *caloCollection;
     };
 } // SToGS Namespace
 

@@ -81,11 +81,11 @@ G4VUserPrimaryGeneratorAction *SToGS::UserActionInitialization::GetGun() const
 }
 
 #include "SToGS_G4_TrackerSD.hh"
-#include "SToGS_G4_CaloSD.hh"
+#include "SToGS_G4_CopClusterSD.hh"
 
 G4VSensitiveDetector *SToGS::UserActionInitialization::GetTrackerSD( G4String name )
 {
-    G4cout << "[+[SToGS::UserActionInitialization::GetTrackerSD()]] Creating a tracker SD " << G4endl;
+    G4cout << "[+[SToGS::UserActionInitialization::GetTrackerSD()]] Creating a Tracker SD " << G4endl;
     G4VSensitiveDetector *aSD = 0x0;
     
     G4SDManager *SDman =
@@ -104,13 +104,13 @@ G4VSensitiveDetector *SToGS::UserActionInitialization::GetTrackerSD( G4String na
             SDman->AddNewDetector(aSD);
     }
 #endif
-    G4cout << "[_[SToGS::UserActionInitialization::GetTrackerSD()]] Creating a tracker SD " << G4endl;
+    G4cout << "[_[SToGS::UserActionInitialization::GetTrackerSD()]] Creating a Tracker SD " << G4endl;
     return aSD;
 }
 
-G4VSensitiveDetector *SToGS::UserActionInitialization::GetCaloSD( G4String name )
+G4VSensitiveDetector *SToGS::UserActionInitialization::GetCopClusterSD( G4String name )
 {
-    G4cout << "[+[SToGS::UserActionInitialization::GetCaloSD()]] Creating a calo SD " << G4endl;
+    G4cout << "[+[SToGS::UserActionInitialization::GetCopClusterSD()]] Creating a CopCluster SD " << G4endl;
     G4VSensitiveDetector *aSD = 0x0;
     
     G4SDManager *SDman =
@@ -118,18 +118,18 @@ G4VSensitiveDetector *SToGS::UserActionInitialization::GetCaloSD( G4String name 
     
 #ifdef G4MULTITHREADED
     // TO BE CHECKED IF SHOULD BE LIKE THAT !
-    aSD = new SToGS::CaloSD(name);
+    aSD = new SToGS::CopClusterSD(name);
     if ( aSD )
         SDman->AddNewDetector(aSD);
 #else
     aSD = SDman->FindSensitiveDetector(name,false);
     if ( aSD == 0x0 ) {
-        aSD = new SToGS::CaloSD(name);
+        aSD = new SToGS::CopClusterSD(name);
         if ( aSD )
             SDman->AddNewDetector(aSD);
     }
 #endif
-    G4cout << "[_[SToGS::UserActionInitialization::GetCaloSD()]] Creating a calo SD " << G4endl;
+    G4cout << "[_[SToGS::UserActionInitialization::GetCopClusterSD()]] Creating a CopCluster SD " << G4endl;
     return aSD;
 }
 

@@ -24,8 +24,8 @@
 // ********************************************************************
 //
 
-#include "SToGS_G4_CaloSD.hh"
-#include "SToGS_G4_CaloHit.hh"
+#include "SToGS_G4_CopClusterSD.hh"
+#include "SToGS_G4_CopClusterHit.hh"
 
 #include "G4Step.hh"
 #include "G4HCofThisEvent.hh"
@@ -33,44 +33,44 @@
 #include "G4VProcess.hh"
 #include "G4ios.hh"
 
-SToGS::CaloSD::CaloSD(G4String name): G4VSensitiveDetector(name)
+SToGS::CopClusterSD::CopClusterSD(G4String name): G4VSensitiveDetector(name)
 {
-	G4String HCname = "caloCollection";
+	G4String HCname = "CopClusterHits";
     collectionName.insert(HCname);
 }
-SToGS::CaloSD::~CaloSD()
+SToGS::CopClusterSD::~CopClusterSD()
 {
     ;
 }
-void SToGS::CaloSD::Initialize(G4HCofThisEvent* HCE)
+void SToGS::CopClusterSD::Initialize(G4HCofThisEvent* HCE)
 {
-//	G4cout << " In SToGS::CaloSD::Initialize " << G4endl;
+//	G4cout << " In SToGS::CopClusterSD::Initialize " << G4endl;
 	static int HCID = -1;
-	caloCollection = new SToGS::CaloHitsCollection(SensitiveDetectorName,collectionName[0]); 
+	caloCollection = new SToGS::CopClusterHitsCollection(SensitiveDetectorName,collectionName[0]); 
 	
 	if ( HCID < 0 ) 
 		HCID = GetCollectionID(0);
 		
 	HCE->AddHitsCollection(HCID,caloCollection);
-//	G4cout << " Out SToGS::CaloSD::Initialize " << G4endl;
+//	G4cout << " Out SToGS::CopClusterSD::Initialize " << G4endl;
 }
-G4bool SToGS::CaloSD::ProcessHits(G4Step* aStep, G4TouchableHistory *touch)
+G4bool SToGS::CopClusterSD::ProcessHits(G4Step* aStep, G4TouchableHistory *touch)
 {
 	G4String tmp;
 	
-//	G4cout << " In SToGS::CaloSD::ProcessHits" << G4endl;
+//	G4cout << " In SToGS::CopClusterSD::ProcessHits" << G4endl;
 	// nothing to be stored if no energy 
 	
 	G4double edep = aStep->GetTotalEnergyDeposit();  if ( edep == 0. ) return false;
 	
-	G4bool anew = true; G4int id = aStep->GetTrack()->GetVolume()->GetCopyNo(); SToGS::CaloHit *newHit; 
+	G4bool anew = true; G4int id = aStep->GetTrack()->GetVolume()->GetCopyNo(); SToGS::CopClusterHit *newHit; 
 	
 	for( unsigned int i = 0; i < caloCollection->GetSize(); i++ ){ // look 
-		newHit = (SToGS::CaloHit *)caloCollection->GetHit(i); if ( id == newHit->GetDetID() ) { anew = false; break; }
+		newHit = (SToGS::CopClusterHit *)caloCollection->GetHit(i); if ( id == newHit->GetDetID() ) { anew = false; break; }
 	}
 
 	if ( anew ) { // a new hit is created
-		newHit = new SToGS::CaloHit();
+		newHit = new SToGS::CopClusterHit();
 	
 		newHit->SetEdep( edep );
 		newHit->SetPos(  aStep->GetPostStepPoint()->GetPosition() );
@@ -94,22 +94,22 @@ G4bool SToGS::CaloSD::ProcessHits(G4Step* aStep, G4TouchableHistory *touch)
 	}
 	
 
-//	G4cout << " Out SToGS::CaloSD::ProcessHits" << G4endl;
+//	G4cout << " Out SToGS::CopClusterSD::ProcessHits" << G4endl;
 	return true;
 }
-void SToGS::CaloSD::EndOfEvent(G4HCofThisEvent*)
+void SToGS::CopClusterSD::EndOfEvent(G4HCofThisEvent*)
 {
 	for( unsigned int i = 0; i < caloCollection->GetSize(); i++ ){ // to calculate properly the mean values
-		SToGS::CaloHit *hit = (SToGS::CaloHit *)caloCollection->GetHit(i); 
+		SToGS::CopClusterHit *hit = (SToGS::CopClusterHit *)caloCollection->GetHit(i); 
 		hit->EndOfEvent();
 	}	
 }
-void SToGS::CaloSD::clear()
+void SToGS::CopClusterSD::clear()
 {
 }
-void SToGS::CaloSD::DrawAll()
+void SToGS::CopClusterSD::DrawAll()
 {
 } 
-void SToGS::CaloSD::PrintAll()
+void SToGS::CopClusterSD::PrintAll()
 {
 } 

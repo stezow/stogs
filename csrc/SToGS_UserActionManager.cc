@@ -32,15 +32,9 @@
 
 #include <fstream>
 
-/*
-#include "SToGS_UserActionInitialization.hh"
-#include "SToGS_UserActionInitialization.hh"
-#include "SToGS_UserActionInitialization.hh"
-#include "SToGS_UserActionInitialization.hh"
- */
-
 // includes here all possible actions
 #include "SToGS_PrintOut.hh"
+#include "SToGS_Ascii.hh"
 
 SToGS::UserActionManager::UserActionManager(G4String filename) :
     UserActionInitialization(),
@@ -106,8 +100,11 @@ SToGS::UserActionManager::UserActionManager(G4String filename) :
 
 SToGS::UserActionInitialization *SToGS::UserActionManager::GetUserActionInitialization()
 {
-    if ( fWhichActionManager.first == "PrintOut" ) {
-        fImplementation = new PrintOut(fWhichActionManager.second);
+    if ( fWhichActionManager.first == "printout" ) {
+        fImplementation = new SToGS::PrintOut(fWhichActionManager.second);
+    }
+    if ( fWhichActionManager.first == "ascii" ) {
+        fImplementation = new SToGS::Ascii(fWhichActionManager.second);
     }
     return fImplementation;
 }

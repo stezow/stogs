@@ -35,6 +35,7 @@
 #include "G4DecayPhysics.hh"
 #include "G4ChargedGeantino.hh"
 #include "G4Geantino.hh"
+#include "G4OpticalPhoton.hh"
 
 SToGS::GeneralPhysics::GeneralPhysics(const G4String& name) : G4VPhysicsConstructor(name)
 {
@@ -49,6 +50,9 @@ void SToGS::GeneralPhysics::ConstructParticle()
     // pseudo-particles
     G4Geantino::GeantinoDefinition();
     G4ChargedGeantino::ChargedGeantinoDefinition();
+    // to avoid tracking optical photon in SD detector, add this here event if optical physics not loaded
+    // otherwise, crash in MT mode due to particle created out of pre_init state
+    G4OpticalPhoton::OpticalPhotonDefinition();
 }
 
 void SToGS::GeneralPhysics::ConstructProcess()

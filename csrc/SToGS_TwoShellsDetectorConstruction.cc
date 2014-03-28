@@ -264,7 +264,7 @@ void SToGS::TwoShellsDetectorConstruction::ComputeParameters(G4String filename)
 		G4cout << " ** WARNING **, " << 2 - nb_mandatory << " shell(s) missing " << G4endl;
 	}
 	// print oout the final geometry loaded
-	G4cout << " Shell0 and Shell:1 definitions: " << G4endl;
+	G4cout << " Shell:0 and Shell:1 definitions: " << G4endl;
 	G4cout << "\t"; Inner.Print(G4cout); G4cout << "\t"; Outer.Print(G4cout);
 	if ( otherShells.size() ) {
 		G4cout << " List of passive materials: " << G4endl;
@@ -356,6 +356,8 @@ G4VPhysicalVolume* SToGS::TwoShellsDetectorConstruction::Construct()
                                         -1);              // copy number
 	}
 	
+    ConstructSDandField();
+    
     // the world is returned
 	return physiWorld;
 }
@@ -364,7 +366,7 @@ void SToGS::TwoShellsDetectorConstruction::ConstructSDandField()
 {
     // sensitive part. Because the sensitive part depends on what we would to extrac
 	// for analysis, it asks th OutputManager to give it the sensitive part
-    G4VSensitiveDetector *sd = SToGS::DetectorFactory::GetSD("/SToGS/Tracker");
+    G4VSensitiveDetector *sd = SToGS::DetectorFactory::GetSD("/SToGS/SD/Tracker");
 	if ( sd && Inner.IsActive ) {
         //SetSensitiveDetector("Shell:0", sd);
   		logicInner->SetSensitiveDetector( sd );

@@ -538,9 +538,9 @@ G4VSensitiveDetector *SToGS::DetectorFactory::GetSD(G4String sdname, const char 
     sensdet = G4SDManager::GetSDMpointer()->FindSensitiveDetector(sdname,false);
     if ( sensdet == 0x0 ) {
         if ( sd_type == 'S' ) {
-            if ( sdname == "/SToGS/Calo")
-               sensdet = SToGS::UserActionInitialization::GetCaloSD(sdname);
-            if ( sdname == "/SToGS/Track")
+            if ( sdname == "/SToGS/SD/CopCluster")
+               sensdet = SToGS::UserActionInitialization::GetCopClusterSD(sdname);
+            if ( sdname == "/SToGS/SD/Tracker")
                 sensdet = SToGS::UserActionInitialization::GetTrackerSD(sdname);
         }
         if ( sd_type == 's' ) {

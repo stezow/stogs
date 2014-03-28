@@ -24,8 +24,8 @@
 // ********************************************************************
 //
 
-#ifndef SToGS_SingleHit_h
-#define SToGS_SingleHit_h 1
+#ifndef SToGS_TrackerHit_h
+#define SToGS_TrackerHit_h 1
 
 #include "G4VHit.hh"
 #include "G4THitsCollection.hh"
@@ -43,7 +43,7 @@ namespace SToGS {
     /*!
      In G4, one have to define a class (a hit) that inherits from G4VHit to keep informations during the tracking.
      This one is dedicated for tracking since it kept infomations of any single impact in sensitive detectors. Here is
-     the list of the available informations for each SingleHit. Use Get/Set methods to obtain/change these values.
+     the list of the available informations for each TrackerHit. Use Get/Set methods to obtain/change these values.
      
      - G4int trackID:   Track to which belongs this hit
      - G4int parentID:  Parent track of the track to which this hit belongs
@@ -69,15 +69,15 @@ namespace SToGS {
      These codes are define in G4ParticleTable
      )
      */
-    class SingleHit : public G4VHit
+    class TrackerHit : public G4VHit
     {
     public:
-        SingleHit();
-        virtual ~SingleHit();
-        SingleHit(const SingleHit &right);
+        TrackerHit();
+        virtual ~TrackerHit();
+        TrackerHit(const TrackerHit &right);
         
-        const SingleHit& operator=(const SingleHit &right);
-        G4int operator==(const SingleHit &right) const;
+        const TrackerHit& operator=(const TrackerHit &right);
+        G4int operator==(const TrackerHit &right) const;
         
         inline void *operator new(size_t);
         inline void operator delete(void *aHit);
@@ -217,25 +217,25 @@ namespace SToGS {
         G4int PDGcode;	// PDGcode of particle which hit the detector
     };
     
-    typedef G4THitsCollection<SingleHit> SingleHitsCollection;
-    extern G4ThreadLocal G4Allocator<SingleHit> *SingleHitAllocator;
+    typedef G4THitsCollection<TrackerHit> TrackerHitsCollection;
+    extern G4ThreadLocal G4Allocator<TrackerHit> *TrackerHitAllocator;
     
 #ifdef G4MULTITHREADED
-//    extern G4ThreadLocal G4Allocator<SingleHit> *SingleHitAllocator;
+//    extern G4ThreadLocal G4Allocator<TrackerHit> *TrackerHitAllocator;
 #else
-//    extern G4Allocator<SingleHit> *SingleHitAllocator;
+//    extern G4Allocator<TrackerHit> *TrackerHitAllocator;
 #endif
     
-    inline void* SingleHit::operator new(size_t)
+    inline void* TrackerHit::operator new(size_t)
     {
-        if( !SingleHitAllocator )
-            SingleHitAllocator = new G4Allocator<SingleHit>;
-        return SingleHitAllocator->MallocSingle();
+        if( !TrackerHitAllocator )
+            TrackerHitAllocator = new G4Allocator<TrackerHit>;
+        return TrackerHitAllocator->MallocSingle();
     }
     
-    inline void SingleHit::operator delete(void *aHit)
+    inline void TrackerHit::operator delete(void *aHit)
     {
-        SingleHitAllocator->FreeSingle((SingleHit*) aHit);
+        TrackerHitAllocator->FreeSingle((TrackerHit*) aHit);
     }
 } // SToGS Namespace
 

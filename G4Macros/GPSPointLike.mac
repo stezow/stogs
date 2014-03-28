@@ -1,0 +1,23 @@
+#/gps/particle neutron
+#/gps/particle gamma
+
+/gps/particle geantino
+/gps/pos/type Point
+/gps/pos/centre 0. 0. 0 cm
+/gps/ang/type iso
+/gps/ene/type Lin
+/gps/ene/min  59.5 keV
+/gps/ene/max  61.5 keV
+/gps/ene/gradient  0 
+/gps/ene/intercept  1 
+
+#/gps/ene/min  99.5 keV
+#/gps/ene/max 100.5 keV
+# source 1
+#/gps/pos/centre 0. 0. 17.5 cm
+#/gps/source/add 100
+# source 2
+#/gps/pos/centre 0. 0. 17.5 cm
+#/gps/source/add 100
+# true vertex is generated for each of the source defined, otherwise only one.
+#/gps/source/multiplevertex true
