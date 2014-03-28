@@ -1,0 +1,29 @@
+# This is the default file used to configure the SToGS_Source program. 
+# It is read at the beginning of the program to select 
+# 
+# The UserActionInitialization (which deals without outputs and the generator [thread local objects])
+#
+actions: printout run;event;track;step
+#actions: ascii setup/SToGS_ascii_actions.conf 
+#
+# Detector geometry
+#
+setup: factory DetectorFactory/Generics/TwoShells 
+#setup: factory DetectorFactory/Scintillators/ParisPW_2 
+#
+# The Physics list
+#
+physics: stogs_m general0;emstandard_opt0;
+#physics: general0;emstandard_opt0;Optical;
+#physics: general0;emstandard_opt0;ParisHadron0
+#
+# generator
+#
+generator: GPS G4Macros/GPS_Cs137.mac
+#
+# In case of MT, allows the user to specify the number of threads
+# 
+nbthread: 2
+#
+#
+
