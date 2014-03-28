@@ -34,38 +34,34 @@ SToGS::LoadFromDetectorFactory::~LoadFromDetectorFactory()
 
 G4VPhysicalVolume *SToGS::LoadFromDetectorFactory::Construct()
 {
-    G4VPhysicalVolume *physiWorld = 0x0;
-    
-    SToGS::DetectorFactory *where_to_load = SToGS::DetectorFactory::GetFactory(fNameInFactory);
-    if ( where_to_load == 0x0 ) {
-        where_to_load = SToGS::DetectorFactory::GetFactory("DetectorFactory/MyStore/");
-    }
+    G4cout << G4endl << " ------ INF ------ from SToGS::LoadFromDetectorFactory::Construct " << fNameInFactory << G4endl;
+
+    G4VPhysicalVolume *physiWorld = 0x0; SToGS::DetectorFactory *where_to_load = SToGS::DetectorFactory::GetFactory(fNameInFactory);
     if ( where_to_load ) {
-//        physiWorld = where_to_load->MakeGeometry(fNameInFactory);
         physiWorld = where_to_load->Get(fNameInFactory,false);
+        if ( physiWorld == 0x0 ) {
+            G4cout << "**** Cannot find setup " << fNameInFactory << " in Detector Factory " << where_to_load->GetFactoryName() << G4endl;
+        }
     }
-    else
-        G4cout << "**** Cannot load setup " << fNameInFactory << " from Detector Factory " << G4endl;
+    else G4cout << "**** Cannot load setup " << fNameInFactory << " from Detector Factory " << G4endl;
     
+    G4cout << " ------ END ------ from SToGS::LoadFromDetectorFactory::Construct " << G4endl;
+
     return physiWorld;
 }
 
 void SToGS::LoadFromDetectorFactory::ConstructSDandField()
 {
-    /*
-    MySensitiveDetector* mySD = new MySensitiveDetector(...);
-    SetSensitiveDetector("MySDLV", pMySD);
-     */
+    G4cout << " ------ INF ------ from SToGS::LoadFromDetectorFactory::ConstructSDandField " << fNameInFactory << G4endl;
+
     SToGS::DetectorFactory *where_to_load = SToGS::DetectorFactory::GetFactory(fNameInFactory);
-    if ( where_to_load == 0x0 ) {
-        where_to_load = SToGS::DetectorFactory::GetFactory("DetectorFactory/MyStore/");
-    }
     if ( where_to_load ) {
         where_to_load->GetAttributes(fNameInFactory); // assign amap, dmap
     }
     else
         G4cout << "**** Cannot load setup " << fNameInFactory << " from Detector Factory " << G4endl;
     
+    G4cout << " ------ END ------ from SToGS::LoadFromDetectorFactory::ConstructSDandField " << G4endl;
 }
 
 SToGS::BuildFromDetectorFactory::~BuildFromDetectorFactory()

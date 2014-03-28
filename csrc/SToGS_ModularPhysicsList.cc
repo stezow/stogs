@@ -52,17 +52,13 @@
 #include "SToGS::PenelopeEMPhysicsList.hh"
 #include "SToGS::Hadron0.hh"
 #include "SToGS::Hadron1.hh"
-
-
-
-
  */
 
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 SToGS::ModularPhysicsList::ModularPhysicsList(const G4String &option) : G4VModularPhysicsList()
 {
+    G4cout << " ------ INF ------ from SToGS::ModularPhysicsList::ModularPhysicsList with " << option << G4endl;
+
 	// parse option
 	std::vector <G4String> all_opt; G4String lopt = option, tmp = ""; lopt += ';';
 	//
@@ -192,17 +188,15 @@ SToGS::ModularPhysicsList::ModularPhysicsList(const G4String &option) : G4VModul
 			G4cout << " ==> Physics list " << all_opt[i] << " registered " << G4endl;
 		}		
          */
-	}	
+	}
+    G4cout <<  " ------ END ------ from SToGS::ModularPhysicsList::ModularPhysicsList " << G4endl ;
 }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 SToGS::ModularPhysicsList::~ModularPhysicsList()
 {
 }
 
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 /*
 void SToGS::PhysicsList::AddIonGasModels()
@@ -226,5 +220,4 @@ void SToGS::PhysicsList::AddIonGasModels()
 	}
 }
 */
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

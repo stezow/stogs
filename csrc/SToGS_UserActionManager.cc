@@ -32,18 +32,15 @@
 
 #include <fstream>
 
-// includes here all possible actions
-#include "SToGS_PrintOut.hh"
-#include "SToGS_Ascii.hh"
-
 SToGS::UserActionManager::UserActionManager(G4String filename) :
     UserActionInitialization(),
     fImplementation(0x0),
-    fWhichGeometry(),
-    fWhichPhysics(),
-    fWhichActionManager("PrintOut","")
+    fWhichGeometry("factory","DetectorFactory/Generics/Target"),
+    fWhichPhysics("stogs_m","general0;emstandard_opt0;"),
+    fWhichActionManager("PrintOut","run;event;track;step"),
+    fNbThreads(2)
 {
-    G4cout << G4endl << " ------ INFO ------ from UserActionManager::UserActionManager with " << filename << G4endl << G4endl;
+    G4cout << G4endl << " ------ INF ------ from UserActionManager::UserActionManager with " << filename << G4endl;
     
 	// open the ascii file
     std::ifstream file(filename);
@@ -59,21 +56,26 @@ SToGS::UserActionManager::UserActionManager(G4String filename) :
                 continue;
             } // this line is a comment
             
-            std::string key, which, option; std::istringstream decode(aline); decode >> key >> which >> option;
+            std::string key, which, option; std::istringstream decode(aline); decode >> key;
             
-      //      if ( decode.good() ) {
-                if ( key == "actions:" ) {
-                    fWhichActionManager = std::pair<G4String, G4String> (which,option);
-                }
-                if ( key == "setup:" ) {
-                    fWhichGeometry = std::pair<G4String, G4String> (which,option);
-                }
-                if ( key == "physics:" ) {
-                    fWhichPhysics = std::pair<G4String, G4String> (which,option);
-                }
-                if ( key == "generator:" ) {
-                    fWhichGenerator = std::pair<G4String, G4String> (which,option);
-       //         }
+            if ( key == "actions:" ) {
+                decode >> which >> option;
+                fWhichActionManager = std::pair<G4String, G4String> (which,option);
+            }
+            if ( key == "setup:" ) {
+                decode >> which >> option;
+                fWhichGeometry = std::pair<G4String, G4String> (which,option);
+            }
+            if ( key == "physics:" ) {
+                decode >> which >> option;
+                fWhichPhysics = std::pair<G4String, G4String> (which,option);
+            }
+            if ( key == "generator:" ) {
+                decode >> which >> option;
+                fWhichGenerator = std::pair<G4String, G4String> (which,option);
+            }
+            if ( key == "nbthread:" ) {
+                decode >> fNbThreads;
             }
             getline(file,aline);
         }
@@ -95,8 +97,11 @@ SToGS::UserActionManager::UserActionManager(G4String filename) :
 	G4cout << "   + geometry used    " <<  fWhichGeometry.first << " " << fWhichGeometry.second  << G4endl;
 	G4cout << "   + action manager   " << fWhichActionManager.first << " " << fWhichActionManager.second << G4endl;
     
-	G4cout << G4endl << " ------ END ------ from UserActionManager::UserActionManager " << G4endl << G4endl;
+	G4cout << " ------ END ------ from UserActionManager::UserActionManager " << G4endl;
 }
+
+#include "SToGS_PrintOut.hh"
+#include "SToGS_Ascii.hh"
 
 SToGS::UserActionInitialization *SToGS::UserActionManager::GetUserActionInitialization()
 {
@@ -108,6 +113,32 @@ SToGS::UserActionInitialization *SToGS::UserActionManager::GetUserActionInitiali
     }
     return fImplementation;
 }
+
+#include "SToGS_LoadFromDetectorFactory.hh"
+
+G4VUserDetectorConstruction *SToGS::UserActionManager::GetDetectorConstruction() const
+{
+    G4VUserDetectorConstruction *detectorconstruction = 0x0;
+    if ( fWhichGeometry.first == "factory" ) {
+        detectorconstruction = new SToGS::LoadFromDetectorFactory(fWhichGeometry.second);
+    }
+    
+    return detectorconstruction;
+}
+
+#include "SToGS_ModularPhysicsList.hh"
+
+G4VUserPhysicsList *SToGS::UserActionManager::GetPhysicsList() const
+{
+    G4VUserPhysicsList *physics_list = 0x0;
+    
+    if ( fWhichPhysics.first == "stogs_m" ) {
+        physics_list = new SToGS::ModularPhysicsList(fWhichPhysics.second);
+    }
+    
+    return physics_list;
+}
+
 G4UserRunAction *SToGS::UserActionManager::GetRunAction() const
 {
     return fImplementation->GetRunAction();

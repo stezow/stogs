@@ -148,7 +148,7 @@ SToGS::TwoShellsDetectorConstruction::~TwoShellsDetectorConstruction()
 
 void SToGS::TwoShellsDetectorConstruction::ComputeParameters(G4String filename)
 {
-	G4cout << G4endl << " ------ INFO ------ from SToGS::TwoShellsDetectorConstruction::ComputeParameters with " << filename << G4endl;
+	G4cout << " ------ INF ------ from SToGS::TwoShellsDetectorConstruction::ComputeParameters with " << filename << G4endl;
 	
 	// init the MaterialConsultant to check the materials defined
 	SToGS::MaterialConsultant *materialFactory = SToGS::MaterialConsultant::theConsultant();
@@ -270,11 +270,13 @@ void SToGS::TwoShellsDetectorConstruction::ComputeParameters(G4String filename)
 		G4cout << " List of passive materials: " << G4endl;
 		for(unsigned int i = 0; i < otherShells.size() ; i++ ) { G4cout << "\t"; otherShells[i]->Print(G4cout); }
 	}
-	G4cout << " ------ END ------ from SToGS::TwoShellsDetectorConstruction::ComputeParameters " << G4endl << G4endl;
+	G4cout << " ------ END ------ from SToGS::TwoShellsDetectorConstruction::ComputeParameters " << G4endl;
 }
 
 G4VPhysicalVolume* SToGS::TwoShellsDetectorConstruction::Construct()
 {
+    G4cout << " ------ INF ------ from SToGS::TwoShellsDetectorConstruction::Construct() " << G4endl;
+
     // Clean old geometry, if any
     //
     // G4GeometryManager::GetInstance()->OpenGeometry();
@@ -355,15 +357,21 @@ G4VPhysicalVolume* SToGS::TwoShellsDetectorConstruction::Construct()
                                         false,           // no boolean operations
                                         -1);              // copy number
 	}
-	
-    ConstructSDandField();
     
+#ifdef G4MULTITHREADED
+#else
+    ConstructSDandField();
+#endif
+    G4cout << " ------ END ------ from SToGS::TwoShellsDetectorConstruction::Construct() " << G4endl;
+
     // the world is returned
 	return physiWorld;
 }
 
 void SToGS::TwoShellsDetectorConstruction::ConstructSDandField()
 {
+    G4cout <<  " ------ INF ------ from SToGS::TwoShellsDetectorConstruction::ConstructSDandField() " << G4endl;
+
     // sensitive part. Because the sensitive part depends on what we would to extrac
 	// for analysis, it asks th OutputManager to give it the sensitive part
     G4VSensitiveDetector *sd = SToGS::DetectorFactory::GetSD("/SToGS/SD/Tracker");
@@ -377,6 +385,7 @@ void SToGS::TwoShellsDetectorConstruction::ConstructSDandField()
         // SetSensitiveDetector("Shell:1", sd);
   		logicOuter->SetSensitiveDetector( sd );
 	}
+    G4cout << " ------ END ------ from SToGS::TwoShellsDetectorConstruction::ConstructSDandField() " << G4endl;
 }
 
 

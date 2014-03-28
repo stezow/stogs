@@ -33,14 +33,6 @@
 
 #include <fstream>
 
-/*
-#include "SToGS_UserActionInitialization.hh"
-#include "SToGS_UserActionInitialization.hh"
-#include "SToGS_UserActionInitialization.hh"
-#include "SToGS_UserActionInitialization.hh"
- */
-
-
 SToGS::UserActionInitialization::UserActionInitialization()
 #if G4VERSION_NUMBER < 1000
     :

@@ -188,7 +188,7 @@ void ParisUniformPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 void ParisUniformPrimaryGeneratorAction::ComputeParameters(G4String filename)
 {
 	
-	G4cout << G4endl << " ------ INFO ------ from ParisUniformPrimaryGeneratorAction::ComputeParameters " << G4endl;
+	G4cout << G4endl << " ------ INF ------ from ParisUniformPrimaryGeneratorAction::ComputeParameters " << G4endl;
 	
 	// open the ascii file 
 	ifstream file;
@@ -261,7 +261,7 @@ void ParisUniformPrimaryGeneratorAction::ComputeParameters(G4String filename)
 
 void ParisUniformPrimaryGeneratorAction::ChangeMultiplicity(G4int smult)
 {
-	G4cout << " ------ INFO ------ Changing multiplicity in ParisUniformPrimaryGeneratorAction " << G4endl;
+	G4cout << " ------ INF ------ Changing multiplicity in ParisUniformPrimaryGeneratorAction " << G4endl;
 	mult = smult;	
 }   
 

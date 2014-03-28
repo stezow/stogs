@@ -63,34 +63,29 @@
     It thus excludes the case of beams with event number / time stamp and treatments of radiactivity created by it
  
  \code
+ # This is the default file used to configure the SToGS_Source program.
+ # It is read at the beginning of the program to select
  #
- # This file is used to configure the Paris program. It is read at the beginning
- # of the program to select
+ # The UserActionInitialization (which deals without outputs and the generator [thread local objects])
  #
- # Analysis (output manager)
- #	 0: ParisPrintOut
- #	 1: ParisBaseAscii
- #	 2: ParisAscii
+ actions: printout run;event;track;step
+ #actions: ascii setup/SToGS_ascii_actions.conf
  #
- 0 setup/ascii.ana
  # Detector geometry
- #	 0: ParisShellDetectorConstruction
- #	 1: ParisSegmentedDetectorConstruction
  #
- 0 setup/shells.geo
+ setup:  
  #
- # physics list
- #	 0: ParisStandardEMPhysicsList
- #	 1: ParisLowEnergyEMPhysicsList
- #	 2: ParisPenelopeEMPhysicsList
+ # The Physics list
  #
- 0
+ physics: general0;emstandard_opt0;
+ #physics: general0;emstandard_opt0;Optical;
+ #physics: general0;emstandard_opt0;ParisHadron0
+ #
  # generator
- #	 0: ParisBasicPrimaryGeneratorAction
- #	 1: ParisUniformPrimaryGeneratorAction
  #
- O setup/basic.gene
+ generator: GPS G4Macros/GPS_Cs137.mac
  #
+
  \endcode
  
  Without arguments, the program starts a G4 interactive session. It is also possible to run it
@@ -123,14 +118,23 @@ int main(int argc,char** argv)
     
     // Construct the default run manager which is necessary
 #ifdef G4MULTITHREADED
-    G4MTRunManager* theRunManager = new G4MTRunManager;
-    theRunManager->SetNumberOfThreads(4);
+    G4MTRunManager* theRunManager = new G4MTRunManager();
+    theRunManager->SetNumberOfThreads(user_action_manager->GetNbThread());
 #else
-    G4RunManager* theRunManager = new G4RunManager;
+    G4RunManager* theRunManager = new G4RunManager();
 #endif
-//    theRunManager->SetUserInitialization ( new SToGS::LoadFromDetectorFactory(filedfb) );
-    theRunManager->SetUserInitialization ( new SToGS::TwoShellsDetectorConstruction() );
-    theRunManager->SetUserInitialization ( new SToGS::ModularPhysicsList("general0;emstandard_opt0;") );
+    G4VUserDetectorConstruction *setup = user_action_manager->GetDetectorConstruction();
+    if ( setup == 0x0 ) {
+        G4cout << " [ERR] Cannot init setup " << G4endl;
+        exit(-1);
+    }
+    else theRunManager->SetUserInitialization ( setup );
+    G4VUserPhysicsList *physics_list = user_action_manager->GetPhysicsList();
+    if ( physics_list == 0x0 ) {
+        G4cout << " [ERR] Cannot init Physics List " << G4endl;
+        exit(-1);
+    }
+    else theRunManager->SetUserInitialization ( physics_list );
 #ifdef G4MULTITHREADED
     theRunManager->SetUserInitialization( user_action_manager );
 #else

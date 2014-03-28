@@ -107,8 +107,28 @@ SToGS::AsciiRun::~AsciiRun()
 
 void SToGS::AsciiRun::RecordEvent(const G4Event* evt)
 {
+    SToGS::TrackerHitsCollection *THC = 0x0; SToGS::CopClusterHitsCollection *CHC = 0x0; G4int nb_hits = 0;
+
+    // check there is something to write in files
 	if( colltrackerID < 0 && collcaloID < 0 )
 		return;
+    
+    G4HCofThisEvent *HCE = evt->GetHCofThisEvent();
+	if(HCE)
+	{
+        THC = (SToGS::TrackerHitsCollection *)(HCE->GetHC(colltrackerID));
+        if ( THC ) {
+            nb_hits += THC->entries();
+        }
+		CHC = (SToGS::CopClusterHitsCollection*)(HCE->GetHC(collcaloID));
+        if ( CHC ) {
+            nb_hits += CHC->entries();
+        }
+  	}
+    if ( fRecordOption == 1 ) {
+        if ( nb_hits == 0 )
+            return;
+    }
     
     // write primary part
     G4int istart = 0, iend = evt->GetNumberOfPrimaryVertex();
@@ -131,16 +151,7 @@ void SToGS::AsciiRun::RecordEvent(const G4Event* evt)
                 << prim->GetPx() << " " << prim->GetPy() << " " << prim->GetPz()
                 << std::endl;
 		}
-	} 
-
-    SToGS::TrackerHitsCollection *THC = 0x0; SToGS::CopClusterHitsCollection *CHC = 0x0;
-    
-	G4HCofThisEvent *HCE = evt->GetHCofThisEvent();
-	if(HCE)
-	{
-        THC = (SToGS::TrackerHitsCollection *)(HCE->GetHC(colltrackerID));
-		CHC = (SToGS::CopClusterHitsCollection*)(HCE->GetHC(collcaloID));
-  	}
+	}
 	if(THC && colltrackerID != -1)
 	{
 		int n_hit = THC->entries();
@@ -149,7 +160,8 @@ void SToGS::AsciiRun::RecordEvent(const G4Event* evt)
                 << std::setw(2)
                 << "H "	<< " "
                 << std::setw(4)
- //               << PrimaryID[(*THC)[i]->GetTrackID()]  << " "
+                // << PrimaryID[(*THC)[i]->GetTrackID()]  << " " TODO through tracking info
+                << 1 << " "
                 << std::setw(3)
                 << (*THC)[i]->GetDetID() << " "
                 << std::setw(7)
@@ -267,19 +279,19 @@ SToGS::Ascii::Ascii(G4String conf):
             std::string key, what, option; std::istringstream decode(aline);
             decode >> key;
             
-            if ( key == "path" ) {
+            if ( key == "path:" ) {
                 decode >> fPathToData;
             }
-            if ( key == "basename" ) {
+            if ( key == "basename:" ) {
                 decode >> fBaseName;
             }
-            if ( key == "modulo" ) {
+            if ( key == "modulo:" ) {
                 decode >> fPrintModulo;
             }
-            if ( key == "max_event" ) {
+            if ( key == "max_event:" ) {
                 decode >> fMaxEvents;
             }
-            if ( key == "record_option" ) {
+            if ( key == "record_option:" ) {
                 decode >> fRecordOption;
             }
             getline(file,aline);

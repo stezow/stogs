@@ -176,7 +176,7 @@ void ParisBasicPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 void ParisBasicPrimaryGeneratorAction::ComputeParameters(G4String filename)
 {
-	G4cout << G4endl << " ------ INFO ------ from ParisBasicPrimaryGeneratorAction::ComputeParameters " << G4endl;
+	G4cout << G4endl << " ------ INF ------ from ParisBasicPrimaryGeneratorAction::ComputeParameters " << G4endl;
 	
 	// open the ascii file 
 	ifstream file; 

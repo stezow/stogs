@@ -37,7 +37,7 @@ namespace SToGS {
     class LoadFromDetectorFactory : public G4VUserDetectorConstruction
     {
     public:
-        LoadFromDetectorFactory(G4String name_in_factory = "default.setup") : G4VUserDetectorConstruction(), fNameInFactory(name_in_factory)
+        LoadFromDetectorFactory(G4String name_in_factory = "") : G4VUserDetectorConstruction(), fNameInFactory(name_in_factory)
             {;}
         virtual ~LoadFromDetectorFactory();
         

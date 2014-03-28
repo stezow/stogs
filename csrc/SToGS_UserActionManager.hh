@@ -29,11 +29,15 @@
 
 #include "SToGS_UserActionInitialization.hh"
 
+class G4VUserDetectorConstruction;
+class G4VUserPhysicsList;
+
 //! SToGS namespace to protect SToGS classes
 namespace SToGS {
-    //!  Base class for SToGS user's actions.
+    //!  Manager which, based on a configuration file, manages user's actions + selection of the geometry and the physics list
     /*!
-        
+        It extends it also by adding the physics list and the geometry.
+        It can be used in geant4.9.6 and geant > 10.0
      */
     class UserActionManager : public UserActionInitialization
     {
@@ -52,6 +56,9 @@ namespace SToGS {
         std::pair < G4String, G4String > fWhichActionManager;
         
     protected:
+        G4int fNbThreads;
+        
+    protected:
         SToGS::UserActionInitialization *GetUserActionInitialization();
         
     public:
@@ -59,6 +66,15 @@ namespace SToGS {
         virtual ~UserActionManager()
             {;}
     public:
+        //! allows the user to specify the number of threads
+        G4int GetNbThread() const
+        {
+            return fNbThreads;
+        }
+        //! Return the detector depending of the configuration file
+        virtual G4VUserDetectorConstruction *GetDetectorConstruction() const;
+        //! Return the physics list depending of the configuration file
+        virtual G4VUserPhysicsList *GetPhysicsList() const;
         
         //! Individual calls in case it is used for Geant4 < 10.0
         virtual G4UserRunAction *GetRunAction() const;
@@ -66,7 +82,7 @@ namespace SToGS {
         virtual G4UserTrackingAction *GetTrackingAction() const;
         virtual G4UserSteppingAction *GetSteppingAction() const;
         
-        //! Geant4 > 10.0 interface
+        //! Geant4 > 10.0 interface to set user's local actions i.e Gun, Run, Event etc ... Action
         virtual void 	BuildForMaster () const;
         virtual void 	Build () const;
     };
