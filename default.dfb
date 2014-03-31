@@ -1,0 +1,37 @@
+#
+# First the world / detector envelop. if detector does not exist, box with dim given otherwise dim ignored
+#
+# With this line, one can change the current global copy number. At loading time, the detector numbers
+# are read from the factory and added to this offset. Allows to add many detectors with their own range of unique number
+#
+@ 0 ->
+#
+# Import method. So far used to load a gdml produced by another package.
+# First, name of the vdml file, the factory it is going to be set, then two string to quickly customize the a .map and .dmap files
+# For .amap, sequence of volumename|matname|SDname|Color^volumename|matname|SDname|Color
+# with color being r;g;b;alpha 
+# For .dmap T means touchable i.e. change the name of the physical volume to include copy number
+# 
+#i geom/IdealSegmentedShell.gdml DetectorFactory/MyStore/IdealSegmentedShell Inner|*|/Paris/Calo|1.0;0.0;0.0;1^Outer|*|/Paris/Calo|0.0;0.0;1.0;1 T
+#i geom/Cube_LaBr_CsI.gdml DetectorFactory/MyStore/Cube_LaBr_CsI LaBr3_log|*|/Paris/Calo|1.0;0.0;0.0;1^CsI_log|*|/Paris/Calo|0.0;0.0;1.0;1
+#
+#
+# built a world. For final setup or to build arrays.
+#   load a full gdml file only
+#w DetectorFactory/Scintillators/CParisPW_2 0. 0. 25. cm  
+#
+# build a room in order to host detectors
+w DetectorFactory/Rooms/VR 1. 1. 1. m  
+#+ DetectorFactory/Scintillators/CParisPW_2 0. 0. 25. cm 
++ DetectorFactory/Generics/TwoShells 0. 0. 0. cm 
+#
+#   
+#w DetectorFactory/Rooms/GANIL 2. 2. 2. m  
+#
+# add chateau de crystal of the store and place it 10 cm away the target position
+#+ DetectorFactory/Arrays/Chateau2Crystal 0. 0. 10. cm
+#
+# just one module of Chateau 2 Crystal
+#+ DetectorFactory/Scintillators/aChateau2Crystal 0. 0. 0. cm
+#
+# end
