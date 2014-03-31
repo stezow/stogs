@@ -67,12 +67,12 @@ set(SToGS_SRC
 	csrc/SToGS_MaterialConsultant.cc
 	csrc/SToGS_DetectorFactory.cc
     csrc/SToGS_RoomsDF.cc
-    csrc/SToGS_ArraysDF.cc
     csrc/SToGS_ScintillatorDF.cc
     csrc/SToGS_MyStoreDF.cc
     csrc/SToGS_LoadFromDetectorFactory.cc
     csrc/SToGS_TwoShellsDetectorConstruction.cc
     csrc/SToGS_GenericsDF.cc
+    csrc/SToGS_ArraysDF.cc
 # Physics Lists related
     csrc/SToGS_G4_GeneralPhysics.cc
     csrc/SToGS_ModularPhysicsList.cc
@@ -130,12 +130,12 @@ set(SToGS_HEADER
 	csrc/SToGS_MaterialConsultant.hh
 	csrc/SToGS_DetectorFactory.hh
     csrc/SToGS_RoomsDF.hh
-    csrc/SToGS_ArraysDF.hh
     csrc/SToGS_ScintillatorDF.hh
     csrc/SToGS_MyStoreDF.hh
     csrc/SToGS_LoadFromDetectorFactory.hh
     csrc/SToGS_TwoShellsDetectorConstruction.hh
     csrc/SToGS_GenericsDF.hh
+    csrc/SToGS_ArraysDF.hh
 # Physics Lists related
     csrc/SToGS_G4_GeneralPhysics.hh
     csrc/SToGS_ModularPhysicsList.hh

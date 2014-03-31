@@ -16,17 +16,10 @@
 #i geom/Cube_LaBr_CsI.gdml DetectorFactory/MyStore/Cube_LaBr_CsI LaBr3_log|*|/Paris/Calo|1.0;0.0;0.0;1^CsI_log|*|/Paris/Calo|0.0;0.0;1.0;1
 #
 #
-# built a world. For final setup or to build arrays.
-#   load a full gdml file only
-#w DetectorFactory/Scintillators/CParisPW_2 0. 0. 25. cm  
-#
 # build a room in order to host detectors
 w DetectorFactory/Rooms/VR 1. 1. 1. m  
 #+ DetectorFactory/Scintillators/CParisPW_2 0. 0. 25. cm 
 + DetectorFactory/Generics/TwoShells 0. 0. 0. cm 
-#
-#   
-#w DetectorFactory/Rooms/GANIL 2. 2. 2. m  
 #
 # add chateau de crystal of the store and place it 10 cm away the target position
 #+ DetectorFactory/Arrays/Chateau2Crystal 0. 0. 10. cm

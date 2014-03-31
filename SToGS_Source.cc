@@ -99,7 +99,7 @@
 int main(int argc,char** argv)
 {
 	// check out the command line options. default is to read global.paris unless another file is givn on command line
-	G4String gconf = "setup/SToGS_Source.default", macro; G4bool is_interactive = true;
+	G4String gconf = "setup/SToGS_Source.conf", macro; G4bool is_interactive = true;
 	//
 	for( G4int i = 1; i < argc ; i++) {
 		G4String arg = argv[i];
