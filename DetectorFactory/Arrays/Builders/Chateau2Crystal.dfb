@@ -1,0 +1,84 @@
+#
+# First the world / detector envelop. if detector does not exist, box with dim given otherwise dim ignored
+w Chateau2Crystal +10. +10. +10. m 
+#
+#
+@ 0 ->
+#
+#
+*	DetectorFactory/Scintillators/aChateau2Crystal		200.0		0.0		0.0	mm	Rz +90 Ry +90	
+*	DetectorFactory/Scintillators/aChateau2Crystal		195.0		78.0		45.0	mm	Rz +90 Ry +90	    
+*	DetectorFactory/Scintillators/aChateau2Crystal		195.0		0.0		90.0	mm	Rz +90 Ry +90    
+*	DetectorFactory/Scintillators/aChateau2Crystal		195.0		-78.0		45.0	mm	Rz +90 Ry +90   
+*	DetectorFactory/Scintillators/aChateau2Crystal		195.0		-78.0		-45.0	mm	Rz +90 Ry +90   
+*	DetectorFactory/Scintillators/aChateau2Crystal		195.0		0.0		-90.0 	mm	Rz +90 Ry +90   
+*	DetectorFactory/Scintillators/aChateau2Crystal		195.0		78.0		-45.0	mm	Rz +90 Ry +90 
+*	DetectorFactory/Scintillators/aChateau2Crystal		171.0		156.0		0.0	mm	Rz +90 Ry +90    
+*	DetectorFactory/Scintillators/aChateau2Crystal		171.0		 78.0		135.0  	mm	Rz +90 Ry +90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		171.0		-78.0		135.0	mm	Rz +90 Ry +90    
+*	DetectorFactory/Scintillators/aChateau2Crystal		171.0		-156.0		0.0 	mm	Rz +90 Ry +90 
+*	DetectorFactory/Scintillators/aChateau2Crystal		171.0		-78.0		-135.0 	mm	Rz +90 Ry +90 
+*	DetectorFactory/Scintillators/aChateau2Crystal		171.0		78.0		-135.0 	mm	Rz +90 Ry +90
+*	DetectorFactory/Scintillators/aChateau2Crystal		147.5		156.0		90.0 	mm	Rz +90 Ry +90 
+*	DetectorFactory/Scintillators/aChateau2Crystal		147.5		0.0		180.0	mm	Rz +90 Ry +90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		147.5		-156.0		90.0  	mm	Rz +90 Ry +90
+*	DetectorFactory/Scintillators/aChateau2Crystal		147.5		-156.0		-90.0 	mm	Rz +90 Ry +90 
+*	DetectorFactory/Scintillators/aChateau2Crystal		147.5		0.0		-180.0	mm	Rz +90 Ry +90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		147.5		156.0		-90.0 	mm	Rz +90 Ry +90 
+*	DetectorFactory/Scintillators/aChateau2Crystal		70.0		234.0		45.0  	mm	Rz +90 Ry +90
+*	DetectorFactory/Scintillators/aChateau2Crystal		70.0		156.0		180.0	mm	Rz +90 Ry +90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		70.0		78.0		225.0 	mm	Rz +90 Ry +90 
+*	DetectorFactory/Scintillators/aChateau2Crystal		70.0		-78.0		225.0	mm	Rz +90 Ry +90   
+*	DetectorFactory/Scintillators/aChateau2Crystal		70.0		-156.0		180.0 	mm	Rz +90 Ry +90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		70.0		-234.0		45.00 	mm	Rz +90 Ry +90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		70.0		-234.0		-45.0 	mm	Rz +90 Ry +90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		70.0		-156.0		-180.0 	mm	Rz +90 Ry +90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		70.0		-78.0		-225.0 	mm	Rz +90 Ry +90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		70.0		78.0		-225.0 	mm	Rz +90 Ry +90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		70.0		156.0		-180.0 	mm	Rz +90 Ry +90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		70.0		234.0		-45.0	mm	Rz +90 Ry +90
+*	DetectorFactory/Scintillators/aChateau2Crystal		30.5		234.0		135.0 	mm	Rz +90 Ry +90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		30.5		-234.0		135.0	mm	Rz +90 Ry +90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		30.5		-234.0		-135.0 	mm	Rz +90 Ry +90 
+*	DetectorFactory/Scintillators/aChateau2Crystal		30.5		234.0		-135.0 	mm	Rz +90 Ry +90
+*	DetectorFactory/Scintillators/aChateau2Crystal		55.0		0.0		270.0  	mm	Rz +90 Ry +90
+*	DetectorFactory/Scintillators/aChateau2Crystal		55.0		0.0		-270.0	mm	Rz +90 Ry +90
+*	DetectorFactory/Scintillators/aChateau2Crystal		-200.0		0.0		0.0   	mm	Rz +90 Ry -90 
+*	DetectorFactory/Scintillators/aChateau2Crystal		-195.0		78.0		45.0 	mm	Rz +90 Ry -90   
+*	DetectorFactory/Scintillators/aChateau2Crystal		-195.0		0.0		90.0 	mm	Rz +90 Ry -90   
+*	DetectorFactory/Scintillators/aChateau2Crystal		-195.0		-78.0		45.0 	mm	Rz +90 Ry -90 
+*	DetectorFactory/Scintillators/aChateau2Crystal		-195.0		-78.0		-45.0 	mm	Rz +90 Ry -90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		-195.0		0.0		-90.0 	mm	Rz +90 Ry -90   
+*	DetectorFactory/Scintillators/aChateau2Crystal		-195.0		78.0		-45.0 	mm	Rz +90 Ry -90
+*	DetectorFactory/Scintillators/aChateau2Crystal		-171.0		156.0		0.0 	mm	Rz +90 Ry -90   
+*	DetectorFactory/Scintillators/aChateau2Crystal		-171.0		78.0		135.0	mm	Rz +90 Ry -90    
+*	DetectorFactory/Scintillators/aChateau2Crystal		-171.0		-78.0		135.0 	mm	Rz +90 Ry -90   
+*	DetectorFactory/Scintillators/aChateau2Crystal		-171.0		-156.0		0.0  	mm	Rz +90 Ry -90
+*	DetectorFactory/Scintillators/aChateau2Crystal		-171.0		-78.0		-135.0 	mm	Rz +90 Ry -90 
+*	DetectorFactory/Scintillators/aChateau2Crystal		-171.0		78.0		-135.0 	mm	Rz +90 Ry -90
+*	DetectorFactory/Scintillators/aChateau2Crystal		-147.5		156.0		90.0  	mm	Rz +90 Ry -90
+*	DetectorFactory/Scintillators/aChateau2Crystal		-147.5		0.0		180.0 	mm	Rz +90 Ry -90 
+*	DetectorFactory/Scintillators/aChateau2Crystal		-147.5		-156.0		90.0  	mm	Rz +90 Ry -90
+*	DetectorFactory/Scintillators/aChateau2Crystal		-147.5		-156.0		-90.0  	mm	Rz +90 Ry -90
+*	DetectorFactory/Scintillators/aChateau2Crystal		-147.5		0.0		-180.0	mm	Rz +90 Ry -90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		-147.5		156.0		-90.0 	mm	Rz +90 Ry -90 
+*	DetectorFactory/Scintillators/aChateau2Crystal		-70.0		234.0		45.0 	mm	Rz +90 Ry -90 
+*	DetectorFactory/Scintillators/aChateau2Crystal		-70.0		156.0		180.0  	mm	Rz +90 Ry -90
+*	DetectorFactory/Scintillators/aChateau2Crystal		-70.0		78.0		225.0 	mm	Rz +90 Ry -90 
+*	DetectorFactory/Scintillators/aChateau2Crystal		-70.0		-78.0		225.0 	mm	Rz +90 Ry -90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		-70.0		-156.0		180.0 	mm	Rz +90 Ry -90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		-70.0		-234.0		45.00 	mm	Rz +90 Ry -90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		-70.0		-234.0		-45.0 	mm	Rz +90 Ry -90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		-70.0		-156.0		-180.0	mm	Rz +90 Ry -90   
+*	DetectorFactory/Scintillators/aChateau2Crystal		-70.0		-78.0		-225.0 	mm	Rz +90 Ry -90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		-70.0		78.0		-225.0 	mm	Rz +90 Ry -90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		-70.0		156.0		-180.0 	mm	Rz +90 Ry -90  
+*	DetectorFactory/Scintillators/aChateau2Crystal		-70.0		234.0		-45.0	mm	Rz +90 Ry -90
+*	DetectorFactory/Scintillators/aChateau2Crystal		-30.5		234.0		135.0  	mm	Rz +90 Ry -90 
+*	DetectorFactory/Scintillators/aChateau2Crystal		-30.5		-234.0		135.0  	mm	Rz +90 Ry -90
+*	DetectorFactory/Scintillators/aChateau2Crystal		-30.5		-234.0		-135.0 	mm	Rz +90 Ry -90 
+*	DetectorFactory/Scintillators/aChateau2Crystal		-30.5		234.0		-135.0 	mm	Rz +90 Ry -90
+*	DetectorFactory/Scintillators/aChateau2Crystal		-55.0		0.0		270.0  	mm	Rz +90 Ry -90
+*	DetectorFactory/Scintillators/aChateau2Crystal		-55.0		0.0		-270.0	mm	Rz +90 Ry -90
+#
+# end
