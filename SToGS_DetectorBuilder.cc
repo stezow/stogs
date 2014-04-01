@@ -1,3 +1,4 @@
+
 //
 // ********************************************************************
 // * License and Disclaimer                                           *
@@ -34,15 +35,18 @@
 //
 // --------------------------------------------------------------
 
+// G4 includes
+#include "G4RunManager.hh"
 #include "G4UImanager.hh"
 #include "G4UIterminal.hh"
 #include "G4UItcsh.hh"
-#include "G4Version.hh"
-
-#include "G4RunManager.hh"
 
 #ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
+#endif
+
+#ifdef G4UI_USE
+#include "G4UIExecutive.hh"
 #endif
 
 #include "SToGS_DetectorFactory.hh"
@@ -56,7 +60,7 @@
 
 /*! DetectorBuilder helps in building detectors/setup using the Detector Factories
  
-    Construction is done through the Detector Factory using the
+ Construction is done through the Detector Factory using the
  */
 int main(int argc, char** argv)
 {
@@ -75,7 +79,7 @@ int main(int argc, char** argv)
         filedfb = "default.dfb";
     }
     
-//Pure SToGS related
+    //Pure SToGS related
     // Make sure an output manager is set and the main factory is built
     SToGS::DetectorFactory::theMainFactory()->MakeStore();
     // simple printout manager enough at the level of detector construction
@@ -83,11 +87,11 @@ int main(int argc, char** argv)
     SToGS::UserActionInitialization *user_action_manager = new SToGS::PrintOut("run;event;track;step");
     // Customization here. Default is geantino through GPS
     user_action_manager->SetWhichGenerator("GPS","G4Macros/GPSPointLike.mac");
-
+    
 	// Construct the default run manager which is necessary
     G4RunManager* theRunManager = new G4RunManager;
     //
-//    theRunManager->SetUserInitialization ( new SToGS::ShellDetectorConstruction() );
+    //    theRunManager->SetUserInitialization ( new SToGS::ShellDetectorConstruction() );
     switch ( what_detector ) {
         case 0:
             break;
@@ -103,46 +107,45 @@ int main(int argc, char** argv)
     theRunManager->SetUserAction( user_action_manager->GetTrackingAction() );
     theRunManager->SetUserAction( user_action_manager->GetSteppingAction() );
 #else
-    theRunManager->SetUserInitialization( user_action_manager );   
+    theRunManager->SetUserInitialization( user_action_manager );
 #endif
     
-	// Initialize G4 kernel
-	theRunManager->Initialize();
-	
-	// Visualization manager
-	G4VisManager* visManager = new G4VisExecutive();
+    // Initialize G4 kernel
+    theRunManager->Initialize();
+    
+    // Get the pointer to the User Interface manager
+    G4UImanager * UImanager = G4UImanager::GetUIpointer();
+    
+    // And the Visualization manager
+    G4VisManager* visManager = new G4VisExecutive();
     //
     if ( visManager ) {
         visManager->SetVerboseLevel(G4VisManager::quiet);
         visManager->Initialize();
     }
     
-    G4UIsession *session = 0;
-    //
-#ifdef G4UI_USE_TCSH
-    session = new G4UIterminal(new G4UItcsh);
-#else
-    session = new G4UIterminal();
+    G4UIsession *session = 0x0;
+#ifdef G4UI_USE
+    G4UIExecutive * ui = new G4UIExecutive(argc,argv);
+#ifdef G4VIS_USE
+    UImanager->ApplyCommand("/control/execute G4Macros/vis.mac");
 #endif
-    // a set of commands to check the geometry
-    G4UImanager::GetUIpointer()->ApplyCommand("/vis/ASCIITree/verbose 11");
-    G4UImanager::GetUIpointer()->ApplyCommand("/vis/drawTree");
-    G4UImanager::GetUIpointer()->ApplyCommand("/geometry/test/grid_test");
-    
-    G4cout << "\n A detector/setup has been built using " << filedfb << "\n";
-    G4cout << " To view it through openGL:\n    /control/execute G4Macros/visGL.mac \n";
-    G4cout << " Try also /DetectorFactory commands \n" << G4endl;
-    
-    session->SessionStart();
+    ui->SessionStart();
+    delete ui;
+#endif
+    // job termination
     delete session;
     
-	// job termination
-	if ( visManager )
-        delete visManager;
+    if ( visManager ) delete visManager;
     delete theRunManager;
 	
-	return 0; 
+    return 0;
+    
 }
+
+
+
+
 
 
 
