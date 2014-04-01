@@ -65,7 +65,7 @@
 int main(int argc, char** argv)
 {
     // file to be given on the command line. If not, set a demo
-    G4int what_detector = -1; G4String filedfb = "";
+    G4int what_detector = -1; G4String filedfb = "", macro_visu = "G4Macros/vis.mac";
     for( G4int i = 1; i < argc ; i++) {
 		G4String arg = argv[i];
 		if ( arg == "-dfb" && i < argc - 1 ) {
@@ -73,6 +73,9 @@ int main(int argc, char** argv)
         }
         if ( arg == "-myd" ) {
             what_detector = 0;
+        }
+        if ( arg == "-vis" ) {
+			macro_visu = argv[i+1];
         }
 	}
     if ( filedfb == "" ) {
@@ -128,7 +131,9 @@ int main(int argc, char** argv)
 #ifdef G4UI_USE
     G4UIExecutive * ui = new G4UIExecutive(argc,argv);
 #ifdef G4VIS_USE
-    UImanager->ApplyCommand("/control/execute G4Macros/vis.mac");
+    G4String cmd = "/control/execute ";
+    cmd += macro_visu;
+    UImanager->ApplyCommand(cmd.data());
 #endif
     ui->SessionStart();
     delete ui;
