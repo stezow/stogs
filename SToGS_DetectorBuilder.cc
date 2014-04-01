@@ -145,7 +145,6 @@ int main(int argc, char** argv)
     delete theRunManager;
 	
     return 0;
-    
 }
 
 
