@@ -192,7 +192,7 @@ namespace SToGS {
         virtual ~DetectorFactory()
         { /* what to delete ? ... the main factory .. */ ;}
         
-        G4String GetFactoryName()
+        G4String GetFactoryName() const
         {
             return fPath;
         }

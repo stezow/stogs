@@ -31,22 +31,32 @@
 #include "G4ios.hh"
 #include "G4SDManager.hh"
 
+#ifdef G4MULTITHREADED
+#include "G4AutoLock.hh"
+namespace { G4Mutex buildMutex = G4MUTEX_INITIALIZER; }
+#endif
+
 #include <fstream>
 
-SToGS::UserActionInitialization::UserActionInitialization()
+SToGS::UserActionInitialization::UserActionInitialization(G4String user_action_opt, G4String which_gene, G4String which_gene_opt)
 #if G4VERSION_NUMBER < 1000
     :
 #else
     : G4VUserActionInitialization(),
 #endif
-    fWhichGenerator("-","-")
+    fUserActionOption(user_action_opt),
+    fWhichGenerator(which_gene,which_gene_opt)
 {
 }
 SToGS::UserActionInitialization::~UserActionInitialization()
 {
-    ;
+    for (size_t i = 0; i < fAllUserAction.size(); i++) {
+        if ( fAllUserAction[i] ) {
+            delete fAllUserAction[i];
+            fAllUserAction[i] = 0x0;
+        }
+    };
 }
-
 std::pair < G4String, G4String > SToGS::UserActionInitialization::SetWhichGenerator(G4String which_gene, G4String option)
 {
     std::pair < G4String, G4String > current = fWhichGenerator, new_one(which_gene,option);
@@ -54,7 +64,6 @@ std::pair < G4String, G4String > SToGS::UserActionInitialization::SetWhichGenera
     fWhichGenerator = new_one;
     return current;
 }
-
 
 // Primary Generators
 #include "SToGS_G4_GPSPrimaryGeneratorAction.hh"
@@ -123,6 +132,41 @@ G4VSensitiveDetector *SToGS::UserActionInitialization::GetCopClusterSD( G4String
 #endif
     G4cout << "[_[SToGS::UserActionInitialization::GetCopClusterSD()]] Creating a CopCluster SD " << G4endl;
     return aSD;
+}
+
+void SToGS::UserActionInitialization::BuildAndRegister ( AllActions *actions ) const
+{
+#ifdef G4MULTITHREADED
+    G4AutoLock lock(&buildMutex);
+#endif
+    G4cout << " ------ INF ------ from SToGS::UserActionInitialization::BuildAndRegister() " << G4endl;
+#if G4VERSION_NUMBER < 1000
+    G4cout << " *** ERROR *** SToGS::UserActionInitialization::BuildAndRegister() should never be called by this version of Geant4 " << G4endl;
+#else
+    SetUserAction( GetGun(fWhichGenerator.first,fWhichGenerator.second) );
+    //
+    fAllUserAction.push_back(actions);
+    //
+    SetUserAction( new SToGS::RunAction(actions) ) ;
+    SetUserAction( new SToGS::EventAction(actions) ) ;
+    SetUserAction( new SToGS::TrackingAction(actions) ) ;
+    SetUserAction( new SToGS::SteppingAction(actions) ) ;
+#endif
+    G4cout << " ------ END ------  from SToGS::UserActionInitialization::BuildAndRegister() " << G4endl;
+}
+
+void SToGS::UserActionInitialization::Register ( AllActions *actions ) const
+{
+#ifdef G4MULTITHREADED
+    G4AutoLock lock(&buildMutex);
+#endif    
+    G4cout << " ------ INF ------ from SToGS::UserActionInitialization::Register() " << G4endl;
+#if G4VERSION_NUMBER < 1000
+    G4cout << " *** ERROR *** SToGS::AllInOneUserActionInitialization::Build() should never be called by this version of Geant4 " << G4endl;
+#else
+    fAllUserAction.push_back(actions);
+#endif
+    G4cout << " ------ END ------  from SToGS::UserActionInitialization::Register() " << G4endl;
 }
 
 

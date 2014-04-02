@@ -135,14 +135,16 @@ int main(int argc,char** argv)
         exit(-1);
     }
     else theRunManager->SetUserInitialization ( physics_list );
+    
+    SToGS::UserActionInitialization *user_action = user_action_manager->GetUserActionInitialization();
 #ifdef G4MULTITHREADED
-    theRunManager->SetUserInitialization( user_action_manager );
+    theRunManager->SetUserInitialization( user_action );
 #else
-    theRunManager->SetUserAction( user_action_manager->GetGun() );
-    theRunManager->SetUserAction( user_action_manager->GetRunAction() );
-    theRunManager->SetUserAction( user_action_manager->GetEventAction() );
-    theRunManager->SetUserAction( user_action_manager->GetTrackingAction() );
-    theRunManager->SetUserAction( user_action_manager->GetSteppingAction() );
+    theRunManager->SetUserAction( user_action->GetGun() );
+    theRunManager->SetUserAction( user_action->GetRunAction() );
+    theRunManager->SetUserAction( user_action->GetEventAction() );
+    theRunManager->SetUserAction( user_action->GetTrackingAction() );
+    theRunManager->SetUserAction( user_action->GetSteppingAction() );
 #endif
 	
 	// Initialize G4 kernel

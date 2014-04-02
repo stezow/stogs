@@ -39,7 +39,7 @@ namespace SToGS {
         It extends it also by adding the physics list and the geometry.
         It can be used in geant4.9.6 and geant > 10.0
      */
-    class UserActionManager : public UserActionInitialization
+    class UserActionManager
     {
     private:
         SToGS::UserActionInitialization *fImplementation;
@@ -49,6 +49,7 @@ namespace SToGS {
         /*!
             We are keeping however here some references in case the user would like to ask the manager to do the job for her/him
          */
+        std::pair < G4String, G4String > fWhichGenerator;
         std::pair < G4String, G4String > fWhichGeometry;
         std::pair < G4String, G4String > fWhichPhysics;
         
@@ -59,7 +60,8 @@ namespace SToGS {
         G4int fNbThreads;
         
     protected:
-        SToGS::UserActionInitialization *GetUserActionInitialization();
+        //! depending of the configuration file, it returns the adapted UserActionInitialization
+        SToGS::UserActionInitialization *ProvideUserActionInitialization();
         
     public:
         UserActionManager(G4String configurationfile = "");
@@ -75,16 +77,11 @@ namespace SToGS {
         virtual G4VUserDetectorConstruction *GetDetectorConstruction() const;
         //! Return the physics list depending of the configuration file
         virtual G4VUserPhysicsList *GetPhysicsList() const;
-        
-        //! Individual calls in case it is used for Geant4 < 10.0
-        virtual G4UserRunAction *GetRunAction() const;
-        virtual G4UserEventAction *GetEventAction() const;
-        virtual G4UserTrackingAction *GetTrackingAction() const;
-        virtual G4UserSteppingAction *GetSteppingAction() const;
-        
-        //! Geant4 > 10.0 interface to set user's local actions i.e Gun, Run, Event etc ... Action
-        virtual void 	BuildForMaster () const;
-        virtual void 	Build () const;
+        //! Return the UserActionInitialisation
+        virtual UserActionInitialization *GetUserActionInitialization()
+        {
+            return fImplementation;
+        }
     };
 } // SToGS Namespace
 

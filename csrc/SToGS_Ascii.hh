@@ -50,121 +50,31 @@ namespace SToGS {
         G4int collcaloID;
     protected:
         //! current stream to output data
-        std::ofstream fOutputFile;
-        //! name of the file, it includes path and basename ... keep here if this takes charge of opening a new file
-        G4String fFilename;
+        std::ofstream &fOutputFile;
     protected:
         //! A new event in the file starts/ends with the following characters
-        std::pair < char, char >  fEventMarkOff;
-        //! max numer of event per files ... better to limit because of ascii file could be uged !
-        G4int fMaxEvents;
-        //! 0 [default] means keep all, 1 only events which gives at least one hit in the full detector
-        G4int fRecordOption;
+        //std::pair < char, char >  fEventMarkOff;
         
     public:
-        AsciiRun(G4String filename);
+        AsciiRun(std::ofstream &out);
         virtual ~AsciiRun();
-        
-        //! Open the stream
-        void OpenStream();
 
         virtual void RecordEvent(const G4Event* evt);
         //virtual void Merge(const G4Run*);
     };
     //! This class just print out once a new run begins/ends with the run number and the number of events to be simulated
     /*!
+     \TODO
      */
-    class AsciiRunAction : public G4UserRunAction
+    class AsciiAction : public AllActions
     {
+    protected:
+        //! current stream to output data
+        std::ofstream fOutputFile;
     protected:
         //! directory where to output data
         G4String fPathToData;
         //! base for all the files
-        G4String fBaseName;
-        //! max numer of event per files ... better to limit because of ascii file could be uged !
-        G4int fMaxEvents;
-        
-        //! 0 [default] means keep all, 1 only events which gives at least one hit in the full detector
-        G4int fRecordOption;
-        
-    protected:
-#if G4VERSION_NUMBER < 1000
-        G4bool IsMaster() const
-        {
-            return false;
-        }
-#else
-#endif
-    public:
-        AsciiRunAction(G4String path = "./", G4String basename = "SToGS_Ascii", G4int maxevent = 500000, G4int record_opt = 0);
-        virtual ~AsciiRunAction();
-        
-        virtual G4Run* GenerateRun();
-        
-        virtual void BeginOfRunAction(const G4Run *aRun);
-        virtual void EndOfRunAction(const G4Run* aRun);
-        
-    };
-    //! This class just print out once a new event begins/ends with the event
-    /*!
-     */
-    class AsciiEventAction : public G4UserEventAction
-    {
-    private:
-        //! print out simulated number of event every modulo ...
-        G4int fPrintModulo;
-    public:
-        AsciiEventAction(G4int modulo = 1000) : fPrintModulo(modulo)
-            {;}
-        virtual ~AsciiEventAction()
-            {;}
-        
-    public:
-        virtual void BeginOfEventAction(const G4Event *event);
-        virtual void EndOfEventAction(const G4Event *event);
-    };
-    //! This class just print out once a new track begins/ends with some informations PARTICLE, TRACKID, PARENTID, Total and kinetic energy
-    /*!
-     */
-    class AsciiTrackingAction : public G4UserTrackingAction
-    {
-    public:
-        AsciiTrackingAction()
-            {;}
-        virtual ~AsciiTrackingAction()
-            {;}
-        
-    public:
-        virtual void PreUserTrackingAction(const G4Track* atrack);
-        virtual void PostUserTrackingAction(const G4Track *atrack);
-    };
-    //! This class just print out information of step once going from one volume to another one
-    /*!
-     */
-    class AsciiSteppingAction : public G4UserSteppingAction
-    {
-    public:
-        AsciiSteppingAction() : G4UserSteppingAction()
-            {;}
-        virtual ~AsciiSteppingAction()
-            {;}
-        
-    public:
-        virtual void UserSteppingAction(const G4Step *step);
-    };
-    
-    //! Extract informations from Geant4 using SToGS sensitives and write hits in ascii files
-    /*!
-     */
-    class Ascii : public UserActionInitialization
-    {
-    protected:
-        //! name of the configuration file
-        G4String fConffile;
-    protected:
-        //! directory where to output data
-        G4String fPathToData;
-        //! base name for all the files
         G4String fBaseName;
         //! max numer of event per files ... better to limit because of ascii file could be uged !
         G4int fMaxEvents;
@@ -173,17 +83,42 @@ namespace SToGS {
         //! to print out status any fPrintModulo events
         G4int fPrintModulo;
         
+    protected:
+        //! Just check if there are collected hits in the collection
+        // std::pair<G4int, G4int> HitsinCollection(const G4Event);
+        
+        //! Open the stream depending of the configuration
+        void OpenStream(G4int run_id);
+        
     public:
-        Ascii(G4String conf = "setup/SToGS_ascii_actions.conf");
-        virtual ~Ascii();
+        AsciiAction(G4String conffile = "setup/SToGS_ascii_actions.conf");
+        virtual ~AsciiAction()
+            {;}
         
-        virtual G4UserRunAction *GetRunAction() const;
-        virtual G4UserEventAction *GetEventAction() const;
-        virtual G4UserTrackingAction *GetTrackingAction() const;
-        virtual G4UserSteppingAction *GetSteppingAction() const;
+        virtual G4Run* GenerateRun();
         
-        virtual void 	BuildForMaster () const;
-        virtual void 	Build () const;
+        virtual void BeginOfRunAction(const G4Run * /*therun*/);
+        virtual void EndOfRunAction(const G4Run * /*therun*/);
+        virtual void BeginOfEventAction(const G4Event * /*event*/);
+        virtual void EndOfEventAction(const G4Event * /*event*/);
+        // virtual void PreUserTrackingAction(const G4Track * /*atrack*/);
+        // virtual void PostUserTrackingAction(const G4Track * /*atrack*/);
+        // virtual void UserSteppingAction(const G4Step * /*step*/);
+    };
+    
+    //! Extract informations from Geant4 using SToGS sensitives and write hits in ascii files
+    /*!
+     */
+    class Ascii : public  AllInOneUserActionInitialization<AsciiAction>
+    {
+    public:
+        Ascii(G4String conf = "setup/SToGS_ascii_actions.conf", G4String which_gene = "GPS", G4String which_gene_opt = "G4Macros/GPSPointLike.mac"):
+            AllInOneUserActionInitialization<AsciiAction>(conf,which_gene,which_gene_opt)
+            {;}
+        virtual ~Ascii()
+            {;}
+        
+        // virtual void Build () const;
     };
         
 } // SToGS Namespace

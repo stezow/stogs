@@ -33,6 +33,11 @@
 #include "G4Event.hh"
 #include "G4UnitsTable.hh"
 
+#ifdef G4MULTITHREADED
+#include "G4AutoLock.hh"
+namespace { G4Mutex buildMutex = G4MUTEX_INITIALIZER; }
+#endif
+
 SToGS::PrintOutRun::PrintOutRun() :
     G4Run(),
     colltrackerID(-1),
@@ -93,37 +98,29 @@ void SToGS::PrintOutRun::RecordEvent(const G4Event* evt)
 	}
 }
 
-SToGS::PrintOutRunAction::PrintOutRunAction()
-{
-    ;
-}
-SToGS::PrintOutRunAction::~PrintOutRunAction()
-{
-    ;
-}
-void SToGS::PrintOutRunAction::BeginOfRunAction(const G4Run *aRun)
+void SToGS::PrintOutAction::BeginOfRunAction(const G4Run *aRun)
 {
     G4cout  << "Begin of Run: " <<  aRun->GetRunID() << " " << aRun->GetNumberOfEventToBeProcessed() << G4endl ;
 }
-void SToGS::PrintOutRunAction::EndOfRunAction(const G4Run* aRun)
+void SToGS::PrintOutAction::EndOfRunAction(const G4Run* aRun)
 {
     G4cout  << "End of Run: " <<  aRun->GetRunID() << " " << aRun->GetNumberOfEvent() << G4endl ;
 }
 
 G4int printModuloEvt = 1;
 
-void SToGS::PrintOutEventAction::BeginOfEventAction(const G4Event *evt)
+void SToGS::PrintOutAction::BeginOfEventAction(const G4Event *evt)
 {
     G4int evtNb = evt->GetEventID();
     G4cout << "  Begin of Event: " << evtNb + 1 << G4endl;
 }
-void SToGS::PrintOutEventAction::EndOfEventAction(const G4Event *evt)
+void SToGS::PrintOutAction::EndOfEventAction(const G4Event *evt)
 {
     G4int evtNb = evt->GetEventID();
     G4cout << "  End of Event: " << evtNb + 1 << G4endl;
 }
 
-void SToGS::PrintOutTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
+void SToGS::PrintOutAction::PreUserTrackingAction(const G4Track* aTrack)
 {
     G4cout << "    Begin of Track: (PreUserTrackingAction) " << G4endl;
     G4cout << "     PARTICLE: " << aTrack->GetDefinition()->GetParticleName() << G4endl;
@@ -134,7 +131,7 @@ void SToGS::PrintOutTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
     G4cout << "     VELOCITY: " << aTrack->GetVelocity() << G4endl;
 }
 
-void SToGS::PrintOutTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
+void SToGS::PrintOutAction::PostUserTrackingAction(const G4Track* aTrack)
 {
     G4cout << "    End of Track: (PostUserTrackingAction) " << G4endl;
     
@@ -145,7 +142,7 @@ void SToGS::PrintOutTrackingAction::PostUserTrackingAction(const G4Track* aTrack
         G4cout << "     THE PARTICLE WAS KILLED BECAUSE IT WENT OUT OF THE WORLD VOLUME" << G4endl;
 }
 
-void SToGS::PrintOutSteppingAction::UserSteppingAction(const G4Step* aStep)
+void SToGS::PrintOutAction::UserSteppingAction(const G4Step* aStep)
 {
     G4cout << "        A Step: " << G4endl;
 	G4cout << "         trackID: " << aStep->GetTrack()->GetTrackID()
@@ -164,60 +161,55 @@ void SToGS::PrintOutSteppingAction::UserSteppingAction(const G4Step* aStep)
         << ", ToF: " << aStep->GetPostStepPoint()->GetGlobalTime()  / CLHEP::ns << " ns" << G4endl;
 }
 
-SToGS::PrintOut::~PrintOut()
-{
-    ;
-}
+
 G4UserRunAction *SToGS::PrintOut::GetRunAction() const
 {
-    if ( fOption.contains("run") )
-        return new SToGS::PrintOutRunAction();
+    if ( fUserActionOption.contains("run") )
+        return SToGS::AllInOneUserActionInitialization<PrintOutAction>::GetRunAction();
     return 0x0;
 }
 G4UserEventAction *SToGS::PrintOut::GetEventAction() const
 {
-    if ( fOption.contains("event") )
-        return new SToGS::PrintOutEventAction();
+    if ( fUserActionOption.contains("event") )
+        return SToGS::AllInOneUserActionInitialization<PrintOutAction>::GetEventAction();
     return 0x0;
 }
 G4UserTrackingAction *SToGS::PrintOut::GetTrackingAction() const
 {
-    if ( fOption.contains("track") )
-        return new PrintOutTrackingAction();
+    if ( fUserActionOption.contains("track") )
+        return SToGS::AllInOneUserActionInitialization<PrintOutAction>::GetTrackingAction();
     return 0x0;
 }
 G4UserSteppingAction *SToGS::PrintOut::GetSteppingAction() const
 {
-    if ( fOption.contains("step") )
-        return new SToGS::PrintOutSteppingAction();
+    if ( fUserActionOption.contains("step") )
+        return SToGS::AllInOneUserActionInitialization<PrintOutAction>::GetSteppingAction();
     return 0x0;
 }
 
-void SToGS::PrintOut::BuildForMaster () const
-{
-#if G4VERSION_NUMBER < 1000
-    G4cout << " *** ERROR *** SToGS::PrintOut::BuildForMaster() should never be called by this version of Geant4 " << G4endl;
-#else
-    SetUserAction( new SToGS::PrintOutRunAction() );
-#endif
-}
 void SToGS::PrintOut::Build () const
 {
+#ifdef G4MULTITHREADED
+    G4AutoLock lock(&buildMutex);
+#endif
+    
+    G4cout << " ------ INF ------ from SToGS::PrintOut::Build() " << G4endl;
 #if G4VERSION_NUMBER < 1000
-    G4cout << " *** ERROR *** SToGS::PrintOut::BuildForMaster() should never be called by this version of Geant4 " << G4endl;
+    G4cout << " *** ERROR *** SToGS::PrintOut::Build() should never be called by this version of Geant4 " << G4endl;
 #else
     SetUserAction( GetGun(fWhichGenerator.first,fWhichGenerator.second) );
-    if ( fOption.contains("run") )
-        SetUserAction( new SToGS::PrintOutRunAction() ) ;
-    if ( fOption.contains("event") )
-        SetUserAction( new SToGS::PrintOutEventAction() ) ;
-    if ( fOption.contains("track") )
-        SetUserAction( new SToGS::PrintOutTrackingAction() ) ;
-    if ( fOption.contains("step") )
-        SetUserAction( new SToGS::PrintOutSteppingAction() ) ;
+    
+    PrintOutAction *all_actions = new PrintOutAction(fUserActionOption); fAllUserAction.push_back(all_actions);
+    SetUserAction( new SToGS::RunAction(all_actions) ) ;
+    if ( fUserActionOption.contains("event") )
+        SetUserAction( new SToGS::EventAction(all_actions) ) ;
+    if ( fUserActionOption.contains("track") )
+        SetUserAction( new SToGS::TrackingAction(all_actions) ) ;
+    if ( fUserActionOption.contains("step") )
+        SetUserAction( new SToGS::SteppingAction(all_actions) ) ;
 #endif
+    G4cout << " ------ END ------  from SToGS::PrintOut::Build() " << G4endl;
 }
-
 
 
 

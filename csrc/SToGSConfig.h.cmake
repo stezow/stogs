@@ -23,48 +23,27 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
+//----------------------------------------------------------------------------
+ 
+/** \file SToGSConfig.hh to set informations about the SToGS configuration
+*
+*
+*/ 
+#ifndef SToGS_Config_h
+#define SToGS_Config_h
 
-#ifndef SToGS_GenericsDF_h
-#define SToGS_GenericsDF_h 1
+/* Define to the version of this package. */
+#define PACKAGE_VERSION @PROJECT_VERSION@
 
-#include "SToGS_DetectorFactory.hh"
+/* Define to the full name of this package. */
+#define PACKAGE_NAME @PROJECT_NAME@
 
-class G4VUserDetectorConstruction;
-
-//! SToGS namespace to protect SToGS classes
-namespace SToGS {
-    //! Factory which is an interface to G4VUserDetectorConstruction
-    /*!
-     */
-    class GenericsDF : public DetectorFactory
-    {
-    protected:
-        std::vector < std::pair < G4String, G4VUserDetectorConstruction *> > fLoadedUserDetectorConstruction;
-        
-    protected:
-        //! return from the full path in the factory the configuration file which is following $
-        /*!
-            ex: DetectorFactory/Generics/TwoShell$toto.geo
-         */
-        G4String GetConf(G4String path_in_factory) const;
-
-    public:
-        GenericsDF(G4String path) : DetectorFactory(path), fLoadedUserDetectorConstruction()
-            {;}
-        virtual ~GenericsDF()
-            {;}
-        
-        //! overwrite the Get method to retrieve the detector from the standard G4 way i.e. by calling Construct
-        virtual G4VPhysicalVolume *Get(G4String basename, G4bool is_full = true);
-        //! Read attrbiutes by calling COnstructSDandFileds
-        virtual void GetAttributes(G4String basename);
-
-        //! build the default store i.e. nothing here
-        virtual void MakeStore()
-            {;}
-    };
-} // SToGS Namespace
-
+/* Define MY */
+// My Detector Construction
+#ifdef HAS_MYDET
+#include "@MYDET@DetectorConstruction.hh"
+#define MYDET_          "@MYDET@"
+#define MYDET_CLASSTYPE  @MYDET@DetectorConstruction
 #endif
 
-
+#endif

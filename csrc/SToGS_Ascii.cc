@@ -37,72 +37,25 @@
 #include "G4Threading.hh"
 #endif
 
-SToGS::AsciiRun::AsciiRun(G4String filename) :
+SToGS::AsciiRun::AsciiRun(std::ofstream &out) :
     G4Run(),
     colltrackerID(-1),
     collcaloID(-1),
-    fOutputFile(),
-    fFilename(filename),
-    fEventMarkOff('$','\0'),
-    fMaxEvents(500000),
-    fRecordOption(0)
+    fOutputFile(out)
+//    fEventMarkOff('$','\0')
 {
    	G4SDManager* SDman = G4SDManager::GetSDMpointer();
     if ( SDman ) {
         // keep the collection ID associated to this collection
-        if ( G4SDManager::GetSDMpointer()->FindSensitiveDetector("Tracker",false) )
-            colltrackerID = SDman->GetCollectionID("TrackerHits");
+        colltrackerID = SDman->GetCollectionID("TrackerHits");
         
         // keep the collection ID associated to this collection
-        if ( G4SDManager::GetSDMpointer()->FindSensitiveDetector("CopCluster",false) )
-            collcaloID = SDman->GetCollectionID("CopClusterHits");
+        collcaloID = SDman->GetCollectionID("CopClusterHits");
     }
-}
-void SToGS::AsciiRun::OpenStream()
-{
-    // for MT, thread id used in the name of the file to avoid pb
-    G4int thread_id = 0;
-#if G4MULTITHREADED
-    thread_id = G4Threading::G4GetThreadId();
-#endif
-    std::ostringstream filename;
-    filename.clear();
-    filename << fFilename << "_" << thread_id << "_" << GetRunID() << ".ascii";
-    
-    // close the file if already open
-    if ( fOutputFile.is_open() )
-    {
-        fOutputFile.close();
-        fOutputFile.clear();
-    }
-    fOutputFile.open(filename.str().data());
-    //
-    if ( fOutputFile ) {
-		G4cout << " The File " << filename.str() << " is open to record data " << G4endl;
-		
-		fOutputFile << "#" << std::endl;
-		fOutputFile << "# FORMAT: 'C' ID1  ID2  Energy(keV)    x(cm)     y(cm)     z(cm) " << std::endl;
-		fOutputFile << "#    with X=P for primary gammas and in this case:" << std::endl;
-		fOutputFile << "#        ID1 is the vertexID, ID2 the total number of primaries" << std::endl;
-		fOutputFile << "#        E the energy of the emitted gamma " << std::endl;
-		fOutputFile << "#        x,y,z represents the momentum" << std::endl;
-		fOutputFile << "#    with X=H for a single hit and in this case:" << std::endl;
-		fOutputFile << "#        ID1 is the vertexID it comes from, ID2 the detector number" << std::endl;
-		fOutputFile << "#        E the energy of the impact " << std::endl;
-		fOutputFile << "#        x,y,z represents its position" << std::endl;
-		fOutputFile << "#" << std::endl;
-	} else {
-		G4cout << " *** ERROR *** cannot open " << filename.str() << " to record data " << G4endl;
-	}
 }
 
 SToGS::AsciiRun::~AsciiRun()
 {
-    if ( fOutputFile.is_open() )
-    {
-        fOutputFile.close();
-        fOutputFile.clear();
-    }
 }
 
 void SToGS::AsciiRun::RecordEvent(const G4Event* evt)
@@ -117,19 +70,20 @@ void SToGS::AsciiRun::RecordEvent(const G4Event* evt)
 	if(HCE)
 	{
         THC = (SToGS::TrackerHitsCollection *)(HCE->GetHC(colltrackerID));
-        if ( THC ) {
+        if ( colltrackerID > -1 ) {
             nb_hits += THC->entries();
         }
 		CHC = (SToGS::CopClusterHitsCollection*)(HCE->GetHC(collcaloID));
-        if ( CHC ) {
+        if ( collcaloID > -1 ) {
             nb_hits += CHC->entries();
         }
   	}
+    /*
     if ( fRecordOption == 1 ) {
         if ( nb_hits == 0 )
             return;
     }
-    
+    */
     // write primary part
     G4int istart = 0, iend = evt->GetNumberOfPrimaryVertex();
 	
@@ -193,69 +147,9 @@ void SToGS::AsciiRun::RecordEvent(const G4Event* evt)
 	}
 }
 
-SToGS::AsciiRunAction::AsciiRunAction(G4String path, G4String basename, G4int maxevent, G4int record_opt) :
-    G4UserRunAction(),
-    fPathToData(path),
-    fBaseName(basename),
-    fMaxEvents(maxevent),
-    fRecordOption(record_opt)
-{
-    ;
-}
-SToGS::AsciiRunAction::~AsciiRunAction()
-{
-    ;
-}
-G4Run* SToGS::AsciiRunAction::GenerateRun()
-{
-    G4String filename = fPathToData;
-    filename += fBaseName;
-    
-    // creates a new run. As the file is open bu AsciiRun no need to open something for master ... maybe one day to keep some globals ?
-    SToGS::AsciiRun *localRun = new SToGS::AsciiRun(filename);
-    if ( IsMaster() == false ) {
-        localRun->OpenStream();
-    }
-    return localRun;
-}
-void SToGS::AsciiRunAction::BeginOfRunAction(const G4Run *aRun)
-{
-     if ( !IsMaster() ) {
-         return;
-     }
-    
-    const SToGS::AsciiRun *localRun = static_cast<const SToGS::AsciiRun *> (aRun);
-	G4cout << " IN AsciiRunAction, Begin of Run " << aRun->GetRunID()
-           << ", Nomber of events to be simulated " << localRun->GetNumberOfEventToBeProcessed() << G4endl;
-}
-void SToGS::AsciiRunAction::EndOfRunAction(const G4Run* aRun)
-{
- 	G4cout << " IN AsciiRunAction, End of Run " << aRun->GetRunID() <<  G4endl;
-}
-void SToGS::AsciiEventAction::BeginOfEventAction(const G4Event *evt)
-{
-    G4int evtNb = evt->GetEventID();
-    
-    if ( evtNb % fPrintModulo == 0) {
-    	G4cout << " Begin of event: " << evtNb << G4endl;
-    }
-}
-void SToGS::AsciiEventAction::EndOfEventAction(const G4Event *evt)
-{
-}
-void SToGS::AsciiTrackingAction::PreUserTrackingAction(const G4Track* aTrack)
-{
-}
-void SToGS::AsciiTrackingAction::PostUserTrackingAction(const G4Track* aTrack)
-{
-}
-void SToGS::AsciiSteppingAction::UserSteppingAction(const G4Step* aStep)
-{
-}
-
-SToGS::Ascii::Ascii(G4String conf):
-    UserActionInitialization(),
-    fConffile(conf),
+SToGS::AsciiAction::AsciiAction(G4String conf):
+    AllActions(conf),
+    fOutputFile(),
     fPathToData("./"),
     fBaseName("SToGS_Ascii"),
     fMaxEvents(500000),
@@ -263,9 +157,9 @@ SToGS::Ascii::Ascii(G4String conf):
     fPrintModulo(1000)
 {
     // open the ascii file
-    std::ifstream file(fConffile.data());
+    std::ifstream file(conf.data());
 	if ( file.is_open() == false ) {
-		G4cout << " ** SToGS::Ascii WARNING ** Cannot open file " << fConffile << ", default parameters to be used "<< G4endl;
+		G4cout << " ** SToGS::Ascii WARNING ** Cannot open file " << conf << ", default parameters to be used "<< G4endl;
     }
 	else {
         std::string aline; getline(file,aline);
@@ -299,51 +193,99 @@ SToGS::Ascii::Ascii(G4String conf):
         file.close();
     }
 }
-SToGS::Ascii::~Ascii()
-{
-    ;
-}
-G4UserRunAction *SToGS::Ascii::GetRunAction() const
-{
-    return new SToGS::AsciiRunAction(fPathToData,fBaseName,fMaxEvents,fRecordOption);
-}
-G4UserEventAction *SToGS::Ascii::GetEventAction() const
-{
-    return new SToGS::AsciiEventAction(fPrintModulo);
-}
-G4UserTrackingAction *SToGS::Ascii::GetTrackingAction() const
-{
-    return new AsciiTrackingAction();
-}
-G4UserSteppingAction *SToGS::Ascii::GetSteppingAction() const
-{
-    return 0x0;
-}
 
-void SToGS::Ascii::BuildForMaster () const
+void SToGS::AsciiAction::OpenStream(G4int run_id)
 {
-#if G4VERSION_NUMBER < 1000
-    G4cout << " *** ERROR *** SToGS::Ascii::BuildForMaster() should never be called by this version of Geant4 " << G4endl;
-#else
-    SetUserAction( new SToGS::AsciiRunAction(fPathToData,fBaseName,fMaxEvents,fRecordOption) );
+    // for MT, thread id used in the name of the file to avoid pb
+    G4int thread_id = 0;
+#if G4MULTITHREADED
+    thread_id = G4Threading::G4GetThreadId();
 #endif
+    std::ostringstream filename;
+    filename.clear();
+    filename << fPathToData << "/" << fBaseName << "_" << std::setfill('0') << std::setw(2) << thread_id << "_" << std::setw(4) << run_id << ".g4event";
+    
+    // close the file if already open
+    if ( fOutputFile.is_open() )
+    {
+        fOutputFile.close();
+        fOutputFile.clear();
+    }
+    fOutputFile.open(filename.str().data());
+    //
+    if ( fOutputFile ) {
+		G4cout << " The File " << filename.str() << " is open to record data " << G4endl;
+		
+		fOutputFile << "#" << std::endl;
+		fOutputFile << "# FORMAT: 'C' ID1  ID2  Energy(keV)    x(cm)     y(cm)     z(cm) " << std::endl;
+		fOutputFile << "#    with X=P for primary gammas and in this case:" << std::endl;
+		fOutputFile << "#        ID1 is the vertexID, ID2 the total number of primaries" << std::endl;
+		fOutputFile << "#        E the energy of the emitted gamma " << std::endl;
+		fOutputFile << "#        x,y,z represents the momentum" << std::endl;
+		fOutputFile << "#    with X=H for a single hit and in this case:" << std::endl;
+		fOutputFile << "#        ID1 is the vertexID it comes from, ID2 the detector number" << std::endl;
+		fOutputFile << "#        E the energy of the impact " << std::endl;
+		fOutputFile << "#        x,y,z represents its position" << std::endl;
+		fOutputFile << "#" << std::endl;
+	} else {
+		G4cout << " *** ERROR *** cannot open " << filename.str() << " to record data " << G4endl;
+	}
 }
-void SToGS::Ascii::Build () const
+
+/*
+std::pair<G4int, G4int> SToGS::AsciiAction::HitsinCollection(const G4Event)
 {
-#if G4VERSION_NUMBER < 1000
-    G4cout << " *** ERROR *** SToGS::Ascii::BuildForMaster() should never be called by this version of Geant4 " << G4endl;
-#else
-    SetUserAction( GetGun(fWhichGenerator.first,fWhichGenerator.second) );
-    SetUserAction( new SToGS::AsciiRunAction(fPathToData,fBaseName,fMaxEvents,fRecordOption) ) ;
-    SetUserAction( new SToGS::AsciiEventAction(fPrintModulo) ) ;
-    SetUserAction( new SToGS::AsciiTrackingAction() ) ;
-    SetUserAction( new SToGS::AsciiSteppingAction() ) ;
-#endif
+    
 }
+*/
 
+G4Run* SToGS::AsciiAction::GenerateRun()
+{
+    G4Run* therun = 0x0; G4cout << " In AsciiAction, Generate a new Run " << G4endl;
 
-
-
-
-
+    // creates a new run. As the file is open bu AsciiRun no need to open something for master ... maybe one day to keep some globals ?
+#if G4MULTITHREADED
+    if ( G4Threading::IsWorkerThread() ) {
+//    if ( IsMaster() ) {
+        SToGS::AsciiRun *loc_therun = new SToGS::AsciiRun(fOutputFile);
+        therun = loc_therun;
+    }
+    else therun = G4UserRunAction::GenerateRun();
+#else
+    therun = new SToGS::AsciiRun(fOutputFile);
+#endif
+    return therun;
+}
+    
+void SToGS::AsciiAction::BeginOfRunAction(const G4Run *aRun)
+{
+	G4cout << " In AsciiAction, Begin of Run " << aRun->GetRunID()
+           << ", Number of events to be simulated " << aRun->GetNumberOfEventToBeProcessed() << G4endl;
+    //
+    OpenStream(aRun->GetRunID());
+}
+void SToGS::AsciiAction::EndOfRunAction(const G4Run* aRun)
+{
+ 	G4cout << " In AsciiAction, End of Run " << aRun->GetRunID() << " " << aRun->GetNumberOfEvent() << G4endl;
+    //
+    if ( fOutputFile.is_open() )
+    {
+        fOutputFile.close();
+        fOutputFile.clear();
+    }
+}
+void SToGS::AsciiAction::BeginOfEventAction(const G4Event *evt)
+{
+    G4int evtNb = evt->GetEventID();
+    if ( evtNb % fPrintModulo == 0 ) {
+    	G4cout << " In AsciiAction, Begin of event: " << evtNb << G4endl;
+    }
+}
+void SToGS::AsciiAction::EndOfEventAction(const G4Event *evt)
+{
+    G4int evtNb = evt->GetEventID();
+    if ( evtNb % fPrintModulo == 0 ) {
+    	G4cout << " In AsciiAction, End of event: " << evtNb << G4endl;
+    }
+}
 

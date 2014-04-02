@@ -33,8 +33,8 @@
 #include <fstream>
 
 SToGS::UserActionManager::UserActionManager(G4String filename) :
-    UserActionInitialization(),
     fImplementation(0x0),
+    fWhichGenerator("GPS","G4Macros/GPSPointLike.mac"),
     fWhichGeometry("factory","DetectorFactory/Generics/Target"),
     fWhichPhysics("stogs_m","general0;emstandard_opt0;"),
     fWhichActionManager("PrintOut","run;event;track;step"),
@@ -83,7 +83,7 @@ SToGS::UserActionManager::UserActionManager(G4String filename) :
     }
     
 
-    fImplementation = GetUserActionInitialization();
+    fImplementation = ProvideUserActionInitialization();
     if ( fImplementation == 0x0 ) {
         G4cout << " *** SToGS ERROR *** Action Manager is not known *** SToGS ERROR *** " << G4endl;
     }
@@ -103,7 +103,7 @@ SToGS::UserActionManager::UserActionManager(G4String filename) :
 #include "SToGS_PrintOut.hh"
 #include "SToGS_Ascii.hh"
 
-SToGS::UserActionInitialization *SToGS::UserActionManager::GetUserActionInitialization()
+SToGS::UserActionInitialization *SToGS::UserActionManager::ProvideUserActionInitialization()
 {
     if ( fWhichActionManager.first == "printout" ) {
         fImplementation = new SToGS::PrintOut(fWhichActionManager.second);
@@ -138,31 +138,4 @@ G4VUserPhysicsList *SToGS::UserActionManager::GetPhysicsList() const
     
     return physics_list;
 }
-
-G4UserRunAction *SToGS::UserActionManager::GetRunAction() const
-{
-    return fImplementation->GetRunAction();
-}
-G4UserEventAction *SToGS::UserActionManager::GetEventAction() const
-{
-    return fImplementation->GetEventAction();
-}
-G4UserTrackingAction *SToGS::UserActionManager::GetTrackingAction() const
-{
-    return fImplementation->GetTrackingAction();
-}
-G4UserSteppingAction *SToGS::UserActionManager::GetSteppingAction() const
-{
-    return fImplementation->GetSteppingAction();
-}
-void SToGS::UserActionManager::BuildForMaster() const
-{
-    fImplementation->BuildForMaster();
-}
-
-void SToGS::UserActionManager::Build() const
-{
-    fImplementation->Build();
-}
-
 

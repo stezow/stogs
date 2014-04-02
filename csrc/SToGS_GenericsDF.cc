@@ -28,11 +28,16 @@
 // G4 includes
 #include "G4LogicalVolume.hh"
 #include "G4UnitsTable.hh"
+#include "G4Version.hh"
 
 // Project includes
 #include "SToGS_GenericsDF.hh"
-//
+#include "SToGSConfig.hh"
+
+
+// Specific to the Generic Factory
 #include "SToGS_TwoShellsDetectorConstruction.hh"
+
 
 
 // list of all specific factories
@@ -41,9 +46,23 @@ namespace  {
     SToGS::GenericsDF theGenericFactory("Generics/");
 }
 
+G4String SToGS::GenericsDF::GetConf(G4String path_in_factory) const
+{
+    G4String result(""), tmp = path_in_factory;
+    if ( !tmp.contains("$") ) {
+        return result;
+    }
+    else { result = GetFactoryName(); }
+            
+    G4int start = tmp.last('$'); tmp.remove(0,start+1);
+    result += tmp;
+
+    return result;
+}
+
 G4VPhysicalVolume *SToGS::GenericsDF::Get(G4String basename, G4bool is_full)
 {
-    G4VUserDetectorConstruction *theConstructor = 0x0; G4VPhysicalVolume *theDetector = 0x0;
+    G4VUserDetectorConstruction *theConstructor = 0x0; G4VPhysicalVolume *theDetector = 0x0; G4String conffile;
     
     // check is already loaded
     for (size_t i = 0; i < fLoadedPhysical.size(); i++) {
@@ -55,11 +74,27 @@ G4VPhysicalVolume *SToGS::GenericsDF::Get(G4String basename, G4bool is_full)
     if ( theDetector ) {
         return theDetector;
     }
+    else { // get conf name. If null call default constructor otherwise call constructor with string parameter
+        conffile = GetConf(basename);
+    }
     // load using the g4 facility
-    if ( basename.contains("TwoShells") ) {
-        theConstructor = new SToGS::TwoShellsDetectorConstruction("DetectorFactory/Generics/TwoShells.geo");
+    if ( basename.contains("/TwoShells") ) {
+        if ( conffile == "" ) {
+            theConstructor = new SToGS::TwoShellsDetectorConstruction(conffile);
+        }
+        else theConstructor = new SToGS::TwoShellsDetectorConstruction(conffile);
         theDetector = theConstructor->Construct();
     }
+#ifdef HAS_MYDET
+    // based on My plugins defined in SToGSConfig, it build the detector name in factory
+    if ( basename.contains(MYDET_) ) {
+        if ( conffile == "" ) {
+            theConstructor = new MYDET_CLASSTYPE();
+        }
+        else theConstructor = new MYDET_CLASSTYPE(conffile);
+        theDetector = theConstructor->Construct();
+    }
+#endif
     if ( theDetector ) {
         std::pair < G4String, G4VPhysicalVolume *> p1(basename,theDetector); // add the new loaded detector to the list
         fLoadedPhysical.push_back(p1);
@@ -84,7 +119,7 @@ void SToGS::GenericsDF::GetAttributes(G4String basename)
 #else
     for (size_t i = 0; i < fLoadedUserDetectorConstruction.size(); i++) {
         if ( fLoadedUserDetectorConstruction[i].first == basename ) {
-            fLoadedUserDetectorConstruction[i].second->ConstructSDandField(basename);
+            fLoadedUserDetectorConstruction[i].second->ConstructSDandField();
             break;
         }
     }

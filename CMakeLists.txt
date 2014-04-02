@@ -2,6 +2,8 @@
 # Setup the project
 cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 project(SToGS)
+#----------------------------------------------------------------------------
+
 
 #----------------------------------------------------------------------------
 # Find Geant4 package, activating all available UI and Vis drivers by default
@@ -10,9 +12,9 @@ project(SToGS)
 #
 option(WITH_GEANT4_UIVIS "Build example with Geant4 UI and Vis drivers" ON)
 if(WITH_GEANT4_UIVIS)
-  find_package(Geant4 REQUIRED ui_all vis_all)
+  find_package(Geant4 REQUIRED ui_all vis_all gdml)
 else()
-  find_package(Geant4 REQUIRED)
+  find_package(Geant4 REQUIRED gdml)
 endif()
 
 #
@@ -20,7 +22,7 @@ endif()
 #
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 MESSAGE("${CMAKE_MODULE_PATH}")
-
+#----------------------------------------------------------------------------
 #----------------------------------------------------------------------------
 # Try and Find Root. If found, set HAS_ROOT
 #
@@ -43,6 +45,7 @@ if (ROOT_FOUND)
 else()
 	MESSAGE(" --> ROOT has NOT been found")
 endif()
+#----------------------------------------------------------------------------
 
 
 #----------------------------------------------------------------------------
@@ -51,17 +54,12 @@ endif()
 #
 include(${Geant4_USE_FILE})
 include_directories(${PROJECT_SOURCE_DIR}/csrc)
-
-if(Geant4_gdml_FOUND)
-	ADD_DEFINITIONS(-DHAS_GDML)
-	MESSAGE(" --> GDML is ON")	
-endif()
-
+include_directories(${CMAKE_BINARY_DIR})
+#
+#----------------------------------------------------------------------------
 #----------------------------------------------------------------------------
 # Locate sources and headers for this project
-# NB: headers are included so they will show up in IDEs
 #
- 
 set(SToGS_SRC
 # Detector related
 	csrc/SToGS_MaterialConsultant.cc
@@ -87,44 +85,7 @@ set(SToGS_SRC
     csrc/SToGS_PrintOut.cc
     csrc/SToGS_Ascii.cc
 	csrc/SToGS_UserActionManager.cc
-#
-#	csrc/SToGS_3by3CubicConstruction.cc
-#	csrc/SToGS_Ascii.cc
-#	csrc/SToGS_BaseAscii.cc
-#	csrc/SToGS_BaseROOT.cc
-#	csrc/SToGS_BasicEventAction.cc
-#	csrc/SToGS_BasicPrimaryGeneratorAction.cc
-#	csrc/SToGS_BasicRunAction.cc
-#	csrc/SToGS_BasicSteppingAction.cc
-#	csrc/SToGS_CopClusterHit.cc
-#	csrc/SToGS_CopClusterSD.cc
-#	csrc/SToGS_GDRPrimaryGeneratorAction.cc
-#	csrc/SToGS_GeneralPhysics.cc
-#	csrc/SToGS_LoadDetectorConstruction.cc
-#	csrc/SToGS_LowEnergyEMPhysicsList.cc
-#	csrc/SToGS_MaterialConsultant.cc
-#	csrc/SToGS_OutputManager.cc
-#	csrc/SToGS_PenelopeEMPhysicsList.cc
-#	csrc/SToGS_PhysicsList.cc
-#	csrc/SToGS_PrintOut.cc
-#	csrc/SToGS_ROOT.cc
-#	csrc/SToGS_SDCRotated.cc
-#	csrc/SToGS_SDCRotated_CsI.cc
-#	csrc/SToGS_SegmentedDetectorConstruction.cc
-#	csrc/SToGS_SegmentedShellDetectorConstruction.cc
-#	csrc/SToGS_SemiSphe2LayersConstruction.cc
-#	csrc/SToGS_ShellDetectorConstruction.cc
-#	csrc/SToGS_TrackerHit.cc
-#	csrc/SToGS_StandardEMPhysicsList.cc
-#	csrc/SToGS_TrackerSD.cc
-#	csrc/SToGS_Tree.cc
-#	csrc/SToGS_UniformPrimaryGeneratorAction.cc
-#	csrc/SToGS_Hadron0.cc
-#	csrc/SToGS_Hadron1.cc
-#	csrc/SToGS_OpticalROOT.cc
-#	csrc/SToGS_BasicTrackingAction.cc
 )
-
 set(SToGS_HEADER
 # Detector related
 	csrc/SToGS_MaterialConsultant.hh
@@ -150,66 +111,59 @@ set(SToGS_HEADER
     csrc/SToGS_PrintOut.hh
     csrc/SToGS_Ascii.hh
 	csrc/SToGS_UserActionInitialization.hh
-#
-#	csrc/SToGS_3by3CubicConstruction.hh
-#	csrc/SToGS_Ascii.hh
-#	csrc/SToGS_BaseAscii.hh
-#	csrc/SToGS_BaseROOT.hh
-#	csrc/SToGS_BasicEventAction.hh
-#	csrc/SToGS_BasicPrimaryGeneratorAction.hh
-#	csrc/SToGS_BasicRunAction.hh
-#	csrc/SToGS_BasicSteppingAction.hh
-#	csrc/SToGS_CopClusterHit.hh
-#	csrc/SToGS_CopClusterSD.hh
-#	csrc/SToGS_GDRPrimaryGeneratorAction.hh
-#	csrc/SToGS_GeneralPhysics.hh
-#	csrc/SToGS_IonPhysList.hh
-#	csrc/SToGS_IonPrimaryGeneratorAction.hh
-#	csrc/SToGS_LoadDetectorConstruction.hh
-#	csrc/SToGS_LowEnergyEMPhysicsList.hh
-#	csrc/SToGS_MaterialConsultant.hh
-#	csrc/SToGS_OutputManager.hh
-#	csrc/SToGS_PenelopeEMPhysicsList.hh
-#	csrc/SToGS_PhysicsList.hh
-#	csrc/SToGS_PrintOut.hh
-#	csrc/SToGS_ROOT.hh
-#	csrc/SToGS_SDCRotated.hh
-#	csrc/SToGS_SDCRotated_CsI.hh
-#	csrc/SToGS_SegmentedDetectorConstruction.hh
-#	csrc/SToGS_SegmentedShellDetectorConstruction.hh
-#	csrc/SToGS_SemiSphe2LayersConstruction.hh
-#	csrc/SToGS_ShellDetectorConstruction.hh
-#	csrc/SToGS_TrackerHit.hh
-#	csrc/SToGS_StandardEMPhysicsList.hh
-#	csrc/SToGS_TrackerSD.hh
-#	csrc/SToGS_Tree.hh
-#	csrc/SToGS_UniformPrimaryGeneratorAction.hh
-#	csrc/SToGS_Hadron0.hh
-#	csrc/SToGS_Hadron1.hh
-#	csrc/SToGS_Hadron1.hh
-#	csrc/SToGS_OpticalROOT.hh
-#	csrc/SToGS_BasicTrackingAction.hh
 )
+#----------------------------------------------------------------------------
+#----------------------------------------------------------------------------
+# ADD My Plugins if any
+#
+if ( NOT MYPATH )
+    set(MYPATH SToGS_MY)
+endif()
+if (MYDET)
+ if ( EXISTS "${PROJECT_SOURCE_DIR}/${MYPATH}/${MYDET}DetectorConstruction.hh"
+       AND EXISTS "${PROJECT_SOURCE_DIR}/${MYPATH}/${MYDET}DetectorConstruction.cc" )
+	#
+	ADD_DEFINITIONS(-DHAS_MYDET)
+	#
+	set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/${MYPATH}/${MYDET}DetectorConstruction.cc)
+	set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/${MYPATH}/${MYDET}DetectorConstruction.hh)
+    #
+    include_directories(${PROJECT_SOURCE_DIR}/${MYPATH})
+	#
+	MESSAGE(" --> ADD ${MYDET}DetectorConstruction ")
+ else()
+    MESSAGE(" --> Cannot find " ${PROJECT_SOURCE_DIR}/${MYPATH}/${MYDET}DetectorConstruction.hh)
+    MESSAGE(" --> Or " ${PROJECT_SOURCE_DIR}/${MYPATH}/${MYDET}DetectorConstruction.cc)
+  endif()
+    MESSAGE(" --> Compile with ${MYDET} " ${PROJECT_SOURCE_DIR}/${MYPATH}/${MYDET}DetectorConstruction)
+endif()
 
+# ADD MyXXXX
+#
 # add MyDetectorConstruction if found
 if ( EXISTS "${PROJECT_SOURCE_DIR}/csrc/MyDetectorConstruction.hh" AND EXISTS "${PROJECT_SOURCE_DIR}/csrc/MyDetectorConstruction.cc" )
 	#
-	ADD_DEFINITIONS(-DHAS_MYDETECTOR)
+	ADD_DEFINITIONS(-DHAS_MYDET)
 	#
 	set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/csrc/MyDetectorConstruction.cc) 
 	set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/csrc/MyDetectorConstruction.hh) 
 	#
 	MESSAGE(" --> ADD MyDetectorConstruction ")
 endif()
-if ( EXISTS "${PROJECT_SOURCE_DIR}/csrc/MyDetectorConstruction.hh" AND EXISTS "${PROJECT_SOURCE_DIR}/csrc/MyDetectorConstruction.cc" )
+if ( EXISTS "${PROJECT_SOURCE_DIR}/csrc/MyPrimaryGeneratorAction.hh" AND EXISTS "${PROJECT_SOURCE_DIR}/csrc/MyPrimaryGeneratorAction.cc")
 	#
-	ADD_DEFINITIONS(-DHAS_MYDETECTOR)
+	ADD_DEFINITIONS(-DHAS_MYPRIMARYGENERATOR)
 	#
-	set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/csrc/MyDetectorConstruction.cc) 
-	set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/csrc/MyDetectorConstruction.hh) 
+	set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/csrc/MyPrimaryGeneratorAction.cc)
+	set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/csrc/MyPrimaryGeneratorAction.hh)
 	#
-	MESSAGE(" --> ADD MyDetectorConstruction ")
+	MESSAGE(" --> ADD MyPrimaryGeneratorAction ")
 endif()
+#
+configure_file (
+  "${CMAKE_CURRENT_SOURCE_DIR}/csrc/SToGSConfig.h.cmake"
+  "${CMAKE_BINARY_DIR}/SToGSConfig.hh"
+)
 
 #----------------------------------------------------------------------------
 # Add the executable, and link it to the Geant4 libraries

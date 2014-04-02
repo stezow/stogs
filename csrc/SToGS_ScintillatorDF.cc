@@ -185,7 +185,7 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakeCdC(G4String detname, G4String opt
 	G4VisAttributes *visatt = new G4VisAttributes( G4Colour(0.0, 0.6, 0.0) );
 	visatt->SetVisibility(true);
 	a_log->SetVisAttributes( visatt );
-    a_log->SetSensitiveDetector( SToGS::UserActionManager::GetCopClusterSD() );
+    a_log->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );
     
 	// Rotation and translation to place each peace in the assembly
 	G4ThreeVector Ta;
@@ -288,7 +288,7 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakePPW(G4String detname, G4double cap
 	G4VisAttributes *Inner_visatt = new G4VisAttributes( G4Colour(0.0, 0.0, 1.0) );
 	Inner_visatt->SetVisibility(true);
 	Inner_logic->SetVisAttributes( Inner_visatt );
-    Inner_logic->SetSensitiveDetector( SToGS::UserActionManager::GetCopClusterSD() );
+    Inner_logic->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );
     
 	T.setX( 0.0 );
     T.setY( 0.0 );
@@ -303,7 +303,7 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakePPW(G4String detname, G4double cap
 	G4VisAttributes *Outer_visatt = new G4VisAttributes( G4Colour(1.0, 0.0, 0.0) );
 	Outer_visatt->SetVisibility(true);
 	Outer_logic->SetVisAttributes( Outer_visatt );
-    Outer_logic->SetSensitiveDetector( SToGS::UserActionManager::GetCopClusterSD() );
+    Outer_logic->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );
     
 	T.setX( 0.0 );
     T.setY( 0.0 );
