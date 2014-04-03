@@ -220,12 +220,6 @@ namespace SToGS {
     typedef G4THitsCollection<TrackerHit> TrackerHitsCollection;
     extern G4ThreadLocal G4Allocator<TrackerHit> *TrackerHitAllocator;
     
-#ifdef G4MULTITHREADED
-//    extern G4ThreadLocal G4Allocator<TrackerHit> *TrackerHitAllocator;
-#else
-//    extern G4Allocator<TrackerHit> *TrackerHitAllocator;
-#endif
-    
     inline void* TrackerHit::operator new(size_t)
     {
         if( !TrackerHitAllocator )

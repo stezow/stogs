@@ -58,7 +58,7 @@ namespace SToGS {
      
         The option could be used to pass a filename that contains configuration fields
      */
-    class AllActions : public G4UserRunAction, public G4UserEventAction, public G4UserTrackingAction, public G4UserSteppingAction
+    class AllActions : virtual public G4UserRunAction, virtual public G4UserEventAction, virtual public G4UserTrackingAction, virtual public G4UserSteppingAction
     {
     protected:
         G4String fOption;
@@ -171,16 +171,8 @@ namespace SToGS {
         virtual ~TrackingAction()
             {;}
     public:
-        virtual void PreUserTrackingAction(const G4Track* atrack)
-        {
-            if (theRealAction)
-                theRealAction->PreUserTrackingAction(atrack);
-        }
-        virtual void PostUserTrackingAction(const G4Track *atrack)
-        {
-            if (theRealAction)
-                theRealAction->PostUserTrackingAction(atrack);
-        }
+        virtual void PreUserTrackingAction(const G4Track* atrack);
+        virtual void PostUserTrackingAction(const G4Track *atrack);
     };
     //! Base class for a Steeping action that calls a concrete one.
     /*!

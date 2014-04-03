@@ -114,7 +114,7 @@ void SToGS::AsciiRun::RecordEvent(const G4Event* evt)
                 << std::setw(2)
                 << "H "	<< " "
                 << std::setw(4)
-                // << PrimaryID[(*THC)[i]->GetTrackID()]  << " " TODO through tracking info
+                << (*THC)[i]->GetPrimaryID() << " "
                 << 1 << " "
                 << std::setw(3)
                 << (*THC)[i]->GetDetID() << " "
@@ -134,7 +134,7 @@ void SToGS::AsciiRun::RecordEvent(const G4Event* evt)
                 << std::setw(2)
                 << "H "	<< " "
                 << std::setw(4)
-                << 1 << " "
+                << -1 << " "
                 << std::setw(3)
                 << (*CHC)[i]->GetDetID() << " "
                 << std::setw(7)

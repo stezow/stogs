@@ -26,6 +26,7 @@
 
 #include "SToGS_G4_TrackerSD.hh"
 #include "SToGS_G4_TrackerHit.hh"
+#include "SToGS_TrackInformation.hh"
 
 #include "G4Step.hh"
 #include "G4HCofThisEvent.hh"
@@ -77,10 +78,15 @@ G4bool SToGS::TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory * /*touch
 	SToGS::TrackerHit *newHit = new SToGS::TrackerHit();
 	
 	// set hit properties  
-	newHit->SetTrackID(aStep->GetTrack()->GetTrackID());
-	newHit->SetParentID(aStep->GetTrack()->GetParentID());	
-	newHit->SetPrimaryID(aStep->GetTrack()->GetParentID());
-			
+	newHit->SetTrackID(theTrack->GetTrackID());
+	newHit->SetParentID(theTrack->GetParentID());
+    
+    SToGS::PrimaryTrackInformation *pinfo = (SToGS::PrimaryTrackInformation *)theTrack->GetUserInformation();
+    if ( pinfo )
+        newHit->SetPrimaryID(pinfo->GetPrimaryID());
+    else
+        newHit->SetPrimaryID(theTrack->GetParentID()); // in case primary is not know, at least parent
+    
 	newHit->SetEdep( edep );
 	newHit->SetPos(  aStep->GetPostStepPoint()->GetPosition() );
 	newHit->SetToF ( aStep->GetPostStepPoint()->GetGlobalTime() );	

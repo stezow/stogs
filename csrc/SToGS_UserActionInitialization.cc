@@ -28,8 +28,11 @@
 
 
 #include "SToGS_UserActionInitialization.hh"
+#include "SToGS_TrackInformation.hh"
+
 #include "G4ios.hh"
 #include "G4SDManager.hh"
+#include "G4TrackingManager.hh"
 
 #ifdef G4MULTITHREADED
 #include "G4AutoLock.hh"
@@ -37,6 +40,41 @@ namespace { G4Mutex buildMutex = G4MUTEX_INITIALIZER; }
 #endif
 
 #include <fstream>
+
+void SToGS::TrackingAction::PreUserTrackingAction(const G4Track* atrack)
+{
+    // if real primary, no parent, add user information
+    if ( atrack->GetParentID() == 0 ) {
+        if ( atrack->GetUserInformation() ) {
+            SToGS::PrimaryTrackInformation *pinfo = new SToGS::PrimaryTrackInformation(atrack->GetTrackID());
+            fpTrackingManager->SetUserTrackInformation(pinfo);
+        }
+    }
+    if (theRealAction) {
+        theRealAction->PreUserTrackingAction(atrack);
+    }
+}
+void SToGS::TrackingAction::PostUserTrackingAction(const G4Track *atrack)
+{
+    G4TrackVector *secondaries = fpTrackingManager->GimmeSecondaries();
+    if ( secondaries ) {
+        size_t nbSecondaries = secondaries->size();
+        if ( nbSecondaries > 0 ) {
+            SToGS::PrimaryTrackInformation *pinfo = (SToGS::PrimaryTrackInformation *)atrack->GetUserInformation();
+            G4int pid = atrack->GetTrackID();
+            if ( pinfo ) {
+                pid = pinfo->GetPrimaryID();
+            }
+            for (size_t i = 0; i < nbSecondaries; i++) {
+                SToGS::PrimaryTrackInformation *sinfo = new SToGS::PrimaryTrackInformation(pid);
+                (*secondaries)[i]->SetUserInformation(sinfo);
+            }
+        }
+    }
+    if (theRealAction) {
+        theRealAction->PostUserTrackingAction(atrack);
+    }
+}
 
 SToGS::UserActionInitialization::UserActionInitialization(G4String user_action_opt, G4String which_gene, G4String which_gene_opt)
 #if G4VERSION_NUMBER < 1000

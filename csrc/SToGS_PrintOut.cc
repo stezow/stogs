@@ -27,6 +27,7 @@
 #include "SToGS_PrintOut.hh"
 #include "SToGS_G4_TrackerSD.hh"
 #include "SToGS_G4_CopClusterSD.hh"
+#include "SToGS_TrackInformation.hh"
 
 #include "G4SDManager.hh"
 #include "G4RunManager.hh"
@@ -78,8 +79,6 @@ void SToGS::PrintOutRun::RecordEvent(const G4Event* evt)
                 << " hits are stored in tracker collection" << G4endl;
         
 		for (int i = 0 ;i < n_hit; i++) {
-            //			(*THC)[i]->SetPrimaryID(PrimaryID[(*THC)[i]->GetTrackID()]);
-			
 			G4cout  << " hit # " << i << G4endl;
             (*THC)[i]->Print();
 		}
@@ -122,6 +121,7 @@ void SToGS::PrintOutAction::EndOfEventAction(const G4Event *evt)
 
 void SToGS::PrintOutAction::PreUserTrackingAction(const G4Track* aTrack)
 {
+    //
     G4cout << "    Begin of Track: (PreUserTrackingAction) " << G4endl;
     G4cout << "     PARTICLE: " << aTrack->GetDefinition()->GetParticleName() << G4endl;
     G4cout << "     TRACK ID: " << aTrack->GetTrackID() << G4endl;
@@ -133,34 +133,39 @@ void SToGS::PrintOutAction::PreUserTrackingAction(const G4Track* aTrack)
 
 void SToGS::PrintOutAction::PostUserTrackingAction(const G4Track* aTrack)
 {
-    G4cout << "    End of Track: (PostUserTrackingAction) " << G4endl;
-    
     // verify if next volume exist -> if it does not exist it means that the particle went out of the world volume
     if(aTrack->GetNextVolume())
         G4cout << "     VOLUME WHERE THE PARTICLE WAS KILLED: " << aTrack->GetTouchable()->GetVolume()->GetName() << G4endl;
     else
         G4cout << "     THE PARTICLE WAS KILLED BECAUSE IT WENT OUT OF THE WORLD VOLUME" << G4endl;
+
+    G4cout << "    End of Track: (PostUserTrackingAction) " << G4endl;
 }
 
 void SToGS::PrintOutAction::UserSteppingAction(const G4Step* aStep)
 {
+    G4Track* theTrack = aStep->GetTrack();
+
+    G4int primaryID = theTrack->GetParentID(); SToGS::PrimaryTrackInformation *pinfo = (SToGS::PrimaryTrackInformation *)theTrack->GetUserInformation();
+    if ( pinfo )
+       primaryID = pinfo->GetPrimaryID();
+    
     G4cout << "        A Step: " << G4endl;
-	G4cout << "         trackID: " << aStep->GetTrack()->GetTrackID()
-        << ", parentID: " << aStep->GetTrack()->GetParentID()
-//    << ", primaryID: " << primaryID
-        << ", particleName: " << aStep->GetTrack()->GetDefinition()->GetParticleName()
-        << ", PDG: " << aStep->GetTrack()->GetDefinition()->GetPDGEncoding ()
+	G4cout << "         trackID: " << theTrack->GetTrackID()
+        << ", parentID: " << theTrack->GetParentID()
+        << ", primaryID: " << primaryID
+        << ", particleName: " << theTrack->GetDefinition()->GetParticleName()
+        << ", PDG: " << theTrack->GetDefinition()->GetPDGEncoding ()
         << ", processName: " << aStep->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName()
         << G4endl
-        << "         detID: " << aStep->GetTrack()->GetVolume()->GetCopyNo()
-        << ", detName: " << aStep->GetTrack()->GetVolume()->GetName()
+        << "         detID: " << theTrack->GetVolume()->GetCopyNo()
+        << ", detName: " << theTrack->GetVolume()->GetName()
         << ", motherID: " << aStep->GetPreStepPoint()->GetTouchableHandle()->GetReplicaNumber(1)
         << ", motherDetName: " /* << motherDetName */ << G4endl;
     G4cout << "         edep: " <<  aStep->GetTotalEnergyDeposit() / CLHEP::keV << " keV"
         << ", pos: " << aStep->GetPostStepPoint()->GetPosition()
         << ", ToF: " << aStep->GetPostStepPoint()->GetGlobalTime()  / CLHEP::ns << " ns" << G4endl;
 }
-
 
 G4UserRunAction *SToGS::PrintOut::GetRunAction() const
 {
