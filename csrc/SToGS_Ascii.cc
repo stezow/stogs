@@ -194,7 +194,7 @@ SToGS::AsciiAction::AsciiAction(G4String conf):
     }
 }
 
-void SToGS::AsciiAction::OpenStream(G4int run_id)
+void SToGS::AsciiAction::OpenFile(G4int run_id)
 {
     // for MT, thread id used in the name of the file to avoid pb
     G4int thread_id = 0;
@@ -206,11 +206,7 @@ void SToGS::AsciiAction::OpenStream(G4int run_id)
     filename << fPathToData << "/" << fBaseName << "_" << std::setfill('0') << std::setw(2) << thread_id << "_" << std::setw(4) << run_id << ".g4event";
     
     // close the file if already open
-    if ( fOutputFile.is_open() )
-    {
-        fOutputFile.close();
-        fOutputFile.clear();
-    }
+    CloseFile();
     fOutputFile.open(filename.str().data());
     //
     if ( fOutputFile ) {
@@ -230,6 +226,15 @@ void SToGS::AsciiAction::OpenStream(G4int run_id)
 	} else {
 		G4cout << " *** ERROR *** cannot open " << filename.str() << " to record data " << G4endl;
 	}
+}
+
+void SToGS::AsciiAction::CloseFile()
+{
+    if ( fOutputFile.is_open() )
+    {
+        fOutputFile.close();
+        fOutputFile.clear();
+    }
 }
 
 /*
@@ -262,17 +267,13 @@ void SToGS::AsciiAction::BeginOfRunAction(const G4Run *aRun)
 	G4cout << " In AsciiAction, Begin of Run " << aRun->GetRunID()
            << ", Number of events to be simulated " << aRun->GetNumberOfEventToBeProcessed() << G4endl;
     //
-    OpenStream(aRun->GetRunID());
+    OpenFile(aRun->GetRunID());
 }
 void SToGS::AsciiAction::EndOfRunAction(const G4Run* aRun)
 {
  	G4cout << " In AsciiAction, End of Run " << aRun->GetRunID() << " " << aRun->GetNumberOfEvent() << G4endl;
     //
-    if ( fOutputFile.is_open() )
-    {
-        fOutputFile.close();
-        fOutputFile.clear();
-    }
+    CloseFile();
 }
 void SToGS::AsciiAction::BeginOfEventAction(const G4Event *evt)
 {

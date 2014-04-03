@@ -1,3 +1,4 @@
+
 //
 // ********************************************************************
 // * License and Disclaimer                                           *
@@ -25,36 +26,34 @@
 //
 //----------------------------------------------------------------------------
 
-#ifndef SToGS_Ascii_h
-#define SToGS_Ascii_h 1
+#ifndef SToGS_BaseROOT_h
+#define SToGS_BaseROOT_h 1
 
 #include "SToGS_UserActionInitialization.hh"
 #include "G4Run.hh"
 
-#include <vector>
-#include <fstream>
+class TFile;
+class TTree;
 
 //! SToGS namespace to protect SToGS classes
 namespace SToGS {
     //!
     /*!
      */
-    class AsciiRun : public G4Run
+    class BaseROOTTreeRun : public G4Run
     {
     protected:
         G4int colltrackerID;
         G4int collcaloID;
+
     protected:
-        //! current stream to output data
-        std::ofstream &fOutputFile;
-    protected:
-        //! A new event in the file starts/ends with the following characters
-        //std::pair < char, char >  fEventMarkOff;
+        //! to be called to add definition of events in this to the TTree
+        // void SetBranches(TTree *);
         
     public:
-        AsciiRun(std::ofstream &out);
-        virtual ~AsciiRun();
-
+        BaseROOTTreeRun(TTree *);
+        virtual ~BaseROOTTreeRun();
+        
         virtual void RecordEvent(const G4Event* evt);
         //virtual void Merge(const G4Run*);
     };
@@ -62,23 +61,22 @@ namespace SToGS {
     /*!
      \TODO
      */
-    class AsciiAction : public AllActions
+    class BaseROOTAction : public AllActions
     {
     protected:
-        //! current stream to output data
-        std::ofstream fOutputFile;
+        //! the current root file
+        TFile *fRootFile;
     protected:
         //! directory where to output data
         G4String fPathToData;
         //! base for all the files
         G4String fBaseName;
-        //! max numer of event per files ... better to limit because of ascii file could be uged !
+        //! max numer of event per files ... better to limit because of BaseROOT file could be uged !
         G4int fMaxEvents;
         //! 0 [default] means keep all, 1 only events which gives at least one hit in the full detector
         G4int fRecordOption;
         //! to print out status any fPrintModulo events
         G4int fPrintModulo;
-        
     protected:
         //! Just check if there are collected hits in the collection
         // std::pair<G4int, G4int> HitsinCollection(const G4Event);
@@ -87,13 +85,13 @@ namespace SToGS {
         virtual void OpenFile(G4int run_id);
         //! Make sure ths file is closed properly
         virtual void CloseFile();
-       
+        
     public:
-        AsciiAction(G4String conffile = "setup/SToGS_ascii_actions.conf");
-        virtual ~AsciiAction()
+        BaseROOTAction(G4String conffile = "setup/SToGS_root_actions.conf");
+        virtual ~BaseROOTAction()
             {;}
         
-        virtual G4Run* GenerateRun();
+        // virtual G4Run* GenerateRun();
         
         virtual void BeginOfRunAction(const G4Run * /*therun*/);
         virtual void EndOfRunAction(const G4Run * /*therun*/);
@@ -103,23 +101,41 @@ namespace SToGS {
         // virtual void PostUserTrackingAction(const G4Track * /*atrack*/);
         // virtual void UserSteppingAction(const G4Step * /*step*/);
     };
-    //! Extract informations from Geant4 using SToGS sensitives and write hits in ascii files
+    class BaseROOTTreeAction : public BaseROOTAction
+    {
+    protected:
+        //! the Tree to be filled
+        TTree *fTree;
+        
+    protected:
+        G4String fTreeName;
+        G4String fTreeTitle;
+        
+    protected:
+        //! Open the stream depending of the configuration and attach the Tree to the file
+        virtual void OpenFile(G4int run_id);
+        //! Make sure ths file is closed properly
+        virtual void CloseFile();
+        
+    public:
+        BaseROOTTreeAction(G4String conffile = "setup/SToGS_root_actions.conf");
+        virtual ~BaseROOTTreeAction();
+    };
+    
+    //! Extract informations from Geant4 using SToGS sensitives and write hits in root tree
     /*!
      */
-    class Ascii : public  AllInOneUserActionInitialization<AsciiAction>
+    class BaseROOTTree : public  AllInOneUserActionInitialization<BaseROOTTreeAction>
     {
     public:
-        Ascii(G4String conf = "setup/SToGS_ascii_actions.conf", G4String which_gene = "GPS", G4String which_gene_opt = "G4Macros/GPSPointLike.mac"):
-            AllInOneUserActionInitialization<AsciiAction>(conf,which_gene,which_gene_opt)
+        BaseROOTTree(G4String conf = "setup/SToGS_root_actions.conf", G4String which_gene = "GPS", G4String which_gene_opt = "G4Macros/GPSPointLike.mac"):
+        AllInOneUserActionInitialization<BaseROOTTreeAction>(conf,which_gene,which_gene_opt)
             {;}
-        virtual ~Ascii()
+        virtual ~BaseROOTTree()
             {;}
     };
-        
+    
 } // SToGS Namespace
-        
-#endif   /* SToGS_Ascii.hh */
-        
-        
-        
-        
+
+
+#endif

@@ -102,6 +102,7 @@ SToGS::UserActionManager::UserActionManager(G4String filename) :
 
 #include "SToGS_PrintOut.hh"
 #include "SToGS_Ascii.hh"
+#include "SToGS_BaseROOT.hh"
 
 SToGS::UserActionInitialization *SToGS::UserActionManager::ProvideUserActionInitialization()
 {
@@ -110,6 +111,9 @@ SToGS::UserActionInitialization *SToGS::UserActionManager::ProvideUserActionInit
     }
     if ( fWhichActionManager.first == "ascii" ) {
         fImplementation = new SToGS::Ascii(fWhichActionManager.second);
+    }
+    if ( fWhichActionManager.first == "stogstree" ) {
+        fImplementation = new SToGS::BaseROOTTree(fWhichActionManager.second);
     }
     return fImplementation;
 }

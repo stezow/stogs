@@ -23,29 +23,6 @@ endif()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 MESSAGE("${CMAKE_MODULE_PATH}")
 #----------------------------------------------------------------------------
-#----------------------------------------------------------------------------
-# Try and Find Root. If found, set HAS_ROOT
-#
-find_package(ROOT)
-if (ROOT_FOUND)
-	MESSAGE("ROOT has been found: ${ROOT_INCLUDE_DIR} ${ROOT_LIBRARY_DIR} ==> Add TTree facilities")
-	if (EXISTS ${CMAKE_SOURCE_DIR}/analysis/libParisEvents.so)
-		#
-		ADD_DEFINITIONS(-DHAS_ROOT)
-		# add ROOT includes and libs + ParisEvents (includes and lib which is compiled)
-		include_directories(${CMAKE_SOURCE_DIR}/analysis)
-		include_directories(${ROOT_INCLUDE_DIR})
-		#
-		set (EXTRA_LIB ${ROOT_LIBRARIES} -L${CMAKE_SOURCE_DIR}/analysis -lParisEvents)
-		MESSAGE(" --> Cool, libParisEvents.so found in analysis !")	
-		#
-	else()
-		MESSAGE(" --> libParisEvents.so NOT FOUND in analysis, you may needed to compile it first to fully exploit ROOT facilities")	
-	endif()
-else()
-	MESSAGE(" --> ROOT has NOT been found")
-endif()
-#----------------------------------------------------------------------------
 
 
 #----------------------------------------------------------------------------
@@ -55,6 +32,8 @@ endif()
 include(${Geant4_USE_FILE})
 include_directories(${PROJECT_SOURCE_DIR}/csrc)
 include_directories(${CMAKE_BINARY_DIR})
+#
+set(SToGS_EXTRA_LIB "")
 #
 #----------------------------------------------------------------------------
 #----------------------------------------------------------------------------
@@ -112,6 +91,26 @@ set(SToGS_HEADER
     csrc/SToGS_Ascii.hh
 	csrc/SToGS_UserActionInitialization.hh
 )
+#----------------------------------------------------------------------------
+#----------------------------------------------------------------------------
+# Try and Find Root. If found, set HAS_ROOT in SToGSConfig and compile Core ROOT nased modules
+#
+find_package(ROOT)
+if (ROOT_FOUND)
+	MESSAGE("ROOT has been found: ${ROOT_INCLUDE_DIR} ${ROOT_LIBRARY_DIR} ==> Add TTree facilities")
+    #
+    ADD_DEFINITIONS(-DHAS_ROOT)
+    include_directories(${ROOT_INCLUDE_DIR})
+    set (SToGS_EXTRA_LIB ${SToGS_EXTRA_LIB} ${ROOT_LIBRARIES})
+
+    #
+    set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOT.hh)
+    set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOT.cc)
+    #
+    MESSAGE(" --> SToGS Compiled with ROOT facilities ")
+else()
+	MESSAGE(" --> ROOT has NOT been found")
+endif()
 #----------------------------------------------------------------------------
 #----------------------------------------------------------------------------
 # ADD My Plugins if any
@@ -172,8 +171,8 @@ add_executable(SToGS_Source SToGS_Source.cc ${SToGS_SRC} ${SToGS_HEADER})
 add_executable(SToGS_DetectorBuilder SToGS_DetectorBuilder.cc ${SToGS_SRC} ${SToGS_HEADER})
 
 #
-target_link_libraries(SToGS_Source ${Geant4_LIBRARIES} ${EXTRA_LIB})
-target_link_libraries(SToGS_DetectorBuilder ${Geant4_LIBRARIES} ${EXTRA_LIB})
+target_link_libraries(SToGS_Source ${Geant4_LIBRARIES} ${SToGS_EXTRA_LIB})
+target_link_libraries(SToGS_DetectorBuilder ${Geant4_LIBRARIES} ${SToGS_EXTRA_LIB})
 
 
 #----------------------------------------------------------------------------
