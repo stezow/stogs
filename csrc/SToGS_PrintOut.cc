@@ -27,7 +27,7 @@
 #include "SToGS_PrintOut.hh"
 #include "SToGS_G4_TrackerSD.hh"
 #include "SToGS_G4_CopClusterSD.hh"
-#include "SToGS_TrackInformation.hh"
+#include "SToGS_G4_TrackInformation.hh"
 
 #include "G4SDManager.hh"
 #include "G4RunManager.hh"

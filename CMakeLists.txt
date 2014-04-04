@@ -56,7 +56,7 @@ set(SToGS_SRC
 # Generator related
     csrc/SToGS_G4_GPSPrimaryGeneratorAction.cc
 # User's Action related
-	csrc/SToGS_TrackInformation.cc
+	csrc/SToGS_G4_TrackInformation.cc
 	csrc/SToGS_G4_CopClusterHit.cc
 	csrc/SToGS_G4_CopClusterSD.cc
 	csrc/SToGS_G4_TrackerHit.cc
@@ -83,7 +83,7 @@ set(SToGS_HEADER
 # Generator related
     csrc/SToGS_G4_GPSPrimaryGeneratorAction.hh
 # User's Action related
-	csrc/SToGS_TrackInformation.hh
+	csrc/SToGS_G4_TrackInformation.hh
 	csrc/SToGS_G4_CopClusterHit.hh
 	csrc/SToGS_G4_CopClusterSD.hh
 	csrc/SToGS_G4_TrackerHit.hh

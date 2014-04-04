@@ -25,6 +25,6 @@
 //
 //
 
-#include "SToGS_TrackInformation.hh"
+#include "SToGS_G4_TrackInformation.hh"
 
 G4ThreadLocal G4Allocator<SToGS::PrimaryTrackInformation> *SToGS::aPrimaryTrackInformationAllocator = 0x0;

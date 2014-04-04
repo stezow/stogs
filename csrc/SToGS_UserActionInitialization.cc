@@ -28,7 +28,7 @@
 
 
 #include "SToGS_UserActionInitialization.hh"
-#include "SToGS_TrackInformation.hh"
+#include "SToGS_G4_TrackInformation.hh"
 
 #include "G4ios.hh"
 #include "G4SDManager.hh"

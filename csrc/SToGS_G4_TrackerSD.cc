@@ -26,7 +26,7 @@
 
 #include "SToGS_G4_TrackerSD.hh"
 #include "SToGS_G4_TrackerHit.hh"
-#include "SToGS_TrackInformation.hh"
+#include "SToGS_G4_TrackInformation.hh"
 
 #include "G4Step.hh"
 #include "G4HCofThisEvent.hh"
