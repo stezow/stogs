@@ -60,6 +60,8 @@ namespace SToGS {
         virtual ~PrintOutAction()
             {;}
         
+        virtual G4Run* GenerateRun();
+        
         virtual void BeginOfRunAction(const G4Run * /*therun*/);
         virtual void EndOfRunAction(const G4Run * /*therun*/);
         virtual void BeginOfEventAction(const G4Event * /*event*/);

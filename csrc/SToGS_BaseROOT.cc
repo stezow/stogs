@@ -47,11 +47,11 @@ namespace { G4Mutex buildMutex = G4MUTEX_INITIALIZER; }
 #include <fstream>
 #include <iomanip>
 
-SToGS::BaseROOTTreeRun::BaseROOTTreeRun(TTree *tree) :
+SToGS::BaseROOTTreeRun::BaseROOTTreeRun(G4int record_option) :
     G4Run(),
+    fRecordOption(record_option),
     colltrackerID(-1),
     collcaloID(-1)
-//    fOutputFile(out)
 {
    	G4SDManager* SDman = G4SDManager::GetSDMpointer();
     if ( SDman ) {
@@ -61,13 +61,13 @@ SToGS::BaseROOTTreeRun::BaseROOTTreeRun(TTree *tree) :
         // keep the collection ID associated to this collection
         collcaloID = SDman->GetCollectionID("CopClusterHits");
     }
-    //SetBranc
 }
 
+/*
 void SToGS::BaseROOTTreeRun::RecordEvent(const G4Event* evt)
 {
-    
 }
+ */
 
 SToGS::BaseROOTTreeRun::~BaseROOTTreeRun()
 {

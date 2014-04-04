@@ -34,11 +34,8 @@
 #include "SToGS_GenericsDF.hh"
 #include "SToGSConfig.hh"
 
-
 // Specific to the Generic Factory
 #include "SToGS_TwoShellsDetectorConstruction.hh"
-
-
 
 // list of all specific factories
 namespace  {

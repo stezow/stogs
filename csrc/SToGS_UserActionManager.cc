@@ -28,8 +28,9 @@
 
 
 #include "SToGS_UserActionManager.hh"
-#include "G4ios.hh"
+#include "SToGSConfig.hh"
 
+#include "G4ios.hh"
 #include <fstream>
 
 SToGS::UserActionManager::UserActionManager(G4String filename) :
@@ -115,6 +116,13 @@ SToGS::UserActionInitialization *SToGS::UserActionManager::ProvideUserActionInit
     if ( fWhichActionManager.first == "stogstree" ) {
         fImplementation = new SToGS::BaseROOTTree(fWhichActionManager.second);
     }
+#ifdef HAS_MYACT
+    // based on My plugins defined in SToGSConfig, it build the user actio
+    if ( fWhichActionManager.first.contains(MYACT_) ) {
+       fImplementation = new MYACT_CLASSTYPE(fWhichActionManager.second);
+       // fImplementation = SToGS::AllInOneUserActionInitialization<MYACT_CLASSTYPE>(fWhichActionManager.second);
+    }
+#endif
     return fImplementation;
 }
 

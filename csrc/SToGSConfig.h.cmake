@@ -39,11 +39,17 @@
 #define PACKAGE_NAME @PROJECT_NAME@
 
 /* Define MY */
-// My Detector Construction
+// MyDetectorConstruction
 #ifdef HAS_MYDET
-#include "@MYDET@DetectorConstruction.hh"
-#define MYDET_          "@MYDET@"
-#define MYDET_CLASSTYPE  @MYDET@DetectorConstruction
+#include "@MY_DET@DetectorConstruction.hh"
+#define MYDET_          "@MY_DET@"
+#define MYDET_CLASSTYPE  @MY_DET@DetectorConstruction
+#endif
+// MyAction
+#ifdef HAS_MYACT
+#include "@MY_ACT@UserAction.hh"
+#define MYACT_          "@MY_ACT@"
+#define MYACT_CLASSTYPE  @MY_ACT@UserActionInitialization
 #endif
 
 #endif

@@ -20,8 +20,8 @@ endif()
 #
 # Add specific modules
 #
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-MESSAGE("${CMAKE_MODULE_PATH}")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
+MESSAGE("[SToGS] Search for cmake modules in ${CMAKE_MODULE_PATH}")
 #----------------------------------------------------------------------------
 
 
@@ -33,13 +33,31 @@ include(${Geant4_USE_FILE})
 include_directories(${PROJECT_SOURCE_DIR}/csrc)
 include_directories(${CMAKE_BINARY_DIR})
 #
+set(SToGS_HEADER)
+set(SToGS_SRC)
 set(SToGS_EXTRA_LIB "")
 #
 #----------------------------------------------------------------------------
+
+#----------------------------------------------------------------------------
+#
+# Add third party libraries (model: -L/path -ltoto ) and includes
+#
+#
+if (THIRD_PARTY_LIBS)
+    set (SToGS_EXTRA_LIB ${SToGS_EXTRA_LIB} ${THIRD_PARTY_LIBS})
+    MESSAGE("[SToGS] Add third party paths to libraries: " ${THIRD_PARTY_LIBS})
+endif()
+if (THIRD_PARTY_INCLUDE)
+    include_directories(${THIRD_PARTY_INCLUDE})
+    MESSAGE("[SToGS] Add third party paths to includes: " ${THIRD_PARTY_INCLUDE})
+endif()
+#----------------------------------------------------------------------------
+
 #----------------------------------------------------------------------------
 # Locate sources and headers for this project
 #
-set(SToGS_SRC
+set(SToGS_SRC ${SToGS_SRC}
 # Detector related
 	csrc/SToGS_MaterialConsultant.cc
 	csrc/SToGS_DetectorFactory.cc
@@ -66,7 +84,7 @@ set(SToGS_SRC
     csrc/SToGS_Ascii.cc
 	csrc/SToGS_UserActionManager.cc
 )
-set(SToGS_HEADER
+set(SToGS_HEADER ${SToGS_HEADER}
 # Detector related
 	csrc/SToGS_MaterialConsultant.hh
 	csrc/SToGS_DetectorFactory.hh
@@ -95,70 +113,71 @@ set(SToGS_HEADER
 )
 #----------------------------------------------------------------------------
 #----------------------------------------------------------------------------
-# Try and Find Root. If found, set HAS_ROOT in SToGSConfig and compile Core ROOT nased modules
+# Try and Find Root. If found, set HAS_ROOT in SToGSConfig and compile Core ROOT based modules
 #
 find_package(ROOT)
 if (ROOT_FOUND)
-	MESSAGE("ROOT has been found: ${ROOT_INCLUDE_DIR} ${ROOT_LIBRARY_DIR} ==> Add TTree facilities")
+	MESSAGE("[SToGS] ROOT has been found: ${ROOT_INCLUDE_DIR} ${ROOT_LIBRARY_DIR}")
     #
     ADD_DEFINITIONS(-DHAS_ROOT)
     include_directories(${ROOT_INCLUDE_DIR})
     set (SToGS_EXTRA_LIB ${SToGS_EXTRA_LIB} ${ROOT_LIBRARIES})
-
     #
     set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOT.hh)
     set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOT.cc)
     #
-    MESSAGE(" --> SToGS Compiled with ROOT facilities ")
+    MESSAGE("[SToGS] SToGS Compiled with ROOT facilities ")
 else()
-	MESSAGE(" --> ROOT has NOT been found")
+	MESSAGE("[SToGS] --> ROOT has NOT been found")
 endif()
 #----------------------------------------------------------------------------
 #----------------------------------------------------------------------------
 # ADD My Plugins if any
 #
-if ( NOT MYPATH )
-    set(MYPATH SToGS_MY)
-endif()
-if (MYDET)
- if ( EXISTS "${PROJECT_SOURCE_DIR}/${MYPATH}/${MYDET}DetectorConstruction.hh"
-       AND EXISTS "${PROJECT_SOURCE_DIR}/${MYPATH}/${MYDET}DetectorConstruction.cc" )
-	#
-	ADD_DEFINITIONS(-DHAS_MYDET)
-	#
-	set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/${MYPATH}/${MYDET}DetectorConstruction.cc)
-	set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/${MYPATH}/${MYDET}DetectorConstruction.hh)
+if (MY_DIR)
+    # ---------- collect all My files ----------
+    set(MY_HEADER)
+    file(GLOB MY_HEADER ${MY_DIR}/*.hh ${MY_DIR}/*.h)
+    set(MY_SRC)
+    file(GLOB MY_SRC ${MY_DIR}/*.cc ${MY_DIR}/*.cpp ${MY_DIR}/*.cxx ${MY_DIR}/*.c)
     #
-    include_directories(${PROJECT_SOURCE_DIR}/${MYPATH})
-	#
-	MESSAGE(" --> ADD ${MYDET}DetectorConstruction ")
- else()
-    MESSAGE(" --> Cannot find " ${PROJECT_SOURCE_DIR}/${MYPATH}/${MYDET}DetectorConstruction.hh)
-    MESSAGE(" --> Or " ${PROJECT_SOURCE_DIR}/${MYPATH}/${MYDET}DetectorConstruction.cc)
-  endif()
-    MESSAGE(" --> Compile with ${MYDET} " ${PROJECT_SOURCE_DIR}/${MYPATH}/${MYDET}DetectorConstruction)
-endif()
+    include_directories(${PROJECT_SOURCE_DIR}/${MY_DIR})
+    #
+    #MESSAGE("MY_HEADERS" ${MY_HEADER})
+    #MESSAGE("MY_SOURCES" ${MY_SRC})
+    
+    set (SToGS_HEADER ${SToGS_HEADER} ${MY_HEADER})
+    set (SToGS_SRC ${SToGS_SRC} ${MY_SRC})
+    
+    # ---------- MYDetector ----------
+    if (MY_DET)
+        if ( EXISTS "${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_DET}DetectorConstruction.hh"
+                AND EXISTS "${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_DET}DetectorConstruction.cc" )
+            #
+            ADD_DEFINITIONS(-DHAS_MYDET)
+            #
+            MESSAGE("[SToGS] --> ADD ${MY_DET}DetectorConstruction ")
+        else()
+            MESSAGE("[SToGS] --> Cannot find " ${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_DET}DetectorConstruction.hh)
+            MESSAGE("[SToGS] --> Or " ${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_DET}DetectorConstruction.cc)
+        endif()
+    #MESSAGE("[SToGS] --> Compile with ${MY_DET} " ${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_DET}DetectorConstruction)
+    endif()
 
-# ADD MyXXXX
-#
-# add MyDetectorConstruction if found
-if ( EXISTS "${PROJECT_SOURCE_DIR}/csrc/MyDetectorConstruction.hh" AND EXISTS "${PROJECT_SOURCE_DIR}/csrc/MyDetectorConstruction.cc" )
-	#
-	ADD_DEFINITIONS(-DHAS_MYDET)
-	#
-	set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/csrc/MyDetectorConstruction.cc) 
-	set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/csrc/MyDetectorConstruction.hh) 
-	#
-	MESSAGE(" --> ADD MyDetectorConstruction ")
-endif()
-if ( EXISTS "${PROJECT_SOURCE_DIR}/csrc/MyPrimaryGeneratorAction.hh" AND EXISTS "${PROJECT_SOURCE_DIR}/csrc/MyPrimaryGeneratorAction.cc")
-	#
-	ADD_DEFINITIONS(-DHAS_MYPRIMARYGENERATOR)
-	#
-	set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/csrc/MyPrimaryGeneratorAction.cc)
-	set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/csrc/MyPrimaryGeneratorAction.hh)
-	#
-	MESSAGE(" --> ADD MyPrimaryGeneratorAction ")
+    # ---------- MYActions ----------
+    if (MY_ACT)
+        if ( EXISTS "${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_ACT}UserAction.hh"
+                AND EXISTS "${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_ACT}UserAction.cc" )
+            #
+            ADD_DEFINITIONS(-DHAS_MYACT)
+            #
+            MESSAGE("[SToGS] --> ADD ${MY_ACT}UserAction ")
+        else()
+            MESSAGE("[SToGS] --> Cannot find " ${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_ACT}UserAction.hh)
+            MESSAGE("[SToGS] --> Or " ${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_ACT}UserAction.cc)
+        endif()
+    #MESSAGE("[SToGS] --> Compile with ${MY_ACT} " ${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_ACT})
+    endif()
 endif()
 #
 configure_file (

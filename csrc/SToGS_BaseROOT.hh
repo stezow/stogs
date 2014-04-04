@@ -43,18 +43,16 @@ namespace SToGS {
     class BaseROOTTreeRun : public G4Run
     {
     protected:
+        G4int fRecordOption;
+    protected:
         G4int colltrackerID;
         G4int collcaloID;
-
-    protected:
-        //! to be called to add definition of events in this to the TTree
-        // void SetBranches(TTree *);
-        
+  
     public:
-        BaseROOTTreeRun(TTree *);
+        BaseROOTTreeRun(G4int record_option = 0);
         virtual ~BaseROOTTreeRun();
         
-        virtual void RecordEvent(const G4Event* evt);
+        //virtual void RecordEvent(const G4Event* evt);
         //virtual void Merge(const G4Run*);
     };
     //! This class just print out once a new run begins/ends with the run number and the number of events to be simulated
@@ -90,9 +88,7 @@ namespace SToGS {
         BaseROOTAction(G4String conffile = "setup/SToGS_root_actions.conf");
         virtual ~BaseROOTAction()
             {;}
-        
-        // virtual G4Run* GenerateRun();
-        
+                
         virtual void BeginOfRunAction(const G4Run * /*therun*/);
         virtual void EndOfRunAction(const G4Run * /*therun*/);
         virtual void BeginOfEventAction(const G4Event * /*event*/);

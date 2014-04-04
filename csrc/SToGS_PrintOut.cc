@@ -47,10 +47,10 @@ SToGS::PrintOutRun::PrintOutRun() :
    	G4SDManager* SDman = G4SDManager::GetSDMpointer();
     if ( SDman ) {
         // keep the collection ID associated to this collection
-        colltrackerID = SDman->GetCollectionID("/SToGS/SD/Tracker");
+        colltrackerID = SDman->GetCollectionID("TrackerHits");
         
         // keep the collection ID associated to this collection
-        collcaloID = SDman->GetCollectionID("/SToGS/SD/CopCluster");
+        collcaloID = SDman->GetCollectionID("CopClusterHits");
     }
 }
 SToGS::PrintOutRun::~PrintOutRun()
@@ -61,8 +61,11 @@ void SToGS::PrintOutRun::RecordEvent(const G4Event* evt)
 {
     SToGS::TrackerHitsCollection *THC = 0x0; SToGS::CopClusterHitsCollection *CHC = 0x0;
 	
-	if( colltrackerID < 0 || collcaloID < 0 )
+	if( colltrackerID < 0 && collcaloID < 0  ) {
 		return;
+    }
+    G4cout << "  Beginning Record of Event: " << evt->GetEventID() + 1 << G4endl;
+
 	
 	G4HCofThisEvent *HCE = evt->GetHCofThisEvent();
     
@@ -72,29 +75,49 @@ void SToGS::PrintOutRun::RecordEvent(const G4Event* evt)
 		CHC = (SToGS::CopClusterHitsCollection*)(HCE->GetHC(collcaloID));
   	}
     
-	if(THC)
+	if(THC && colltrackerID > -1)
 	{
 		int n_hit = THC->entries();
-		G4cout  << "     " << n_hit
+		G4cout  << "  " << n_hit
                 << " hits are stored in tracker collection" << G4endl;
         
 		for (int i = 0 ;i < n_hit; i++) {
-			G4cout  << " hit # " << i << G4endl;
-            (*THC)[i]->Print();
+			G4cout  << "  hit # " << i << " " << G4BestUnit((*THC)[i]->GetEdep(), "Energy") << G4endl;
+//            (*THC)[i]->Print();
 		}
   	}
 	
-	if(CHC)
+	if(CHC && collcaloID > -1)
 	{
 		int n_hit = CHC->entries();
-		G4cout  << "     " << n_hit
+		G4cout  << "  " << n_hit
                 << " hits are stored in calo collection" << G4endl;
         
 		for(int i = 0; i < n_hit; i++) {
-			G4cout  << " hit # " << i << G4endl;
-            (*CHC)[i]->Print();
+			G4cout  << "  hit # " << i << G4BestUnit((*CHC)[i]->GetEdep(), "Energy") << G4endl;
+//            (*CHC)[i]->Print();
 		}
 	}
+    
+    G4cout << "  End Record of Event: " << evt->GetEventID() + 1 << G4endl;
+}
+
+G4Run* SToGS::PrintOutAction::GenerateRun()
+{
+    G4Run* therun = 0x0; G4cout << " In PrintOutAction, Generate a new Run " << G4endl;
+    
+    // creates a new run. As the file is open bu AsciiRun no need to open something for master ... maybe one day to keep some globals ?
+#if G4MULTITHREADED
+    if ( G4Threading::IsWorkerThread() ) {
+        //    if ( IsMaster() ) {
+        SToGS::PrintOutRun *loc_therun = new SToGS::PrintOutRun();
+        therun = loc_therun;
+    }
+    else therun = G4UserRunAction::GenerateRun();
+#else
+    therun = new SToGS::PrintOutRun();
+#endif
+    return therun;
 }
 
 void SToGS::PrintOutAction::BeginOfRunAction(const G4Run *aRun)
@@ -105,8 +128,6 @@ void SToGS::PrintOutAction::EndOfRunAction(const G4Run* aRun)
 {
     G4cout  << "End of Run: " <<  aRun->GetRunID() << " " << aRun->GetNumberOfEvent() << G4endl ;
 }
-
-G4int printModuloEvt = 1;
 
 void SToGS::PrintOutAction::BeginOfEventAction(const G4Event *evt)
 {
