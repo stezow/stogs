@@ -94,9 +94,9 @@ namespace SToGS {
         virtual void BeginOfEventAction(const G4Event * /*event*/);
         virtual void EndOfEventAction(const G4Event * /*event*/);
         virtual void PreUserTrackingAction(const G4Track * /*atrack*/)
-        {;}
+            {;}
         virtual void PostUserTrackingAction(const G4Track * /*atrack*/)
-        {;}
+            {;}
         // virtual void UserSteppingAction(const G4Step * /*step*/);
     };
     class BaseROOTTreeAction : public BaseROOTAction

@@ -39,11 +39,11 @@ protected:
     TTree *fTree;
 protected:
 	// Events to be filled from G4 to ROOT
-	PEvent *fPrimaryEvent;
-	PEvent *fEvent;
+	PEvent fPrimaryEvent;
+	PEvent fEvent;
 	
 public:
-    ParisEventRun(TTree *tree, PEvent *primaryevent, PEvent *event);
+    ParisEventRun(TTree *tree);
     virtual ~ParisEventRun()
         {;}
         
@@ -56,17 +56,26 @@ public:
 class ParisUserAction : public SToGS::BaseROOTTreeAction
 {
 protected:
-    // Events to be filled from G4 to ROOT
-	PEvent fPrimaryEvent;
-	PEvent fEvent; 
-protected:
-
+    //! true if one has also photons from scintillations
+    G4int fisOptical;
+    //! emitted optical photons
+	POpticalEvent *fOpticalEventBeg;
+    //! end of optical photons
+	POpticalEvent *fOpticalEventEnd;
+    
 public:
 	ParisUserAction(G4String conffile = "setup/paris_actions.conf");
     virtual ~ParisUserAction()
         {;}
     
     virtual G4Run* GenerateRun();
+    
+//    virtual void BeginOfRunAction(const G4Run * /*therun*/);
+    virtual void EndOfRunAction(const G4Run * /*therun*/);
+    virtual void BeginOfEventAction(const G4Event * /*event*/);
+//    virtual void EndOfEventAction(const G4Event * /*event*/);
+    virtual void PreUserTrackingAction(const G4Track * /*atrack*/);
+    virtual void PostUserTrackingAction(const G4Track * /*atrack*/);
 };
 
 //! The ParisUserActionInitialization is use to init G4 kernel with the actions defined in ParisUserAction

@@ -103,7 +103,9 @@ SToGS::UserActionManager::UserActionManager(G4String filename) :
 
 #include "SToGS_PrintOut.hh"
 #include "SToGS_Ascii.hh"
+#ifdef HAS_MYACT
 #include "SToGS_BaseROOT.hh"
+#endif
 
 SToGS::UserActionInitialization *SToGS::UserActionManager::ProvideUserActionInitialization()
 {
@@ -113,10 +115,10 @@ SToGS::UserActionInitialization *SToGS::UserActionManager::ProvideUserActionInit
     if ( fWhichActionManager.first == "ascii" ) {
         fImplementation = new SToGS::Ascii(fWhichActionManager.second);
     }
+#ifdef HAS_MYACT
     if ( fWhichActionManager.first == "stogstree" ) {
         fImplementation = new SToGS::BaseROOTTree(fWhichActionManager.second);
     }
-#ifdef HAS_MYACT
     // based on My plugins defined in SToGSConfig, it build the user actio
     if ( fWhichActionManager.first.contains(MYACT_) ) {
        fImplementation = new MYACT_CLASSTYPE(fWhichActionManager.second);

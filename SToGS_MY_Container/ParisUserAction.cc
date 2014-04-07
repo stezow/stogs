@@ -27,9 +27,12 @@
 #include "ParisUserAction.hh"
 #include "SToGS_G4_TrackerSD.hh"
 #include "SToGS_G4_CopClusterSD.hh"
+#include "SToGS_G4_TrackInformation.hh"
 
 #include "TTree.h"
 
+#include "G4OpticalPhoton.hh"
+#include "G4VProcess.hh"
 #include "G4Event.hh"
 #if G4MULTITHREADED
 #include "G4Threading.hh"
@@ -39,12 +42,14 @@
 namespace { G4Mutex buildMutex = G4MUTEX_INITIALIZER; }
 #endif
 
-ParisEventRun::ParisEventRun(TTree *tree, PEvent *primaryevent, PEvent *event) :
+ParisEventRun::ParisEventRun(TTree *tree) :
     SToGS::BaseROOTTreeRun(),
     fTree(tree),
-	fPrimaryEvent(primaryevent),
-	fEvent(event)
+	fPrimaryEvent(),
+	fEvent()
 {
+    fTree->Branch("Pr.", &fPrimaryEvent);
+    fTree->Branch("Ev.", &fEvent);
 }
 
 void ParisEventRun::RecordEvent(const G4Event* evt)
@@ -55,8 +60,8 @@ void ParisEventRun::RecordEvent(const G4Event* evt)
 	if( colltrackerID < 0 && collcaloID < 0 )
 		return;
     
-    fPrimaryEvent->Clear("");
-    fEvent->Clear("");
+    fPrimaryEvent.Clear("");
+    fEvent.Clear("");
     
     G4HCofThisEvent *HCE = evt->GetHCofThisEvent();
 	if(HCE)
@@ -80,22 +85,22 @@ void ParisEventRun::RecordEvent(const G4Event* evt)
 		G4int jstart = 0, jend = evt->GetPrimaryVertex(i)->GetNumberOfParticle(); // to get the next vertex
 		for( G4int j = jstart; j < jend; j++ ) {
 			
-			PHit *hit = fPrimaryEvent->AddHit();
+			PHit *hit = fPrimaryEvent.AddHit();
 			
 			K++;
 			G4PrimaryParticle *prim = evt->GetPrimaryVertex(i)->GetPrimary(j); // get the next particle for vertex #i
 
-			hit->fE = (std::sqrt( prim->GetMomentum().mag2() + prim->GetMass() * prim->GetMass()) - prim->GetMass())/keV;
+			hit->fE = (std::sqrt( prim->GetMomentum().mag2() + prim->GetMass() * prim->GetMass()) - prim->GetMass())/CLHEP::keV;
 			hit->fX = prim->GetPx();
 			hit->fY = prim->GetPy();
 			hit->fZ = prim->GetPz();
 			
 			hit->fFlag = prim->GetTrackID()-1;
 			
-			H += (std::sqrt( prim->GetMomentum().mag2() + prim->GetMass() * prim->GetMass()) - prim->GetMass())/MeV;
+			H += (std::sqrt( prim->GetMomentum().mag2() + prim->GetMass() * prim->GetMass()) - prim->GetMass())/CLHEP::MeV;
 		}
 	} 
-	fPrimaryEvent->SetHK(H,K);
+	fPrimaryEvent.SetHK(H,K);
     
 	if ( nb_hits_trac ) {
 		int n_hit = nb_hits_trac;
@@ -103,7 +108,7 @@ void ParisEventRun::RecordEvent(const G4Event* evt)
 		K = n_hit; H = 0.0;
 		for (int i = 0 ; i < n_hit; i++) { 
 			
-			PHit *hit = fEvent->AddHit();
+			PHit *hit = fEvent.AddHit();
 			
 			if ( hit == 0x0 ) {
 				G4cout << " Cannot add more that " << i << " hits in the collection " << G4endl;
@@ -112,18 +117,18 @@ void ParisEventRun::RecordEvent(const G4Event* evt)
 	
 			hit->fID = PHit::kGamma ;
 
-			hit->fE = (*THC)[i]->GetEdep()/keV;
-			hit->fX = (*THC)[i]->GetPos().x()/cm;
-			hit->fY = (*THC)[i]->GetPos().y()/cm;
-			hit->fZ = (*THC)[i]->GetPos().z()/cm;
+			hit->fE = (*THC)[i]->GetEdep()/CLHEP::keV;
+			hit->fX = (*THC)[i]->GetPos().x()/CLHEP::cm;
+			hit->fY = (*THC)[i]->GetPos().y()/CLHEP::cm;
+			hit->fZ = (*THC)[i]->GetPos().z()/CLHEP::cm;
 			hit->fT = (*THC)[i]->GetToF();
 			
 			hit->fFlag = (*THC)[i]->GetPrimaryID()-1 ;
 			hit->fUID  = (*THC)[i]->GetDetID();		
 
-			H += (*THC)[i]->GetEdep()/MeV;
+			H += (*THC)[i]->GetEdep()/CLHEP::MeV;
 		}
-		fEvent->SetHK(H,K);
+		fEvent.SetHK(H,K);
   	}  
 	if ( nb_hits_calo )
 	{
@@ -132,57 +137,192 @@ void ParisEventRun::RecordEvent(const G4Event* evt)
 		K = n_hit; H = 0.0;
 		for (int i = 0 ; i < n_hit; i++) { 
 			
-			PHit *hit = fEvent->AddHit();
+			PHit *hit = fEvent.AddHit();
 			if ( hit == 0x0 ) {
 				G4cout << " Cannot add more that " << i << " hits in the collection " << G4endl;
 				break;
 			}			
 			hit->fID = PHit::kUnknown ;		
 
-			hit->fE = (*CHC)[i]->GetEdep()/keV;
-			hit->fX = (*CHC)[i]->GetPos().x()/cm;
-			hit->fY = (*CHC)[i]->GetPos().y()/cm;
-			hit->fZ = (*CHC)[i]->GetPos().z()/cm;
+			hit->fE = (*CHC)[i]->GetEdep()/CLHEP::keV;
+			hit->fX = (*CHC)[i]->GetPos().x()/CLHEP::cm;
+			hit->fY = (*CHC)[i]->GetPos().y()/CLHEP::cm;
+			hit->fZ = (*CHC)[i]->GetPos().z()/CLHEP::cm;
 			hit->fT = (*CHC)[i]->GetToF();
 			
 			hit->fFlag = (*CHC)[i]->GetNbHits() ;		
 			hit->fUID  = (*CHC)[i]->GetDetID();		
 			
-			H += (*CHC)[i]->GetEdep()/MeV;
+			H += (*CHC)[i]->GetEdep()/CLHEP::MeV;
 		}
-		fEvent->SetHK(H,K);
+		fEvent.SetHK(H,K);
 	}
-    /*
     if ( fRecordOption == 1 ) {
-		if ( fEvent->GetK() > 0 ) fTree->Fill();
+		if ( fEvent.GetK() > 0 ) fTree->Fill();
 	}
-	else fTree->Fill(); */
+	else fTree->Fill();
 }
 
 ParisUserAction::ParisUserAction(G4String conffile):
     SToGS::BaseROOTTreeAction(conffile),
-    fPrimaryEvent(),
-    fEvent()
+    fisOptical(0),
+    fOpticalEventBeg(0x0),
+    fOpticalEventEnd(0x0)
 {
-    
+    // open the ascii file
+    std::ifstream file(conffile.data());
+	if ( file.is_open() == false ) {
+		G4cout << " ** ParisUserAction WARNING ** Cannot open file " << conffile << ", default parameters to be used "<< G4endl;
+    }
+	else {
+        std::string aline; getline(file,aline);
+        while ( file.good() && !file.eof() ) {
+            
+            if ( aline[0] == '#' ){
+                getline(file,aline);
+                continue;
+            } // this line is a comment
+            
+            std::string key, what, option; std::istringstream decode(aline); decode.clear();
+            decode >> key;
+            
+            if ( key == "scintillation:" ) { // to switch on following scintillation photons
+                decode >> fisOptical ;
+            }
+            getline(file,aline);
+        }
+        file.close();
+    }
 }
 
 G4Run* ParisUserAction::GenerateRun()
 {
+#ifdef G4MULTITHREADED
+    G4AutoLock lock(&buildMutex);
+#endif
+    
     G4Run* therun = 0x0; G4cout << " In ParisUserAction, Generate a new Run " << G4endl;
+    
+    if ( fTree == 0x0 ) {
+        fTree = new TTree(fTreeName.data(),fTreeTitle.data());
+        fTree->SetDirectory(0x0);
+        
+        if (fisOptical > 0) {
+            fOpticalEventBeg = new POpticalEvent(); fOpticalEventEnd = new POpticalEvent();
+            //
+            fTree->Branch("OpticalEvBegin.", fOpticalEventBeg);
+            fTree->Branch("OpticalEvEnd.", fOpticalEventEnd);
+        }
+    }
     
     // creates a new run. As the file is open bu AsciiRun no need to open something for master ... maybe one day to keep some globals ?
 #if G4MULTITHREADED
     if ( G4Threading::IsWorkerThread() ) {
         //    if ( IsMaster() ) {
-        ParisEventRun *loc_therun = new ParisEventRun(fTree,&fPrimaryEvent,&fEvent);
+        ParisEventRun *loc_therun = new ParisEventRun(fTree);
         therun = loc_therun;
     }
     else therun = G4UserRunAction::GenerateRun();
 #else
-    therun = new ParisEventRun(fTree,&fPrimaryEvent,&fEvent);
+    therun = new ParisEventRun(fTree);
 #endif
     return therun;
 }
+
+void ParisUserAction::EndOfRunAction(const G4Run *therun)
+{
+    SToGS::BaseROOTTreeAction::EndOfRunAction(therun);
+    if (fisOptical > 0) {
+        delete fOpticalEventBeg; delete fOpticalEventEnd;
+    }
+}
+
+void ParisUserAction::BeginOfEventAction(const G4Event *evt)
+{
+	SToGS::BaseROOTTreeAction::BeginOfEventAction(evt);
+	
+	// clear events
+    if ( fisOptical > 0 ) {
+        fOpticalEventBeg->Clear("");
+        fOpticalEventEnd->Clear("");
+    }
+}
+
+void ParisUserAction::PreUserTrackingAction(const G4Track *atrack)
+{
+    if ( fisOptical < 1 ) {
+        return;
+    }
+	//Count what process generated the optical photons
+	if(atrack->GetDefinition()==G4OpticalPhoton::OpticalPhotonDefinition()){
+		// particle is optical photon
+		if(atrack->GetParentID()>0){
+			// particle is secondary
+			if(atrack->GetCreatorProcess()->GetProcessName()=="Scintillation") {
+                //				G4cout << "Scintillation Pre " << atrack->GetTrackID() << " "  << atrack->GetTrackLength() << G4endl;
+                
+                SToGS::PrimaryTrackInformation *pinfo = (SToGS::PrimaryTrackInformation *)atrack->GetUserInformation();
+                G4int pid = atrack->GetTrackID();
+                if ( pinfo ) {
+                    pid = pinfo->GetPrimaryID();
+                }
+
+				POpticalHit *hit = fOpticalEventBeg->AddHit();
+				
+				hit->fX = atrack->GetPosition().x();
+				hit->fY = atrack->GetPosition().y();
+				hit->fZ = atrack->GetPosition().z();
+				
+				hit->fTA = atrack->GetGlobalTime();
+				hit->fTL = atrack->GetLocalTime();
+				
+				hit->fLength = atrack->GetTrackLength();
+                hit->fNbSteps = atrack->GetCurrentStepNumber();
+                
+  				hit->fPrimaryID   = pid-1;
+				hit->fSecondaryID = atrack->GetVolume()->GetCopyNo(); // hit->fUID
+				
+			}
+		}
+	}
+}
+void ParisUserAction::PostUserTrackingAction(const G4Track *atrack)
+{
+    if ( fisOptical < 1 ) {
+        return;
+    }
+	//Count what process generated the optical photons
+	if(atrack->GetDefinition()==G4OpticalPhoton::OpticalPhotonDefinition()){
+		// particle is optical photon
+		if(atrack->GetParentID()>0){
+			// particle is secondary
+			if(atrack->GetCreatorProcess()->GetProcessName()=="Scintillation") {
+                //	G4cout << "Scintillation Post " << atrack->GetTrackID() << " "  << atrack->GetTrackLength()  << G4endl;
+				
+                SToGS::PrimaryTrackInformation *pinfo = (SToGS::PrimaryTrackInformation *)atrack->GetUserInformation();
+                G4int pid = atrack->GetTrackID();
+                if ( pinfo ) {
+                    pid = pinfo->GetPrimaryID();
+                }
+                
+                POpticalHit *hit = fOpticalEventEnd->AddHit();
+                
+				hit->fX = atrack->GetPosition().x();
+				hit->fY = atrack->GetPosition().y();
+				hit->fZ = atrack->GetPosition().z();
+				
+				hit->fTA = atrack->GetGlobalTime();
+				hit->fTL = atrack->GetLocalTime();
+				
+				hit->fLength = atrack->GetTrackLength();
+                hit->fNbSteps = atrack->GetCurrentStepNumber();
+                
+  				hit->fPrimaryID   = pid-1; // PrimaryID[(*THC)[i]->GetTrackID()]-1 ;
+				hit->fSecondaryID = atrack->GetVolume()->GetCopyNo(); // hit->fUID
+            }
+		}
+	}
+}
+
 
 

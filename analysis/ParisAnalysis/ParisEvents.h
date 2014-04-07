@@ -187,55 +187,5 @@ public:
 	
 };
 
-///// ======== Michal ========== ////////////////////////////////////////////
-
-/*! 
-*/
-class cBasicREv {
-public:
-	
-	Int_t fMult; // primary event multiplicity
-	Int_t *fDetId; // [fMult] detector id's, one for each energy event
-	Double_t *fEnergy; // [fMult] inetraction enery in each tuched detector
-	
-	cBasicREv();
-	cBasicREv(Int_t Mult);
-	~cBasicREv();
-	
-	Int_t SetMultiplicity(Int_t Mult);
-	Int_t Fill( Int_t Mult, Int_t *DetId, Double_t *Energy);
-	Int_t Fill2( Int_t NrInteraction, Int_t DetId, Double_t Energy);  
-	Int_t Copy(cBasicREv BasicREv);
-	Double_t SummEnergy();
-	Double_t GetEnergy( Int_t DetId);
-	ClassDef(cBasicREv,1)
-};
-
-
-class cRootEv {
-public:
-	Int_t fNrPGamma; // Nr of primary gammas in the generated event (cascade gamma)
-	Double_t *fEnPGamma; //[fNrPGamma] Energies for the generated gammas
-	cBasicREv *fDetEv; // [fNrPGamma] Events in the detectors gerated by the primary gammas
-	cRootEv();
-	cRootEv( Int_t NrPGamma, Double_t *EnPGamma=0x0, cBasicREv *DetEv=0x0);
-	~cRootEv();
-	
-	//  Int_t  InitRootTree( char *treeName="Paris_Tree");
-	Int_t SetMultiplicity( Int_t NrGamma, Int_t Mult);
-	Int_t Fill( Int_t NrPGamma, Double_t *EnPGamma=0x0, cBasicREv *DetEv=0x0);
-	Int_t DefineEventDep(  Int_t NrGamma, Int_t Mult, Int_t *DetId, Double_t *Energy);	  
-	Int_t DefineEventDep2(  Int_t NrGamma, Int_t NrInteraction, Int_t DetId, Double_t Energy);  
-	Int_t SetPrEnergy( Int_t NrGamma, Double_t PrEnergy);
-	Double_t GetPrEnergy( Int_t NrGamma); // return energy of primary gamma
-	Double_t SummEnergy(Int_t NrGamma); // return the total energy deposted in the detectors for the gamma nr NrPGamma
-	Double_t SummEnergyInDet(Int_t NrGamma, Int_t DetId); //return  the total enrgy deposited in the detector DetId for the gamma Nr NrGamma
-	Double_t SummEnergyDet( Int_t DetId); // return the total energy deposted in the detector nr DetId
-  ClassDef(cRootEv,1)
-};
-
-
-///// ======== Michal ========== ////////////////////////////////////////////
-
 #endif
 

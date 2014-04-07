@@ -254,11 +254,7 @@ void SToGS::BaseROOTTreeAction::OpenFile(G4int run_id)
 #if G4MULTITHREADED
     thread_id = G4Threading::G4GetThreadId();
 #endif
-    if ( fTree == 0x0 ) {
-        fTree = new TTree(fTreeName.data(),fTreeTitle.data());
-        fTree->SetDirectory(0x0);
-    }
-    
+
     std::ostringstream filename;
     filename.clear();
     filename << fPathToData << "/" << fBaseName << "_Thread" << std::setfill('0') << std::setw(2) << thread_id
@@ -267,7 +263,8 @@ void SToGS::BaseROOTTreeAction::OpenFile(G4int run_id)
     fRootFile = new TFile(filename.str().data(),"UPDATE");
     if ( fRootFile->IsOpen() ) {
         G4cout << " The File " << filename.str() << " is open to record data " << G4endl;
-        fTree->SetDirectory(fRootFile);
+   //     fTree->SetDirectory(fRootFile);
+        fTree->DirectoryAutoAdd(fRootFile);
     }
 }
 void SToGS::BaseROOTTreeAction::CloseFile()
@@ -284,6 +281,7 @@ void SToGS::BaseROOTTreeAction::CloseFile()
         fTree->SetDirectory(0x0);
         delete current_root; fRootFile = 0x0; // this is not an error !
 	}
+    fTree->Print();
     delete fTree; fTree = 0x0;
 }
 

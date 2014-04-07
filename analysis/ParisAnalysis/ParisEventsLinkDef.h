@@ -11,9 +11,6 @@
 #pragma link C++ class POpticalHit+;
 #pragma link C++ class POpticalEvent+;
 
-#pragma link C++ class cBasicREv+;
-#pragma link C++ class cRootEv+;
-
 #pragma link C++ nestedclass;
 #pragma link C++ nestedtypedef;
 
