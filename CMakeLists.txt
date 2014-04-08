@@ -63,6 +63,7 @@ set(SToGS_SRC ${SToGS_SRC}
 	csrc/SToGS_DetectorFactory.cc
     csrc/SToGS_RoomsDF.cc
     csrc/SToGS_ScintillatorDF.cc
+    csrc/SToGS_SemiConductorGeDF.cc
     csrc/SToGS_MyStoreDF.cc
     csrc/SToGS_LoadFromDetectorFactory.cc
     csrc/SToGS_TwoShellsDetectorConstruction.cc
@@ -90,6 +91,7 @@ set(SToGS_HEADER ${SToGS_HEADER}
 	csrc/SToGS_DetectorFactory.hh
     csrc/SToGS_RoomsDF.hh
     csrc/SToGS_ScintillatorDF.hh
+    csrc/SToGS_SemiConductorGeDF.hh
     csrc/SToGS_MyStoreDF.hh
     csrc/SToGS_LoadFromDetectorFactory.hh
     csrc/SToGS_TwoShellsDetectorConstruction.hh

@@ -41,9 +41,10 @@ public:
     virtual G4VPhysicalVolume * Make(G4String /* name */, G4String /* version_string */);
     
 protected:
-    //! make a eurogam p1 Ge detector
-    G4VPhysicalVolume *MakeEURO_PI(G4String detname, G4String opt = "");
-
+    //! make a eurogam p1 Ge detector ... to be finished 
+    //G4VPhysicalVolume *MakeEURO_PI(G4String detname, G4String opt = "");
+    //
+    // G4VPhysicalVolume *MakeEXO_CLOVER(G4String detname, G4String opt = "");
     
 public:
     SemiConductorGeDF(G4String path) : DetectorFactory(path)

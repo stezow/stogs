@@ -47,40 +47,23 @@
 #include "G4SDManager.hh"
 #include "G4UnitsTable.hh"
 
+// Project includes
+#include "SToGS_SemiConductorGeDF.hh"
 
-// Paris includes
-#include "SemiConductorGeDF.hh"
-#include "ParisMaterialConsultant.hh"
-#include "ParisOutputManager.hh"
-
-#include "G4GDMLParser.hh"
+#include "SToGS_DetectorFactory.hh"
+#include "SToGS_MaterialConsultant.hh"
+#include "SToGS_UserActionManager.hh"
 
 using namespace std;
-
 
 // list of all specific factories
 namespace  {
     // all SemiConductors
-    SemiConductorGeDF theGeFactory("SemiConductors/Ge/");
+    SToGS::SemiConductorGeDF theGeFactory("SemiConductors/Ge/");
 }
 
-/*
-// Germanium isotopes
-G4Isotope* Ge70 = new G4Isotope(name="Ge70", nprot=32, nnucl=70, a=69.9242*g/mole);
-G4Isotope* Ge72 = new G4Isotope(name="Ge72", nprot=32, nnucl=72, a=71.9221*g/mole);
-G4Isotope* Ge73 = new G4Isotope(name="Ge73", nprot=32, nnucl=73, a=72.9235*g/mole);
-G4Isotope* Ge74 = new G4Isotope(name="Ge74", nprot=32, nnucl=74, a=73.9212*g/mole);
-G4Isotope* Ge76 = new G4Isotope(name="Ge76", nprot=32, nnucl=76, a=75.9214*g/mole);
-// germanium defined via its isotopes
-G4Element* elGe = new G4Element(name="Germanium",symbol="Ge", nelements=5);
-elGe->AddIsotope(Ge70, 0.2123);
-elGe->AddIsotope(Ge72, 0.2766);
-elGe->AddIsotope(Ge73, 0.0773);
-elGe->AddIsotope(Ge74, 0.3594);
-elGe->AddIsotope(Ge76, 0.0744);
-myElements.push_back(elGe);
- */
 
+/*
 G4VPhysicalVolume * SemiConductorGeDF::MakeEURO_PI(G4String detname, G4String opt)
 {
     G4VPhysicalVolume *theDetector = 0x0; G4LogicalVolume *detlogicWorld; G4Box *detWorld; // G4bool do_caps = false, do_housing = false;
@@ -89,13 +72,12 @@ G4VPhysicalVolume * SemiConductorGeDF::MakeEURO_PI(G4String detname, G4String op
     if ( opt != "bare" ) {
 //            do_caps = true;
     }
-    /*
     if ( housing_width != 0.0 ) {
         if ( opt != "bare" ) {
             do_housing = true;
         }
     }
-     */
+
     
     // use a physical as a container to describe the detector
 	detWorld= new G4Box(detname,10.*cm,10.*cm,50.*cm);
@@ -144,30 +126,32 @@ G4VPhysicalVolume * SemiConductorGeDF::MakeEURO_PI(G4String detname, G4String op
         new G4Polycone("CrystalEUROGAM_PI",0.0*deg,360.0*deg,nbSlice,zSlice,InnRad,OutRad);
     // G4LogicalVolume *crys_logical  = new G4LogicalVolume( crys, matCrystal, G4String(sName), 0, 0, 0 );
     
-    
     return theDetector;
 }
-
-G4VPhysicalVolume * SemiConductorGeDF::Make(G4String name, G4String version_string)
+*/
+ 
+G4VPhysicalVolume * SToGS::SemiConductorGeDF::Make(G4String name, G4String version_string)
 {
     G4VPhysicalVolume *theDetector = 0x0; G4String detname;
     
-    // PARIS RELATED
-    if ( name == "EuroPI" ) {
-        
-        detname = GetDetName("EuroPI",version_string);
+    //
+    /*
+    if ( name == "EXOGAM" ) {
+        detname = GetDetName("EXOGAM",version_string);
         theDetector =
-            MakeEURO_PI(detname,version_string);
+            MakeEXO_CLOVER(detname,version_string);
     }
-    
+    */
     return theDetector;
 }
 
-void SemiConductorGeDF::MakeStore()
+void SToGS::SemiConductorGeDF::MakeStore()
 {
 // EUROGAM/BALL related
-    ParisOutputManager::SetGCopyNb(0);
-    //MakeInStore("ParisPW","2");
+    
+// EXOGAM
+    SToGS::DetectorFactory::SetGCopyNb(0);
+    //MakeInStore("EXOGAM","A-bare");
 }
 
 

@@ -206,6 +206,7 @@ G4Run* ParisUserAction::GenerateRun()
     if ( fTree == 0x0 ) {
         fTree = new TTree(fTreeName.data(),fTreeTitle.data());
         fTree->SetDirectory(0x0);
+//        fTree->SetMaxTreeSize(fMaxEvents);
         
         if (fisOptical > 0) {
             fOpticalEventBeg = new POpticalEvent(); fOpticalEventEnd = new POpticalEvent();
