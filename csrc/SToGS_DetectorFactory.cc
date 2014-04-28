@@ -302,7 +302,7 @@ void SToGS::DetectorFactory::Store(G4VPhysicalVolume *theDetector)
     if ( amap.is_open() && dmap.is_open() ) {
         
         std::vector<G4LogicalVolume *> logical_stored; std::vector<G4VPhysicalVolume *> phycical_stored;
-        
+
         for (G4int i = 0; i < theDetector->GetLogicalVolume()->GetNoDaughters(); i++) {
             StoreMap(amap, dmap, logical_stored, phycical_stored, theDetector->GetLogicalVolume()->GetDaughter(i)
                      /*,theDetector->GetName() */);

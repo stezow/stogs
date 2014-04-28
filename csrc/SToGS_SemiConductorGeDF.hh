@@ -41,6 +41,17 @@ public:
     virtual G4VPhysicalVolume * Make(G4String /* name */, G4String /* version_string */);
     
 protected:
+    // take the base polycone shape and applies consecutives substraction to shape it using the
+    // hexagonal shape given bu x/y_fort/back
+    G4VSolid *AGATAShaper(G4Polycone *polycone,
+                          G4double *xfront, G4double *yfront, G4double *xback, G4double *yback,
+                          G4double base_length,
+                          G4double added_dilatation = 0.0);
+    //! From asolid file provided by AGATA, get a capsule
+    G4VPhysicalVolume *MakeAGATACapsule(G4String which_capsule, G4String opt);
+    //! from acluster file, provided by AGATA, get a triple cluter
+    G4VPhysicalVolume *MakeAGATACluster(G4String detname, G4String opt);
+
     //! make a eurogam p1 Ge detector ... to be finished 
     //G4VPhysicalVolume *MakeEURO_PI(G4String detname, G4String opt = "");
     //
