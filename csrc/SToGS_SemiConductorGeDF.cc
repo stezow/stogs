@@ -589,7 +589,7 @@ G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACapsule(G4String detname, 
     //
     tmp  = crystal_name;
     tmp += "ShapeCoaxEncapsulation";
-    G4Polycone *coax_caps_shape = new G4Polycone(tmp, 0.*deg, 360.*deg, 2, zSliceGe, InnRadGe, OutRadGe);
+    G4Polycone *coax_caps_shape = new G4Polycone(tmp, 0.*CLHEP::deg, 360.*CLHEP::deg, 2, zSliceGe, InnRadGe, OutRadGe);
     //
     tmp  = crystal_name;
     tmp += "ShapeCapsule";
