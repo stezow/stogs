@@ -296,7 +296,7 @@ G4LogicalVolume *SToGS::AGATA::MakeAGATACapsule(G4String detname, G4String opt)
     //
     tmp  = detname;
     tmp += "_coax";
-    G4Polycone *coax = new G4Polycone(tmp, 0.*deg, 360.*deg, 4, zSliceGe, InnRadGe, OutRadGe ) ;
+    G4Polycone *coax = new G4Polycone(tmp, 0.*CLHEP::deg, 360.*CLHEP::deg, 4, zSliceGe, InnRadGe, OutRadGe ) ;
     // out of the shaper, the crystal with its complex shape
     tmp  = detname;
     tmp += "_crystal";
@@ -327,7 +327,7 @@ G4LogicalVolume *SToGS::AGATA::MakeAGATACapsule(G4String detname, G4String opt)
         //
         tmp  = detname;
         tmp += "_coax_spacing";
-        G4Polycone *coax_spacing_shape = new G4Polycone(tmp, 0.*deg, 360.*deg, 2, zSliceGe, InnRadGe, OutRadGe);
+        G4Polycone *coax_spacing_shape = new G4Polycone(tmp, 0.*CLHEP::deg, 360.*CLHEP::deg, 2, zSliceGe, InnRadGe, OutRadGe);
         //
         tmp  = detname;
         tmp += "_capsule_spacing";
@@ -352,7 +352,7 @@ G4LogicalVolume *SToGS::AGATA::MakeAGATACapsule(G4String detname, G4String opt)
         //
         tmp  = detname;
         tmp += "_coax_encapsulation";
-        G4Polycone *coax_caps_shape = new G4Polycone(tmp, 0.*deg, 360.*deg, 2, zSliceGe, InnRadGe, OutRadGe);
+        G4Polycone *coax_caps_shape = new G4Polycone(tmp, 0.*CLHEP::deg, 360.*CLHEP::deg, 2, zSliceGe, InnRadGe, OutRadGe);
         //
         tmp  = detname;
         tmp += "_capsule";
