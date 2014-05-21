@@ -1,0 +1,70 @@
+# 
+# First the world / detector envelop. if detector does not exist, box with dim given otherwise dim ignored 
+# 
+w AGATA_180 +2. +2. +2. m 
+# 
+@ 0 -> 
+# 
+# 
+* DetectorFactory/SemiConductors/Ge/ATC	+74.4705	+71.7883	-256.432	mm	Rz +344.302	Ry +158.032	Rz +43.9494
+* DetectorFactory/SemiConductors/Ge/ATC	-45.2621	+93.0094	-256.432	mm	Rz +344.302	Ry +158.032	Rz +115.949
+* DetectorFactory/SemiConductors/Ge/ATC	-102.444	-14.3054	-256.432	mm	Rz +344.302	Ry +158.032	Rz +187.949
+* DetectorFactory/SemiConductors/Ge/ATC	-18.0517	-101.851	-256.432	mm	Rz +344.302	Ry +158.032	Rz +259.949
+* DetectorFactory/SemiConductors/Ge/ATC	+91.2874	-48.6418	-256.432	mm	Rz +344.302	Ry +158.032	Rz +331.949
+* DetectorFactory/SemiConductors/Ge/ATC	+187.191	+59.8266	-194.518	mm	Rz +203.789	Ry +134.707	Rz +17.724
+* DetectorFactory/SemiConductors/Ge/ATC	+118.889	+168.925	-183.811	mm	Rz +111.584	Ry +131.664	Rz +54.8623
+* DetectorFactory/SemiConductors/Ge/ATC	+0.94655	+196.516	-194.518	mm	Rz +203.789	Ry +134.707	Rz +89.724
+* DetectorFactory/SemiConductors/Ge/ATC	-123.919	+165.27		-183.811	mm	Rz +111.584	Ry +131.664	Rz +126.862
+* DetectorFactory/SemiConductors/Ge/ATC	-186.606	+61.6271	-194.518	mm	Rz +203.789	Ry +134.707	Rz +161.724
+* DetectorFactory/SemiConductors/Ge/ATC	-195.474	-66.7822	-183.811	mm	Rz +111.584	Ry +131.664	Rz +198.862
+* DetectorFactory/SemiConductors/Ge/ATC	-116.275	-158.429	-194.518	mm	Rz +203.789	Ry +134.707	Rz +233.724
+* DetectorFactory/SemiConductors/Ge/ATC	+3.10872	-206.544	-183.811	mm	Rz +111.584	Ry +131.664	Rz +270.862
+* DetectorFactory/SemiConductors/Ge/ATC	+114.744	-159.541	-194.518	mm	Rz +203.789	Ry +134.707	Rz +305.724
+* DetectorFactory/SemiConductors/Ge/ATC	+197.396	-60.8691	-183.811	mm	Rz +111.584	Ry +131.664	Rz +342.862
+* DetectorFactory/SemiConductors/Ge/ATC	+274.763	+21.2264	-22.6115	mm	Rz +339.234	Ry +94.6906	Rz +4.41752
+* DetectorFactory/SemiConductors/Ge/ATC	+235.006	+110.564	-94.891		mm	Rz +275.834	Ry +110.07	Rz +25.1958
+* DetectorFactory/SemiConductors/Ge/ATC	+158.302	+213.027	-77.5674	mm	Rz +42.9062	Ry +106.292	Rz +53.3837
+* DetectorFactory/SemiConductors/Ge/ATC	+64.719		+267.875	-22.6115	mm	Rz +339.234	Ry +94.6906	Rz +76.4175
+* DetectorFactory/SemiConductors/Ge/ATC	-32.5321	+257.671	-94.891		mm	Rz +275.834	Ry +110.07	Rz +97.1958
+* DetectorFactory/SemiConductors/Ge/ATC	-153.683	+216.383	-77.5674	mm	Rz +42.9062	Ry +106.292	Rz +125.384
+* DetectorFactory/SemiConductors/Ge/ATC	-234.765	+144.329	-22.6115	mm	Rz +339.234	Ry +94.6906	Rz +148.418
+* DetectorFactory/SemiConductors/Ge/ATC	-255.112	+48.6848	-94.891		mm	Rz +275.834	Ry +110.07	Rz +169.196
+* DetectorFactory/SemiConductors/Ge/ATC	-253.283	-79.2948	-77.5674	mm	Rz +42.9062	Ry +106.292	Rz +197.384
+* DetectorFactory/SemiConductors/Ge/ATC	-209.812	-178.674	-22.6115	mm	Rz +339.234	Ry +94.6906	Rz +220.418
+* DetectorFactory/SemiConductors/Ge/ATC	-125.136	-227.582	-94.891		mm	Rz +275.834	Ry +110.07	Rz +241.196
+* DetectorFactory/SemiConductors/Ge/ATC	-2.85497	-265.39		-77.5674	mm	Rz +42.9062	Ry +106.292	Rz +269.384
+* DetectorFactory/SemiConductors/Ge/ATC	+105.094	-254.756	-22.6115	mm	Rz +339.234	Ry +94.6906	Rz +292.418
+* DetectorFactory/SemiConductors/Ge/ATC	+177.774	-189.338	-94.891		mm	Rz +275.834	Ry +110.07	Rz +313.196
+* DetectorFactory/SemiConductors/Ge/ATC	+251.519	-84.7253	-77.5674	mm	Rz +42.9062	Ry +106.292	Rz +341.384
+* DetectorFactory/SemiConductors/Ge/ATC	+258.827	-58.7264	+77.5674	mm	Rz +222.906	Ry +73.7085	Rz +347.216
+* DetectorFactory/SemiConductors/Ge/ATC	+250.386	+68.9877	+94.891		mm	Rz +95.8336	Ry +69.9295	Rz +15.4042
+* DetectorFactory/SemiConductors/Ge/ATC	+222.434	+162.692	+22.6115	mm	Rz +159.234	Ry +85.3094	Rz +36.1825
+* DetectorFactory/SemiConductors/Ge/ATC	+135.834	+228.011	+77.5674	mm	Rz +222.906	Ry +73.7085	Rz +59.2163
+* DetectorFactory/SemiConductors/Ge/ATC	+11.7624	+259.45		+94.891		mm	Rz +95.8336	Ry +69.9295	Rz +87.4042
+* DetectorFactory/SemiConductors/Ge/ATC	-85.9939	+261.822	+22.6115	mm	Rz +159.234	Ry +85.3094	Rz +108.182
+* DetectorFactory/SemiConductors/Ge/ATC	-174.877	+199.645	+77.5674	mm	Rz +222.906	Ry +73.7085	Rz +131.216
+* DetectorFactory/SemiConductors/Ge/ATC	-243.117	+91.361		+94.891		mm	Rz +95.8336	Ry +69.9295	Rz +159.404
+* DetectorFactory/SemiConductors/Ge/ATC	-275.581	-0.87768	+22.6115	mm	Rz +159.234	Ry +85.3094	Rz +180.182
+* DetectorFactory/SemiConductors/Ge/ATC	-243.914	-104.624	+77.5674	mm	Rz +222.906	Ry +73.7085	Rz +203.216
+* DetectorFactory/SemiConductors/Ge/ATC	-162.017	-202.985	+94.891		mm	Rz +95.8336	Ry +69.9295	Rz +231.404
+* DetectorFactory/SemiConductors/Ge/ATC	-84.3244	-262.364	+22.6115	mm	Rz +159.234	Ry +85.3094	Rz +252.182
+* DetectorFactory/SemiConductors/Ge/ATC	+24.1298	-264.306	+77.5674	mm	Rz +222.906	Ry +73.7085	Rz +275.216
+* DetectorFactory/SemiConductors/Ge/ATC	+142.985	-216.813	+94.891		mm	Rz +95.8336	Ry +69.9295	Rz +303.404
+* DetectorFactory/SemiConductors/Ge/ATC	+223.465	-161.272	+22.6115	mm	Rz +159.234	Ry +85.3094	Rz +324.182
+* DetectorFactory/SemiConductors/Ge/ATC	+181.062	+76.3941	+194.518	mm	Rz +23.7894	Ry +45.2931	Rz +22.876
+* DetectorFactory/SemiConductors/Ge/ATC	+110.265	+174.676	+183.811	mm	Rz +291.584	Ry +48.3361	Rz +57.7377
+* DetectorFactory/SemiConductors/Ge/ATC	-16.7039	+195.807	+194.518	mm	Rz +23.7894	Ry +45.2931	Rz +94.876
+* DetectorFactory/SemiConductors/Ge/ATC	-132.053	+158.846	+183.811	mm	Rz +291.584	Ry +48.3361	Rz +129.738
+* DetectorFactory/SemiConductors/Ge/ATC	-191.386	+44.6214	+194.518	mm	Rz +23.7894	Ry +45.2931	Rz +166.876
+* DetectorFactory/SemiConductors/Ge/ATC	-191.878	-76.5039	+183.811	mm	Rz +291.584	Ry +48.3361	Rz +201.738
+* DetectorFactory/SemiConductors/Ge/ATC	-101.579	-168.23		+194.518	mm	Rz +23.7894	Ry +45.2931	Rz +238.876
+* DetectorFactory/SemiConductors/Ge/ATC	+13.4659	-206.128	+183.811	mm	Rz +291.584	Ry +48.3361	Rz +273.738
+* DetectorFactory/SemiConductors/Ge/ATC	+128.606	-148.593	+194.518	mm	Rz +23.7894	Ry +45.2931	Rz +310.876
+* DetectorFactory/SemiConductors/Ge/ATC	+200.201	-50.8903	+183.811	mm	Rz +291.584	Ry +48.3361	Rz +345.738
+* DetectorFactory/SemiConductors/Ge/ATC	+103.261	-6.04338	+256.432	mm	Rz +164.302	Ry +21.9679	Rz +356.651
+* DetectorFactory/SemiConductors/Ge/ATC	+37.6571	+96.3398	+256.432	mm	Rz +164.302	Ry +21.9679	Rz +68.6506
+* DetectorFactory/SemiConductors/Ge/ATC	-79.9879	+65.5847	+256.432	mm	Rz +164.302	Ry +21.9679	Rz +140.651
+* DetectorFactory/SemiConductors/Ge/ATC	-87.0923	-55.8063	+256.432	mm	Rz +164.302	Ry +21.9679	Rz +212.651
+* DetectorFactory/SemiConductors/Ge/ATC	+26.1619	-100.075	+256.432	mm	Rz +164.302	Ry +21.9679	Rz +284.651
+# 
+# end 
