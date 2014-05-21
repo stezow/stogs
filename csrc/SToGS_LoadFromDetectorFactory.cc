@@ -38,7 +38,7 @@ G4VPhysicalVolume *SToGS::LoadFromDetectorFactory::Construct()
 
     G4VPhysicalVolume *physiWorld = 0x0; SToGS::DetectorFactory *where_to_load = SToGS::DetectorFactory::GetFactory(fNameInFactory);
     if ( where_to_load ) {
-        physiWorld = where_to_load->Get(fNameInFactory,false);
+        physiWorld = where_to_load->Get(fNameInFactory);
         if ( physiWorld == 0x0 ) {
             G4cout << "**** Cannot find setup " << fNameInFactory << " in Detector Factory " << where_to_load->GetFactoryName() << G4endl;
         }
@@ -56,7 +56,7 @@ void SToGS::LoadFromDetectorFactory::ConstructSDandField()
 
     SToGS::DetectorFactory *where_to_load = SToGS::DetectorFactory::GetFactory(fNameInFactory);
     if ( where_to_load ) {
-        where_to_load->GetAttributes(fNameInFactory); // assign amap, dmap
+        where_to_load->GetAttributes(fNameInFactory,true,false); // assign amap, dmap
     }
     else
         G4cout << "**** Cannot load setup " << fNameInFactory << " from Detector Factory " << G4endl;

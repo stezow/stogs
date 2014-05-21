@@ -36,6 +36,7 @@
 
 // Specific to the Generic Factory
 #include "SToGS_TwoShellsDetectorConstruction.hh"
+#include "SToGS_AGATA.hh"
 
 // list of all specific factories
 namespace  {
@@ -80,6 +81,10 @@ G4VPhysicalVolume *SToGS::GenericsDF::Get(G4String basename, G4bool is_full)
             theConstructor = new SToGS::TwoShellsDetectorConstruction(conffile);
         }
         else theConstructor = new SToGS::TwoShellsDetectorConstruction(conffile);
+        theDetector = theConstructor->Construct();
+    }
+    if ( basename.contains("/AGATA") ) {
+        theConstructor = new SToGS::AGATA();
         theDetector = theConstructor->Construct();
     }
 #ifdef HAS_MYDET

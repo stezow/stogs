@@ -177,10 +177,10 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakeCdC(G4String detname, G4String opt
     
 	// crystal
 	G4Polyhedra* a_solid
-        = new G4Polyhedra("C2CCrys",0.,360.1*CLHEP::deg,numSide,numZPlanes,z,rInner,rOuter);
+        = new G4Polyhedra("ShapeC2CCrys",0.,360.1*CLHEP::deg,numSide,numZPlanes,z,rInner,rOuter);
 	//Setting a logical volume
 	G4LogicalVolume *a_log
-        = new G4LogicalVolume(a_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("BaF2"),"C2CCrys",0,0,0);
+        = new G4LogicalVolume(a_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("BaF2"),"C2CCrysLV",0,0,0);
 	
 	G4VisAttributes *visatt = new G4VisAttributes( G4Colour(0.0, 0.6, 0.0) );
 	visatt->SetVisibility(true);
@@ -195,43 +195,55 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakeCdC(G4String detname, G4String opt
     Ta.setY( 0.0 );
     Ta.setZ( 0.0 );
     new G4PVPlacement(0,Ta,a_log,"C2CCrys",detlogicWorld,false,0);
-    
+
+    // encapsulation side
+    G4VisAttributes *Capsule_visatt;
+    a_solid = new G4Polyhedra("ShapeC2CCapsSide",0.,360.*CLHEP::deg,numSide,numZPlanes,z_caps,rInner_caps,rOuter_caps);
     if ( do_caps ) {
-        
-        // encapsulation side
-        a_solid = new G4Polyhedra("C2CCapsSide",0.,360.*CLHEP::deg,numSide,numZPlanes,z_caps,rInner_caps,rOuter_caps);
-        //Setting a logical volume
         a_log
-            = new G4LogicalVolume(a_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"),"C2CCapsSide",0,0,0);
-        
+            = new G4LogicalVolume(a_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"),"C2CCapsSideLV",0,0,0);
         // grey for all passive part
-		G4VisAttributes *Capsule_visatt = new G4VisAttributes( G4Colour(0.8, 0.8, 0.8, 0.75) );
+        Capsule_visatt = new G4VisAttributes( G4Colour(0.8, 0.8, 0.8, 0.75) );
         Capsule_visatt->SetVisibility(true);
         a_log->SetVisAttributes( Capsule_visatt );
-        
-        Ta.setX( 0.0 );
-        Ta.setY( 0.0 );
-        Ta.setZ( 0.0 );
-        new G4PVPlacement(0,Ta,a_log,"C2CCapsSide",detlogicWorld,false,-1);
-        
-        // encapsulation front and back
-        a_solid = new G4Polyhedra("C2CCapsFront",0.,360.*CLHEP::deg,numSide,numZPlanes,z_caps_front,rInner_caps_front,rOuter_caps_front);
-        //Setting a logical volume
+    }
+    else {
         a_log
-            = new G4LogicalVolume(a_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"),"C2CCapsFront",0,0,0);
-        
+            = new G4LogicalVolume(a_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"),"C2CCapsSideLV",0,0,0);
+        // white for all passive part if air
+        Capsule_visatt = new G4VisAttributes( G4Colour(1, 1, 1, 0.5) );
+        Capsule_visatt->SetVisibility(true);
+        a_log->SetVisAttributes( Capsule_visatt );
+    }
+    //Setting a logical volume
+    Ta.setX( 0.0 );
+    Ta.setY( 0.0 );
+    Ta.setZ( 0.0 );
+    new G4PVPlacement(0,Ta,a_log,"C2CCapsSide",detlogicWorld,false,-1);
+    
+    // encapsulation front and back
+    a_solid = new G4Polyhedra("C2CCapsFront",0.,360.*CLHEP::deg,numSide,numZPlanes,z_caps_front,rInner_caps_front,rOuter_caps_front);
+    //Setting a logical volume
+    if ( do_caps ) {
+        a_log
+            = new G4LogicalVolume(a_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"),"C2CCapsFrontLV",0,0,0);
         // grey for all passive part
         a_log->SetVisAttributes( Capsule_visatt );
-        
-        Ta.setX( 0.0 );
-        Ta.setY( 0.0 );
-        Ta.setZ( 0.0 );
-        new G4PVPlacement(0,Ta,a_log,"C2CCapsFront",detlogicWorld,false,-1);
-        Ta.setX( 0.0 );
-        Ta.setY( 0.0 );
-        Ta.setZ( crystal_depth + caps_width + teflon_width );
-        new G4PVPlacement(0,Ta,a_log,"C2CCapsBack",detlogicWorld,false,-1);
     }
+    else {
+        a_log
+            = new G4LogicalVolume(a_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"),"C2CCapsFrontLV",0,0,0);
+        // grey for all passive part
+        a_log->SetVisAttributes( Capsule_visatt );
+    }
+    Ta.setX( 0.0 );
+    Ta.setY( 0.0 );
+    Ta.setZ( 0.0 );
+    new G4PVPlacement(0,Ta,a_log,"C2CCapsFront",detlogicWorld,false,-1);
+    Ta.setX( 0.0 );
+    Ta.setY( 0.0 );
+    Ta.setZ( crystal_depth + caps_width + teflon_width );
+    new G4PVPlacement(0,Ta,a_log,"C2CCapsBack",detlogicWorld,false,-1);
 	
     return theDetector;
 }
@@ -274,17 +286,17 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakePPW(G4String detname, G4double cap
 	
 	// full lenght in X,Y,Z
 	G4double
-    InnerX = 2*2.54*CLHEP::cm, InnerY = 2*2.54*CLHEP::cm, InnerZ = 2*2.54*CLHEP::cm,
-    OuterX = 2*2.54*CLHEP::cm, OuterY = 2*2.54*CLHEP::cm, OuterZ = 6*2.54*CLHEP::cm;
+        InnerX = 2*2.54*CLHEP::cm, InnerY = 2*2.54*CLHEP::cm, InnerZ = 2*2.54*CLHEP::cm,
+        OuterX = 2*2.54*CLHEP::cm, OuterY = 2*2.54*CLHEP::cm, OuterZ = 6*2.54*CLHEP::cm;
     // in case of housing longer at the back of the PW
 	G4double ExtraHousingBack = 20*CLHEP::mm, eps_caps =  caps_width / 100. , eps_housing = 0.05*CLHEP::mm; // eps remove in the capsule part to avoid overlapping
     // G4double r_caps_width = caps_width - eps_caps, r_housing_width = housing_width - eps_housing;
 	
     
 	// Stage 0
-	G4Box *Inner_solid = new G4Box(matInner, InnerX/2., InnerY/2., InnerZ/2.);
+	G4Box *Inner_solid = new G4Box("ShapePW0", InnerX/2., InnerY/2., InnerZ/2.);
 	G4LogicalVolume *Inner_logic =
-        new G4LogicalVolume(Inner_solid, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matInner),"PW:0",0,0,0);
+        new G4LogicalVolume(Inner_solid, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matInner),"PWLV:0",0,0,0);
 	G4VisAttributes *Inner_visatt = new G4VisAttributes( G4Colour(0.0, 0.0, 1.0) );
 	Inner_visatt->SetVisibility(true);
 	Inner_logic->SetVisAttributes( Inner_visatt );
@@ -294,12 +306,12 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakePPW(G4String detname, G4double cap
     T.setY( 0.0 );
     T.setZ( housing_width + caps_width + InnerZ / 2. );
     
-    new G4PVPlacement(0,T,Inner_logic,"PW:0",detlogicWorld,false,0);
+    new G4PVPlacement(0,T,Inner_logic,"PW:0:",detlogicWorld,false,0);
 	
 	// Stage 1
-	G4Box *Outer_solid = new G4Box(matOuter, OuterX/2., OuterY/2., OuterZ/2.);
+	G4Box *Outer_solid = new G4Box("ShapePW1", OuterX/2., OuterY/2., OuterZ/2.);
 	G4LogicalVolume *Outer_logic =
-        new G4LogicalVolume(Outer_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matOuter), "PW:1",0,0,0);
+        new G4LogicalVolume(Outer_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matOuter), "PWLV:1",0,0,0);
 	G4VisAttributes *Outer_visatt = new G4VisAttributes( G4Colour(1.0, 0.0, 0.0) );
 	Outer_visatt->SetVisibility(true);
 	Outer_logic->SetVisAttributes( Outer_visatt );
@@ -308,38 +320,47 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakePPW(G4String detname, G4double cap
 	T.setX( 0.0 );
     T.setY( 0.0 );
     T.setZ( housing_width + caps_width + InnerZ + OuterZ / 2. );
-    new G4PVPlacement(0,T,Outer_logic,"PW:1",detlogicWorld,false,1);
+    new G4PVPlacement(0,T,Outer_logic,"PW:1:",detlogicWorld,false,1);
     
-	if ( do_caps ) {
+    // Encapsulation Al if on otherwise set as AIR ... useful to check overlapping
+    G4double zplane[3], rinner[3], router[3];
+    
+    zplane[0] = 0.01*CLHEP::mm; zplane[1] = caps_width - eps_caps; zplane[2] = InnerZ + OuterZ + ExtraHousingBack;
+    rinner[0] = 0.00*CLHEP::mm; rinner[1] = InnerX / 2 + eps_caps; rinner[2] = InnerX / 2 + eps_caps;
+    router[0] = InnerX / 2 + caps_width ; router[1] = InnerX / 2 + caps_width ; router[2] = InnerX / 2 + caps_width;
+    
+    //rinner[0] = rinner[1] = rinner[2] = InnerX / 2 + eps_caps;
+    //router[0] = router[1] = router[2] = InnerX / 2 + caps_width;
+    
+    G4Polyhedra *side_part =
+        new G4Polyhedra("ShapePWCaps", 0.0, 361.0*CLHEP::deg, 4, 3, zplane, rinner, router);
+    
+    G4LogicalVolume *Capsule_logic_side; G4VisAttributes *Capsule_visatt;
+    if ( do_caps ) {
+        Capsule_logic_side =
+            new G4LogicalVolume(side_part,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matCapsule),"PWCaps",0,0,0);
         
-		// grey for all passive part
-		G4VisAttributes *Capsule_visatt = new G4VisAttributes( G4Colour(0.8, 0.8, 0.8, 0.75) );
+        Capsule_visatt = new G4VisAttributes( G4Colour(0.8, 0.8, 0.8, 0.75) );
         Capsule_visatt->SetVisibility(true);
+        Capsule_logic_side->SetVisAttributes( Capsule_visatt );
+    }
+    else {
+        Capsule_logic_side =
+            new G4LogicalVolume(side_part,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"),"PWCaps",0,0,0);
         
-        G4double zplane[3], rinner[3], router[3];
-        
-        zplane[0] = 0.01*CLHEP::mm; zplane[1] = caps_width - eps_caps; zplane[2] = InnerZ + OuterZ + ExtraHousingBack;
-        rinner[0] = 0.00*CLHEP::mm; rinner[1] = InnerX / 2 + eps_caps; rinner[2] = InnerX / 2 + eps_caps;
-        router[0] = InnerX / 2 + caps_width ; router[1] = InnerX / 2 + caps_width ; router[2] = InnerX / 2 + caps_width;
-        
-        //rinner[0] = rinner[1] = rinner[2] = InnerX / 2 + eps_caps;
-        //router[0] = router[1] = router[2] = InnerX / 2 + caps_width;
-        
- 		G4Polyhedra *side_part =
-        new G4Polyhedra("PwCaps", 0.0, 361.0*CLHEP::deg, 4, 3, zplane, rinner, router);
-        T.setX( 0.0 );
-        T.setY( 0.0 );
-        T.setZ( 0.0 );
-        
-        G4RotationMatrix *Ro = new G4RotationMatrix();
-        Ro->rotateZ(45.0*CLHEP::deg);
-        
- 		G4LogicalVolume *Capsule_logic_side =
-        new G4LogicalVolume(side_part,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matCapsule),"PWCaps",0,0,0);
-        
-		Capsule_logic_side->SetVisAttributes( Capsule_visatt );
-        new G4PVPlacement(Ro,T,Capsule_logic_side,"PwCaps",detlogicWorld,false,-1);
-        
+        Capsule_visatt = new G4VisAttributes( G4Colour(1, 1, 1, 0.5) );
+        Capsule_visatt->SetVisibility(true);
+        Capsule_logic_side->SetVisAttributes( Capsule_visatt );
+    }
+    
+    T.setX( 0.0 );
+    T.setY( 0.0 );
+    T.setZ( 0.0 );
+    G4RotationMatrix *Ro = new G4RotationMatrix();
+    Ro->rotateZ(45.0*CLHEP::deg);
+    new G4PVPlacement(Ro,T,Capsule_logic_side,"PwCaps",detlogicWorld,false,-1);
+    
+    
         /* OLD ... better to avoid boolean operation if possible
          // capsule
          G4Box *capsule_full =
@@ -372,9 +393,9 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakePPW(G4String detname, G4double cap
          
          new G4PVPlacement(0,T,Capsule_logic,"PwCapsule",detlogicWorld,false,-1);
          */
-	}
 	
     // TO BE DONE !
+    /*
 	if ( do_housing ) {
 		// housing
 		G4Box *Housing_full =
@@ -407,6 +428,7 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakePPW(G4String detname, G4double cap
         
         new G4PVPlacement(0,T,Housing_logic,"PWHousing",detlogicWorld,false,-1);
 	}
+     */
     
     return theDetector;
 }

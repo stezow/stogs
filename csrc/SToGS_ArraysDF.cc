@@ -41,15 +41,22 @@ void SToGS::ArraysDF::MakeStore()
     // SToGS::DetectorFactory::theMainFactory()->Clean();
     SToGS::DetectorFactory::SetGCopyNb(0);
     MakeInStore("Chateau2Crystal","");
+    SToGS::DetectorFactory::SetGCopyNb(0);
+    MakeInStore("AGATA","180");
 }
 
 G4VPhysicalVolume *SToGS::ArraysDF::Make(G4String name, G4String version_string)
 {
-    G4VPhysicalVolume *theDetector = 0x0; G4String detname;
+    G4VPhysicalVolume *theDetector = 0x0; // G4String detname;
 
     if ( name == "Chateau2Crystal" ) {
-        detname = GetDetName("Chateau2Crystal",version_string);
+        //detname = GetDetName("Chateau2Crystal",version_string);
         theDetector = MakeAnArrayFromFactory("DetectorFactory/Arrays/Builders/Chateau2Crystal.dfb");
+    }
+    if ( name == "AGATA" ) {
+        //detname = GetDetName("Chateau2Crystal",version_string);
+        if ( version_string == "180" )
+            theDetector = MakeAnArrayFromFactory("DetectorFactory/Arrays/Builders/AGATA_180.dfb");
     }
     return theDetector;
 }

@@ -4,7 +4,7 @@
 #include "TGeoVolume.h"
 #include "TGeoNode.h"
 
-//void CollectVolumes(TGeoNode *theDetector, std::vector<TGeoVolume*> &logical_stored, std::vector<TGeoNode *> &phycical_stored)
+//! From the Full geometry, extract the logical and physical [nodes] volumes
 void CollectVolumes(TGeoNode *theDetector, TObjArray &logical_stored, TObjArray &phycical_stored)
 {
     
@@ -38,7 +38,8 @@ void CollectVolumes(TGeoNode *theDetector, TObjArray &logical_stored, TObjArray 
     }
 }
 
-Bool_t ShowDetector(const char *basename = "DetectorFactory/Scintillators/CParisPW_2", Option_t *opt_draw = "ogl")
+//! Read the detector in the factory and show it in open GL window
+TGeoVolume *ShowDetector(const char *basename = "DetectorFactory/Scintillators/CParisPW_2", Option_t *opt_draw = "ogl")
 {
     TString detname, fullname; TObjArray logical_stored; TObjArray phycical_stored;
     
@@ -61,27 +62,26 @@ Bool_t ShowDetector(const char *basename = "DetectorFactory/Scintillators/CParis
         getline(amap,aline);
         while ( amap.good() ) {
             
-            istringstream decode(aline);
-            TString vname, key_sd, sd, key_color; Float_t r,g,b,a;
+            istringstream decode(aline); TString vname, key_sd, sd, key_color; Float_t r,g,b,a;
             
             decode >> vname
-            >> key_color
-            >> r
-            >> g
-            >> b
-            >> a
-            >> key_sd
-            >> sd
-            ;
+                >> key_color
+                >> r
+                >> g
+                >> b
+                >> a
+                >> key_sd
+                >> sd
+                ;
             
             for (size_t i = 0; i < logical_stored.GetEntries(); i++) {
                 TString tmp = logical_stored[i]->GetName();
                 if ( tmp == vname ) {
-                    cout << " **** Set Attributes to " << tmp << " " << aline << endl;
+                    cout << " **** Set Attributes to: " << tmp << " using " << aline << endl;
 
                     TGeoVolume *alogical = (TGeoVolume *)logical_stored[i];
                     
-                  //  alogical->SetFillColor( TColor::GetColor(r,g,b) );
+                    alogical->SetFillColor( TColor::GetColor(r,g,b) );
                     alogical->SetLineColor( TColor::GetColor(r,g,b) );
                     alogical->SetTransparency(100*(1-a));
                 }
@@ -90,29 +90,24 @@ Bool_t ShowDetector(const char *basename = "DetectorFactory/Scintillators/CParis
             getline(amap,aline);
         }
      }
-    
-    gGeoManager->CloseGeometry();
-    world->Draw(opt_draw);
-    
-    return true;
+
+    if ( opt_draw != "-" ) {
+        world->Draw(opt_draw);
+    }
+    gGeoManager->SetVisOption(0);
+
+    return world;
 }
 
-/*
+//! Read the detector in the factory and show it in Eve
 void ShowInEve(const char *basename = "DetectorFactory/Scintillators/CParisPW_2")
 {
     TEveManager::Create();
     
+    TGeoVolume *world = ShowDetector(basename,"-");
+    TEveGeoTopNode* inn = new TEveGeoTopNode(gGeoManager, gGeoManager->GetTopNode());
+    gEve->AddGlobalElement(inn);
 
-    gGeoManager = gEve->GetGeometry(basename);
-
-    
-    gGeoManager->DefaultColors();
-    
-    //TEveGeoTopNode* inn = new TEveGeoTopNode(gGeoManager, world);
-    //gEve->AddGlobalElement(inn);
-    
-    
-    
     gEve->FullRedraw3D(kTRUE);
     
     // EClipType not exported to CINT (see TGLUtil.h):
@@ -124,7 +119,7 @@ void ShowInEve(const char *basename = "DetectorFactory/Scintillators/CParisPW_2"
     v->CurrentCamera().RotateRad(-.7, 0.5);
     v->DoDraw();
 }
-*/
+
 
 /*
 void ExportToROOT(const Char_t *rfilename = "DetectorFactory.root")

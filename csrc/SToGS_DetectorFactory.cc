@@ -47,7 +47,6 @@
 #include "G4SDManager.hh"
 #include "G4UnitsTable.hh"
 
-
 // Paris includes
 #include "SToGS_DetectorFactory.hh"
 #include "SToGS_MaterialConsultant.hh"
@@ -105,9 +104,9 @@ void SToGS::DetectorFactory::ChangeSD(G4String opt, G4VPhysicalVolume *top)
         return;
 
     // collect from top volume all the logical volumes and modify SD accordingly
-    std::vector<G4LogicalVolume *> logical_stored; std::vector<G4VPhysicalVolume *> phycical_stored;
+    std::vector<G4LogicalVolume *> logical_stored; std::vector<G4VPhysicalVolume *> phycical_stored; std::vector<G4VPhysicalVolume *> phycical_active;
     //
-    CollectVolumes(l_top, logical_stored, phycical_stored);
+    CollectVolumes(l_top, logical_stored, phycical_stored, phycical_active);
     //
     for (size_t i = 0; i < logical_stored.size(); i++) {
 //        G4cout << "Changing volume of " << logical_stored[i]->GetName() << G4endl;
@@ -116,6 +115,22 @@ void SToGS::DetectorFactory::ChangeSD(G4String opt, G4VPhysicalVolume *top)
     }
 }
 
+/*
+void SToGS::DetectorFactory::ChangeCopyNb(G4VPhysicalVolume *top, G4String which_det, G4int which_nb)
+{
+    // collect from top volume all the logical volumes and modify SD accordingly
+    std::vector<G4LogicalVolume *> logical_stored; std::vector<G4VPhysicalVolume *> phycical_stored; G4int nb_sd = 0;
+    //
+    CollectVolumes(top, logical_stored, phycical_stored,nb_sd);
+    //
+    for (size_t i = 0; i < phycical_stored.size(); i++) {
+        if ( phycical_stored[i]->GetName() == which_det ) {
+            G4cout << "Changing copy # of " << phycical_stored[i]->GetName() << " to " << which_nb << G4endl;
+            phycical_stored[i]->SetCopyNo(which_nb);
+        }
+    }
+}
+ */
 
 void SToGS::DetectorFactory::MakeStore()
 {
@@ -162,16 +177,17 @@ void SToGS::DetectorFactory::StreamTouchable(std::ofstream &dmap, G4String dname
     }
 }
 
-void SToGS::DetectorFactory::StoreMap(std::ofstream &amap, std::ofstream &dmap,
-                               std::vector<G4LogicalVolume *> &logical_stored, std::vector<G4VPhysicalVolume *> &phycical_stored,
-                               G4VPhysicalVolume *theDetector /*,
-                               const G4String &mother_name */)
+void SToGS::DetectorFactory::StoreMap(std::ofstream &amap,
+                                      std::ofstream &dmap,
+                                      std::vector<G4LogicalVolume *> &logical_stored,
+                                      std::vector<G4VPhysicalVolume *> &physical_stored, std::vector<G4VPhysicalVolume *> &physical_active,
+                                      G4VPhysicalVolume *theDetector)
 {
     G4LogicalVolume *alogical = theDetector->GetLogicalVolume(); G4VPhysicalVolume *aphysical = 0x0;
     if ( alogical == 0x0 )
         return;
     
-    // check first if already in the list --> means already written in the amap file
+    // check first if logical already in the list --> means already written in the amap file
     G4bool in_the_list = false;
     for (size_t i = 0; i < logical_stored.size() ; i++) {
         if (alogical == logical_stored[i] )
@@ -210,8 +226,73 @@ void SToGS::DetectorFactory::StoreMap(std::ofstream &amap, std::ofstream &dmap,
         logical_stored.push_back(alogical);
     }
     
+    // add this to the physical store ... requires to get the rotation in world ...
+    // no need to check if alread there ad it is removed at the end of the method
+    physical_stored.push_back(theDetector);
+    
+    // keep in the first slot the first physical detector in a tree structure that are not the world ... just in case
+    G4int is_to_be_removed_from_active = false;
+    if ( theDetector->GetMotherLogical() && physical_active.size() == 0 ) {
+        physical_active.push_back(theDetector);
+        is_to_be_removed_from_active = true;
+    }
+    // if an active detector, keep the global unique id, the touchable history and global translation
     if ( theDetector->GetLogicalVolume()->GetSensitiveDetector() ) {
         
+        if ( is_to_be_removed_from_active == false ) { // not added by conditions first top volume but not world
+            physical_active.push_back(theDetector);
+            is_to_be_removed_from_active = true;
+        }
+
+        // add this detector to the list so that one can keep a history of physical to reach a sensitive volume
+        G4int offset = 0, global_unique_copy_number = 0;
+        G4String first_physical = physical_active[0]->GetName();
+        //
+        for (size_t i = 0; i < physical_active.size() ; i++) {
+            // touchable += physical_active[i]->GetName();
+            if ( i == 0 ) {
+                offset = physical_active[i]->GetCopyNo();
+            }
+        }
+        // if depth is reduced to one, otherwise unqiue number is deduced by adding top copy number with this copy number
+        if ( physical_active.size() > 1 ) {
+            global_unique_copy_number = offset + theDetector->GetCopyNo();
+        }
+        else
+            global_unique_copy_number = theDetector->GetCopyNo();
+        
+        G4ThreeVector ToTr;
+        for (size_t i = 0; i < physical_stored.size() ; i++) {
+            ToTr += physical_stored[i]->GetTranslation();
+        }
+        dmap << setw(5) << setfill('0') << global_unique_copy_number << "\t"
+                        << physical_active[0]->GetName() << "\t" << physical_active[0]->GetCopyNo() << "\t"
+                        << theDetector->GetName() << "\t" << theDetector->GetCopyNo() << "\t" ;
+        
+        //<< theDetector->GetName() << "\t";
+        // StreamTouchable(dmap, theDetector->GetName()); dmap << "\t";
+        //       dmap << theDetector->GetName() << "\t";
+        // dmap << touchable << "\t";
+        
+        if ( ToTr.getX() < 0.0 )
+            dmap << ToTr.getX()/CLHEP::cm << " ";
+        else
+            dmap << "+" << ToTr.getX()/CLHEP::cm << " ";
+        
+        if ( ToTr.getY() < 0.0 )
+            dmap << ToTr.getY()/CLHEP::cm << " ";
+        else
+            dmap << "+" << ToTr.getY()/CLHEP::cm << " ";
+        
+        if ( ToTr.getZ() < 0.0 )
+            dmap << ToTr.getZ()/CLHEP::cm << " ";
+        else
+            dmap << "+" << ToTr.getZ()/CLHEP::cm << " ";
+        
+        dmap << " cm\t";
+        dmap << " "<< std::endl;
+        
+        /*
         dmap << setw(5) << setfill('0')
             << theDetector->GetCopyNo() << "\t"
             << theDetector->GetName() << "\t";
@@ -235,17 +316,24 @@ void SToGS::DetectorFactory::StoreMap(std::ofstream &amap, std::ofstream &dmap,
     
         dmap << " cm\t";
         dmap << " "<< std::endl;
+         */
         // 
     }
 
     for (G4int i = 0; i < alogical->GetNoDaughters(); i++) {
         aphysical = alogical->GetDaughter(i);
-        StoreMap(amap, dmap, logical_stored, phycical_stored, aphysical /*, theDetector->GetName() */);
+        StoreMap(amap, dmap, logical_stored, physical_stored, physical_active, aphysical /*, theDetector->GetName() */);
+    }
+    // remove it to the history list
+    physical_stored.pop_back();
+    if ( is_to_be_removed_from_active ) {
+        physical_active.pop_back();
     }
 }
 
 void SToGS::DetectorFactory::CollectVolumes(G4VPhysicalVolume *theDetector,
-                            std::vector<G4LogicalVolume *> &logical_stored, std::vector<G4VPhysicalVolume *> &phycical_stored)
+                            std::vector<G4LogicalVolume *> &logical_stored,
+                            std::vector<G4VPhysicalVolume *> &phycical_stored, std::vector<G4VPhysicalVolume *> &physical_active)
 {
     G4LogicalVolume *alogical = theDetector->GetLogicalVolume(); G4VPhysicalVolume *aphysical = 0x0; G4bool in_the_list;
     
@@ -256,8 +344,11 @@ void SToGS::DetectorFactory::CollectVolumes(G4VPhysicalVolume *theDetector,
             break;
         }
     }
-    if ( !in_the_list ) {
+    if ( !in_the_list ) { // add this to the list if not yet there
         phycical_stored.push_back(theDetector);
+        if ( theDetector->GetLogicalVolume()->GetSensitiveDetector() ) {
+            physical_active.push_back(theDetector);
+        }
     }
     in_the_list = false;
     for (size_t i = 0; i < logical_stored.size() ; i++) {
@@ -273,7 +364,7 @@ void SToGS::DetectorFactory::CollectVolumes(G4VPhysicalVolume *theDetector,
     // recursive call
     for (G4int i = 0; i < alogical->GetNoDaughters(); i++) {
         aphysical = alogical->GetDaughter(i);
-        CollectVolumes(aphysical,logical_stored, phycical_stored);
+        CollectVolumes(aphysical,logical_stored, phycical_stored, physical_active);
     }
 }
 
@@ -301,11 +392,10 @@ void SToGS::DetectorFactory::Store(G4VPhysicalVolume *theDetector)
     
     if ( amap.is_open() && dmap.is_open() ) {
         
-        std::vector<G4LogicalVolume *> logical_stored; std::vector<G4VPhysicalVolume *> phycical_stored;
+        std::vector<G4LogicalVolume *> logical_stored; std::vector<G4VPhysicalVolume *> physical_stored, physical_active;
 
         for (G4int i = 0; i < theDetector->GetLogicalVolume()->GetNoDaughters(); i++) {
-            StoreMap(amap, dmap, logical_stored, phycical_stored, theDetector->GetLogicalVolume()->GetDaughter(i)
-                     /*,theDetector->GetName() */);
+            StoreMap(amap, dmap, logical_stored, physical_stored, physical_active, theDetector->GetLogicalVolume()->GetDaughter(i) );
         }
     }
 }
@@ -362,81 +452,70 @@ void SToGS::DetectorFactory::AssemblyRename(G4AssemblyVolume *assembly, const G4
 	}    
 }
 
-G4int SToGS::DetectorFactory::DoMap(G4AssemblyVolume *assembly, G4VPhysicalVolume *volume_used_to_built_assembly, G4int copy_number_offset, G4String opt) const
+G4int SToGS::DetectorFactory::DoMap(G4AssemblyVolume *assembly,
+                                    G4VPhysicalVolume *volume_used_to_built_assembly, G4int copy_number_offset, G4String opt) const
 {
 
     G4cout << "[+] Results of snapshots of " <<  volume_used_to_built_assembly->GetName() << endl;
 
-	std::string tmp; G4int item = 0, nb_sd; std::vector <G4int> items; // for each imprinted volumes, current number
+	std::string tmp; G4int item = 0; std::vector <G4int> items; // for each imprinted volumes, current number
+    
     // from the detector used to make the assembly, collect logical and physical to remap the imprinted volumes
-    std::vector<G4LogicalVolume *> logical_stored; std::vector<G4VPhysicalVolume *> phycical_stored; std::vector<G4int > volume_counter;
+    std::vector<G4LogicalVolume *> logical_stored; std::vector<G4VPhysicalVolume *> physical_stored; std::vector<G4VPhysicalVolume *> physical_active;
     //
-    CollectVolumes(volume_used_to_built_assembly, logical_stored, phycical_stored);
+    CollectVolumes(volume_used_to_built_assembly, logical_stored, physical_stored, physical_active);
     //
+    std::vector<G4int > volume_counter; volume_counter.resize(physical_stored.size(),0);
+    // items.resize( assembly->GetImprintsCount() , 0 );
     
-    // count number of SD in primary detector
-    volume_counter.resize(phycical_stored.size(),0); items.resize( assembly->GetImprintsCount() , 0 );
-    nb_sd = 0;
-    for (size_t i = 0; i < logical_stored.size(); i++) {
-        if ( logical_stored[i]->GetSensitiveDetector() ) {
-            nb_sd++;
-        }
-    }
-    
+    // now loop on the imprinted volumes and modify the mapping i.e. the name of the imprinted volumes and the copy number of sensitives
     std::vector < G4VPhysicalVolume* >::iterator vol = assembly->GetVolumesIterator();
     for (size_t i = 0; i < assembly->TotalImprintedVolumes(); i++) {
         
         G4VPhysicalVolume *an_element = *vol++;
         tmp = (an_element)->GetName();
         
-        G4int av, impr, pv, nbread; char *tmpname = new char[tmp.size()];
-        
         // necessary otherwise sscanf does not work and set string up to the end
+        G4int av, impr, pv, nbread; char *tmpname = new char[tmp.size()];
         tmp.replace(tmp.find("_pv"), 3, std::string(" _pv"));
         nbread = sscanf(tmp.data(),"av_%d_impr_%d_%s _pv_%d",&av,&impr,tmpname,&pv);
-
+        //
         impr--;
 
         // look for the physical volume this imprinted volumes refered to, extract the name and add :impr
         G4int keep_j = 0;
-        for (size_t j = 1; j < phycical_stored.size(); j++) {
-            if ( an_element->GetLogicalVolume() == phycical_stored[j]->GetLogicalVolume() ) {
-                
+        for (size_t j = 1; j < physical_stored.size(); j++) {
+            if ( an_element->GetLogicalVolume() == physical_stored[j]->GetLogicalVolume() ) {
                 if ( impr == volume_counter[j] ) {
                     keep_j = j;
+                    volume_counter[j]++;
                     break;
                 }
             }
         }
-        ostringstream hname, tmpsize; tmpsize << assembly->GetImprintsCount();
-        
-        hname << phycical_stored[keep_j]->GetName() << ":" << setw(tmpsize.str().size()) << setfill('0') << impr;
-       
-        (an_element)->SetName(hname.str());
-        volume_counter[keep_j]++;
         //
-        // set new copy number depending of option and if SD
-        if ( an_element->GetLogicalVolume()->GetSensitiveDetector() ) {
-            if ( opt == "->" )
-               (an_element)->SetCopyNo(copy_number_offset + item );
-            else
-                (an_element)->SetCopyNo(copy_number_offset + items[impr]*assembly->GetImprintsCount() + impr );
-            
-            items[impr]++;
-            item++;
+        ostringstream hname;
+        hname << volume_used_to_built_assembly->GetName() << ":" << setw(3) << setfill('0') << impr << ":" << physical_stored[keep_j]->GetName() ;
+        if ( physical_stored[keep_j]->GetLogicalVolume()->GetNoDaughters() == 0 ) {
+            if ( physical_stored[keep_j]->GetLogicalVolume()->GetSensitiveDetector() ) {
+                (an_element)->SetName(hname.str());
+                (an_element)->SetCopyNo( copy_number_offset + impr*physical_active.size() + physical_stored[keep_j]->GetCopyNo() );
+                G4cout << " Set Copy Number of Imprinted Physical Volume " << (an_element)->GetName() << " to " << (an_element)->GetCopyNo() << G4endl;
+            }
         }
-        else
-            (an_element)->SetCopyNo(-1);
-        //
-        G4cout << " + " << (an_element)->GetName() << " with copy number " << (an_element)->GetCopyNo() << G4endl;
-
+        else {
+            (an_element)->SetName(hname.str());
+            (an_element)->SetCopyNo( copy_number_offset + impr*physical_active.size() );
+            G4cout << " Set Copy Number of Imprinted Physical Volume " << (an_element)->GetName() << " to " << (an_element)->GetCopyNo() << G4endl;
+        }
         
+        //
         delete [] tmpname;
     }
     
     G4cout << "[-] Results of snapshots of " <<  volume_used_to_built_assembly->GetName()  << endl;
     
-    return item;
+    return physical_active.size();
     
 }
 
@@ -579,9 +658,9 @@ G4VPhysicalVolume *SToGS::DetectorFactory::Import(G4String gdmlfile, G4String de
         theDetector->GetLogicalVolume()->SetName(detname);
         
         // collect logical to eventual set sensitivity using opt
-        std::vector<G4LogicalVolume *> logical_stored; std::vector<G4VPhysicalVolume *> phycical_stored;
+        std::vector<G4LogicalVolume *> logical_stored; std::vector<G4VPhysicalVolume *> phycical_stored; std::vector<G4VPhysicalVolume *> phycical_active;
         //
-        CollectVolumes(theDetector, logical_stored, phycical_stored);
+        CollectVolumes(theDetector, logical_stored, phycical_stored, phycical_active);
  
         for (size_t i = 0; i < logical_stored.size(); i++) {
             SetActive(logical_stored[i], opt_amap);
@@ -619,7 +698,7 @@ G4VPhysicalVolume *SToGS::DetectorFactory::Get(G4String basename)
 }
  */
 
-G4VPhysicalVolume *SToGS::DetectorFactory::Get(G4String basename, G4bool is_full)
+G4VPhysicalVolume *SToGS::DetectorFactory::Get(G4String basename)
 {
     G4VPhysicalVolume *theDetector = 0x0; G4String detname, fullname;
     
@@ -637,6 +716,7 @@ G4VPhysicalVolume *SToGS::DetectorFactory::Get(G4String basename, G4bool is_full
         return theDetector;
     }
     
+    // get it for the first time: load and apply amp, dmap if asked
     std::ifstream isgdml_in(fullname.data());
     if ( isgdml_in.is_open() ) {
         isgdml_in.close();
@@ -659,38 +739,48 @@ G4VPhysicalVolume *SToGS::DetectorFactory::Get(G4String basename, G4bool is_full
     std::pair < G4String, G4VPhysicalVolume *> p(fullname,theDetector); // add the new loaded detector to the list 
     fLoadedPhysical.push_back(p);
     
-    if ( is_full ) {
-        GetAttributes(basename);
-    }
+    // just remove _PV added by G4
+    G4String phy_name = theDetector->GetName();
+    size_t pos = phy_name.find("_PV");
+    phy_name.erase(pos,3);
+    // phy_name += ":0";
+    theDetector->SetName(phy_name);
     
-    cout << "[..+] Loading from store " << basename << endl;
+    GetAttributes(basename, true, true);
+    
+    G4cout << "[..+] Loading from store " << basename << G4endl;
 
     return theDetector;
 }
 
-void SToGS::DetectorFactory::GetAttributes(G4String basename)
+void SToGS::DetectorFactory::GetAttributes(G4String basename, G4bool do_amap, G4bool do_dmap)
 {
     G4VPhysicalVolume *theDetector; G4String detname, fullname;
     
-    theDetector = Get(basename,false);
+    theDetector = Get(basename);
     if ( theDetector == 0x0 )
         return;
     
-    cout << "[+..] Loading Attributes from store " << basename << endl;
+    if ( do_amap == false && do_amap == false ) { // no need to proceed 
+        return;
+    }
+    
+    G4cout << "[+..] Loading Attributes from store " << basename << endl;
     
     // now apply map
     fullname  = basename; fullname += ".dmap"; std::ifstream dmap(fullname.data());
     fullname  = basename; fullname += ".amap"; std::ifstream amap(fullname.data());
     
-    std::vector<G4LogicalVolume *> logical_stored; std::vector<G4VPhysicalVolume *> phycical_stored; G4String aline; G4bool has_done_amap = false;
+    std::vector<G4LogicalVolume *> logical_stored; std::vector<G4VPhysicalVolume *> phycical_stored; std::vector<G4VPhysicalVolume *> physical_active;
+    G4String aline; G4bool has_done_amap = false;
     //
-    CollectVolumes(theDetector, logical_stored, phycical_stored);
+    CollectVolumes(theDetector, logical_stored, phycical_stored, physical_active);
     //
-    if ( amap.is_open() ) {
+    if ( amap.is_open() && do_amap ) {
         
         // logicals
         getline(amap,aline);
-        while ( amap.good() ) {
+        while ( amap.good()  && !amap.eof() ) {
             
             istringstream decode(aline);
             G4String vname, key_sd, sd, key_color, touchable; G4double r,g,b,a;
@@ -707,7 +797,7 @@ void SToGS::DetectorFactory::GetAttributes(G4String basename)
             
             for (size_t i = 0; i < logical_stored.size(); i++) {
                 if ( vname == logical_stored[i]->GetName() ) {
-                    cout << " Change attributes [colors] of " << vname << " to " << G4Color(r,g,b,a) << endl;
+                    //G4cout << " Change attributes [colors] of " << vname << " to " << G4Color(r,g,b,a) << G4endl;
                     //
                     G4VisAttributes visatt(G4Color(r,g,b,a));
                     if ( key_color == "C" )
@@ -721,7 +811,7 @@ void SToGS::DetectorFactory::GetAttributes(G4String basename)
                     if ( sd != "-" ) { // means a sensitive detector so look for it and assign to the volume
                         G4VSensitiveDetector * sensdet = GetSD(sd);
                         if (sensdet) {
-                            cout << " Change attribute [sensitive] of " << vname << " to " << sd << endl;
+                            // G4cout << " Change attribute [sensitive] of " << vname << " to " << sd << G4endl;
                             logical_stored[i]->SetSensitiveDetector(sensdet);
                         }
                     }
@@ -730,7 +820,7 @@ void SToGS::DetectorFactory::GetAttributes(G4String basename)
                     break;
                 }
             }
-            
+            aline = "";
             getline(amap,aline);
         }
     }
@@ -765,19 +855,21 @@ void SToGS::DetectorFactory::GetAttributes(G4String basename)
     }
     
     //
-    if ( dmap.is_open() ) {
+    if ( dmap.is_open() && do_dmap ) {
         
+        G4int max_uid = 0;
         for (size_t i = 0; i < phycical_stored.size(); i++) {
             phycical_stored[i]->SetCopyNo(-1);
         }
-        
+
         // physicals
         getline(dmap,aline);
-        while ( dmap.good() ) {
+        while ( dmap.good() && !dmap.eof()) {
             
-            G4String pname, unit, touchable; G4double x,y,z; G4int uid;
+            G4String pname, unit, firstpname; G4double x,y,z; G4int uid, top_id, id;
             istringstream decode(aline);
             
+            /*
             decode >> uid
             >> pname
             >> touchable
@@ -786,19 +878,40 @@ void SToGS::DetectorFactory::GetAttributes(G4String basename)
             >> z
             >> unit
             ;
-            //               cout << " Change Copy number of " << pname << phycical_stored.size() << endl;
+            */
+            decode >> uid
+                >> firstpname
+                >> top_id
+                >> pname
+                >> id
+                >> x
+                >> y
+                >> z
+                >> unit
+            ;
             
+            //               cout << " Change Copy number of " << pname << phycical_stored.size() << endl;
+            G4cout << " Load Copy number of " << firstpname << " [" << top_id << "] and " << pname << " [" << id << "] " << G4endl;
+            
+            // std::vector<G4bool> is_changed(phycical_stored.size(),0); // to avoid applying modification more that once
             for (size_t i = 0; i < phycical_stored.size(); i++) {
-                if ( pname == phycical_stored[i]->GetName() ) {
-                    cout << " Load Copy number of " << pname << " : " << uid << endl;
+                if ( firstpname == phycical_stored[i]->GetName() ) {
+                    // G4cout << " Load Copy number of " << firstpname << " [" << top_id << "] " << G4endl;
                     //
-                    phycical_stored[i]->SetCopyNo(uid);
-                    break;
+                    phycical_stored[i]->SetCopyNo(top_id);
+                }
+                if ( pname == phycical_stored[i]->GetName() ) {
+                    // G4cout << " Load Copy number of " << pname << " [" << id << "] " << G4endl;
+                    //
+                    phycical_stored[i]->SetCopyNo(id);
                 }
             }
             //
+            aline = "";
             getline(dmap,aline);
         }
+        //SToGS::DetectorFactory::SetGCopyNb( SToGS::DetectorFactory::GetGCopyNb() + max_uid );
+        // in principle consecutive copy numbers ... but just in case take the highest found ...
     }
     else {
         for (size_t i = 0; i < phycical_stored.size(); i++) {
@@ -849,28 +962,28 @@ void SToGS::DetectorFactory::GetAttributes(G4String basename)
             }
         }
     }
-    
     cout << "[..+] Loading Attributes from store " << basename << endl;
 }
 
-
-G4bool SToGS::DetectorFactory::Set(G4String basename, G4VPhysicalVolume *mother, G4int copy_number_offset, G4ThreeVector *T, G4RotationMatrix *R)
+/*
+G4bool SToGS::DetectorFactory::Set(G4String basename, G4VPhysicalVolume *mother,
+                                   G4int copy_number_offset, G4String opt, const G4ThreeVector *T, const G4RotationMatrix *R)
 {
-    G4VPhysicalVolume *thefullDetector = 0x0, *subdetector ; G4LogicalVolume *volume_to_move;
+    G4VPhysicalVolume *thefullDetector = 0x0, *subdetector ; G4LogicalVolume *volume_to_copy; G4int depth = -1;
     
-    thefullDetector = Get(basename); // load from factory the detector, remove the envelop and move the content into mother with all its attribute
+    thefullDetector = Get(basename); // load from factory the detector, remove the envelop and copy the content into mother with all its attribute
     if ( thefullDetector == 0x0 ) {
         return false;
     }
-    else { volume_to_move = thefullDetector->GetLogicalVolume(); /* thefullDetector->SetLogicalVolume(0x0); */ }
+    else { volume_to_copy = thefullDetector->GetLogicalVolume(); }
     
     // set copy number as known by full detector
-    for (G4int i = 0; i < volume_to_move->GetNoDaughters(); i++) {
-        subdetector = volume_to_move->GetDaughter(i);
-//        cout << " + " << subdetector->GetName() << " " << subdetector->GetCopyNo() << endl;
+    for (G4int i = 0; i < volume_to_copy->GetNoDaughters(); i++) {
+        // get sub-detector
+        subdetector = volume_to_copy->GetDaughter(i);
         
         G4ThreeVector *T_ = new G4ThreeVector(); G4RotationMatrix *R_ = new G4RotationMatrix();
-        
+        //
         (*T_) = subdetector->GetObjectTranslation();
         if ( subdetector->GetRotation() ) {
             (*R_) = (*subdetector->GetRotation());
@@ -880,16 +993,152 @@ G4bool SToGS::DetectorFactory::Set(G4String basename, G4VPhysicalVolume *mother,
         if ( R )
             (*R_) = (*R) * (*R_);
         
-        new G4PVPlacement(R_,(*T_),
-                            subdetector->GetLogicalVolume(),
-                            subdetector->GetName(),
-                            mother->GetLogicalVolume(),
-                            false,
-                            copy_number_offset + subdetector->GetCopyNo());
+        G4int placement_mode = 0;
+        if ( dynamic_cast<G4PVPlacement *>(subdetector) == 0x0 ) {
+            G4cout << " Current limitation in cloning this kind of physical volume " << subdetector->GetName() << G4endl;
+            continue;
+        }
+        else placement_mode = 1;
+        //        cout << " + " << subdetector->GetName() << " " << subdetector->GetCopyNo() << endl;
+        
+        // à la StoGS i.e. just give unique positive copy number to Sensitive
+        // to be done: à la G4 i.e. copy number are touchables ...
+        G4int new_copy_number = depth;
+        if ( subdetector->GetLogicalVolume()->GetSensitiveDetector() ) {
+            new_copy_number = subdetector->GetCopyNo() + copy_number_offset;
+        }
+        
+        
+        
+        G4VPhysicalVolume *new_subdetector = new G4PVPlacement(R_,(*T_),
+                                                               subdetector->GetLogicalVolume(),
+                                                               subdetector->GetName(),
+                                                               mother->GetLogicalVolume(),
+                                                               false,
+                                                               new_copy_number);
+        // propagate the copy ... no need of additional Translation, Rotation
+        if ( subdetector->GetNoDaughters() > 0 )
+            Set(subdetector,new_subdetector);
+        
+        delete T_;
+    }
+    // now for all active volume, add offset
+    std::vector<G4LogicalVolume *> logical_stored; std::vector<G4VPhysicalVolume *> phycical_stored;
+    //
+    CollectVolumes(thefullDetector, logical_stored, phycical_stored);
+    //
+    for (size_t i = 0; i < phycical_stored.size(); i++) {
+        if ( phycical_stored[i]->GetLogicalVolume()->GetSensitiveDetector() ) {
+            G4cout << "Changing copy # of " << phycical_stored[i]->GetName() << " to "
+            << phycical_stored[i]->GetCopyNo() + copy_number_offset
+            << G4endl;
+            phycical_stored[i]->SetCopyNo( phycical_stored[i]->GetCopyNo() + copy_number_offset );
+        }
     }
     
     return true;
 }
+ */
+
+G4int SToGS::DetectorFactory::ReMap(G4VPhysicalVolume *adetector, G4int offset)
+{
+    std::vector<G4LogicalVolume *> logical_stored; std::vector<G4VPhysicalVolume *> physical_stored, physical_active;
+    CollectVolumes(adetector, logical_stored, physical_stored, physical_active);
+    
+    for (size_t i = 0; i < physical_active.size(); i++) {
+        G4cout << "---> Changing Copy Number of Detector " << physical_active[i]->GetName() << " from " << physical_active[i]->GetCopyNo()
+                << " to " << offset + i << G4endl;;
+        physical_active[i]->SetCopyNo(offset + i);
+    }
+    return G4int(physical_active.size());
+}
+
+G4int SToGS::DetectorFactory::Set(G4String basename, G4VPhysicalVolume *mother,
+                                   G4int top_copy_number_offset, const G4ThreeVector *T, const G4RotationMatrix *R,  G4int imprint_number)
+{
+    G4VPhysicalVolume *thefullDetector = 0x0, *subdetector ; G4LogicalVolume *volume_to_copy;
+    
+    // load from factory the detector, remove the envelop and move the content into mother with all its attribute
+    thefullDetector = Get(basename);
+    if ( thefullDetector == 0x0 ) {
+        return 0;
+    }
+    else { volume_to_copy = thefullDetector->GetLogicalVolume();  }
+    
+    // to count the number of active volumes
+    std::vector<G4LogicalVolume *> logical_stored; std::vector<G4VPhysicalVolume *> phycical_stored; std::vector<G4VPhysicalVolume *> phycical_active;
+    //
+    CollectVolumes(thefullDetector, logical_stored, phycical_stored, phycical_active);
+
+    // to place new volumes with correct top number
+    for (G4int i = 0; i < volume_to_copy->GetNoDaughters(); i++) {
+        
+        // new sub-detector
+        subdetector = volume_to_copy->GetDaughter(i);
+    
+        // get postion of this sub-detector with repect to its mother and combines with the new position
+        G4ThreeVector *T_ = new G4ThreeVector(); G4RotationMatrix *R_ = new G4RotationMatrix();
+        //
+        (*T_) = subdetector->GetObjectTranslation();
+        if ( subdetector->GetRotation() ) {
+            (*R_) = (*subdetector->GetRotation());
+        }
+        if ( T )
+            (*T_) += (*T);
+        if ( R )
+            (*R_) = (*R) * (*R_);
+        
+        // just a limitation ... to see how to deal with assemblemy, replica ...
+        if ( dynamic_cast<G4PVPlacement *>(subdetector) == 0x0 ) {
+            G4cout << " Current limitation in setting this kind of physical volume " << subdetector->GetName() << G4endl;
+            continue;
+        }
+        
+        // this is a top volume without daugther ... take the current copy number and add offset
+        ostringstream hname;
+        hname << thefullDetector->GetName() << ":" << setw(3) << setfill('0') << imprint_number << ":" << subdetector->GetName() ;
+        
+        if ( subdetector->GetLogicalVolume()->GetNoDaughters() == 0 ) {
+            if ( subdetector->GetLogicalVolume()->GetSensitiveDetector() ) {
+                new G4PVPlacement(R_,(*T_),
+                                  subdetector->GetLogicalVolume(),
+                                  hname.str(),
+                                  mother->GetLogicalVolume(),
+                                  false,
+                                  top_copy_number_offset + subdetector->GetCopyNo() );
+                G4cout << "---> Add to " << mother->GetName() << " " << hname.str() << " with top copy number "
+                        << top_copy_number_offset + subdetector->GetCopyNo()<< G4endl;
+            }
+        }
+        else {
+            // name is the detector name followed by the copy_number_offset
+            new G4PVPlacement(R_,(*T_),
+                              subdetector->GetLogicalVolume(),
+                              hname.str(),
+                              mother->GetLogicalVolume(),
+                              false,
+                              top_copy_number_offset + subdetector->GetCopyNo() );
+            G4cout << "---> Add to " << mother->GetName() << " " << hname.str() << " with top copy number "
+                        << top_copy_number_offset + subdetector->GetCopyNo()<< G4endl;
+        }
+
+        
+        delete T_;
+    }
+    
+    return phycical_active.size();
+}
+
+
+G4int SToGS::DetectorFactory::Set(G4String basename, G4VPhysicalVolume *world, G4int copy_number_offset, const G4Transform3D *Tr,G4int main_copy_number)
+{
+    if ( Tr ) {
+        G4ThreeVector T = Tr->getTranslation(); G4RotationMatrix R = Tr->getRotation().inverse();
+        return Set(basename,world,copy_number_offset,&T,&R,main_copy_number);
+    }
+    else return Set(basename,world,copy_number_offset,0x0,0x0,main_copy_number);
+}
+
 
 G4AssemblyVolume *SToGS::DetectorFactory::GetAssembly(G4String basename)
 {
@@ -924,7 +1173,6 @@ G4AssemblyVolume *SToGS::DetectorFactory::GetAssembly(G4String basename)
             G4Transform3D Tr = G4Transform3D(subdetector->GetObjectRotationValue(),subdetector->GetObjectTranslation());
             theAssembly->AddPlacedVolume( subdetector->GetLogicalVolume(), Tr );
         }
-
     }
     return theAssembly;
 }
@@ -935,6 +1183,7 @@ void SToGS::DetectorFactory::Clean()
         for (size_t i = 0; i < fSubFactory.size(); i++) {
             fSubFactory[i]->Clean();
         }
+        G4LogicalVolumeStore::Clean(); G4PhysicalVolumeStore::Clean();
     }
     else {
         // clean the two inner collection of this factory and call G4 store manager to clean physical and volumes
@@ -947,7 +1196,6 @@ void SToGS::DetectorFactory::Clean()
         }
         fLoadedAssembly.resize(0);
         //
-        G4LogicalVolumeStore::Clean(); G4PhysicalVolumeStore::Clean();
     }
 }
 
@@ -995,7 +1243,7 @@ G4VPhysicalVolume * SToGS::DetectorFactory::MakeAnArrayFromFactory(G4String inpu
     getline(g4map,aline);
     while ( g4map.good() ) {
         
-        istringstream decode(aline); decode.clear();
+        istringstream decode(aline); decode.clear(); G4bool is_Tr = false; // if line contains T means G4Transfrom should be used
         
         decode >> key ;
         
@@ -1067,11 +1315,22 @@ G4VPhysicalVolume * SToGS::DetectorFactory::MakeAnArrayFromFactory(G4String inpu
                 if ( what == "Rt" ) {
                     T = (*R) * T;
                 }
+                if ( what == "Tr" ) {
+                    is_Tr = true;
+                }
                 what = "";
             }
             SToGS::DetectorFactory *where_to_load = SToGS::DetectorFactory::GetFactory(subdetector_name);
             if ( where_to_load ) {
-                where_to_load->Set(subdetector_name, theDetector, SToGS::DetectorFactory::GetGCopyNb(), &T, R);
+           /*     if ( is_Tr ) {
+                    G4Transform3D *Tr = new G4Transform3D(R->inverse(),T);
+                    where_to_load->Set(subdetector_name, theDetector, SToGS::DetectorFactory::GetGCopyNb(), Tr );
+                }
+                else */
+                G4int nb_added = where_to_load->Set(subdetector_name, theDetector, SToGS::DetectorFactory::GetGCopyNb(), &T, R);
+                SToGS::DetectorFactory::SetGCopyNb( SToGS::DetectorFactory::GetGCopyNb() + nb_added );
+                // to do : Set return the number of active volumes
+                
             }
         }
         if ( key == "*" && decode.good() && theDetector ) { // this is a detector going to be replicated in space using the assembly mechanism
@@ -1116,6 +1375,9 @@ G4VPhysicalVolume * SToGS::DetectorFactory::MakeAnArrayFromFactory(G4String inpu
                     }
                     if ( what == "Rt" ) {
                         T = (*R) * T;
+                    }
+                    if ( what == "Tr" ) {
+                        is_Tr = true;
                     }
                     what = "";
                 }

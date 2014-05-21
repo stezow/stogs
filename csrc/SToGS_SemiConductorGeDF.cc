@@ -70,19 +70,15 @@ namespace  {
 }
 
 G4VSolid *SToGS::SemiConductorGeDF::AGATAShaper(G4Polycone *polycone,
-                                        G4double *xfront, G4double *yfront, G4double *xback, G4double *yback,
-                                        G4double base_length,
-                                        G4double added_dilatation)
+                                                 G4double *xfront, G4double *yfront, G4double *xback, G4double *yback,
+                                                 G4double zback,
+                                                 G4double added_dilatation)
 {
     G4String name = polycone->GetName(), tmp;
-    const G4int nb_edges = 6;
-    G4double length, lxfront[nb_edges], lyfront[nb_edges], lxback[nb_edges], lyback[nb_edges];
     
-    G4VSolid *result = polycone;
-    
-// apply scaling to the different shapes if required
+    const G4int nb_edges = 6; G4double lxfront[nb_edges], lyfront[nb_edges], lxback[nb_edges], lyback[nb_edges];
+    // apply scaling to the different shapes if required
     if ( added_dilatation == 0.0 ) {
-        length = base_length;
         for (G4int i = 0; i < nb_edges; i++) {
             lxfront[i] = xfront[i];
             lyfront[i] = yfront[i];
@@ -91,60 +87,90 @@ G4VSolid *SToGS::SemiConductorGeDF::AGATAShaper(G4Polycone *polycone,
         }
     }
     else {
-        length = base_length + 2.*added_dilatation;
+        G4double D;
         for (G4int i = 0; i < nb_edges; i++) {
-            G4double k = (base_length + added_dilatation) / base_length;
-            lxfront[i] = k * xfront[i];
-            lyfront[i] = k * yfront[i];
-            lxback[i]  = k * xback[i];
-            lyback[i]  = k * yback[i];
+            D = std::sqrt( xfront[i]*xfront[i] + yfront[i]*yfront[i] );
+            lxfront[i] = xfront[i] + added_dilatation*xfront[i]/D ;
+            lyfront[i] = yfront[i] + added_dilatation*yfront[i]/D ;
+            D = std::sqrt( xback[i]*xback[i] + yback[i]*yback[i] );
+            lxback[i]  = xback[i] + added_dilatation*xback[i]/D ;
+            lyback[i]  = yback[i] + added_dilatation*yback[i]/D ;
         }
     }
     // for each side of the hexagone, computes from the given point to remove an 'infinite' box [edge]
-    G4double edge_width = 8*CLHEP::mm; G4int inext; G4ThreeVector T;
-    for (G4int i = 0; i < nb_edges; i++) {
+    G4double edge_length_x = 40*CLHEP::mm, edge_width_y = 10*CLHEP::mm, edge_depth_z = 1.2*zback/2.;
+    G4int inext;
     
+    G4VSolid *result = polycone;
+    for (G4int i = 0; i < nb_edges; i++) {
+        
+        // a new box [edge] to cut the polygone
+        tmp  = name; tmp += "_edge_";
+        std::stringstream s1;
+        s1 << i;
+        tmp += s1.str();
+        //
+        G4Box *edge = new G4Box(tmp,edge_length_x,edge_width_y,edge_depth_z);
+        
+        // now defines the edges in 3D
         if ( i == nb_edges-1 ) {
             inext = 0;
         }
         else inext = i + 1;
         
-        tmp  = name; tmp += "_edge_";
-        std::stringstream s;
-        s << i;
-        tmp += s.str();
+        G4ThreeVector T;
+        // Compute the 3D vector that goes from middle of front segment to middle of back segment
+        // --> this gives the rotatation angle the edge should be rotated alongst X
+        G4ThreeVector v_RotX_1((lxback[i]+lxback[inext])/2.-(lxfront[i]+lxfront[inext])/2.,
+                               (lyback[i]+lyback[inext])/2.-(lyfront[i]+lyfront[inext])/2.,zback);
         
-        G4Box *edge = new G4Box(tmp,edge_width,40*CLHEP::mm,80*CLHEP::mm);
+        // compute 2D vector at the center of the segment
+        // --> it is used to determine the additional offset in X,Y
+        //     in order to have the face of the box tangent to the surface extracted from the face of the hexagone
+        G4ThreeVector v_RotZ_0(lxfront[inext]+lxfront[i],lyfront[inext]+lyfront[i] , 0 );
+        // compute 2D vector going from i -> inext.
+        // --> it is used to detemine the rotation angle along Z for the box
+        G4ThreeVector v_RotZ_1(lxfront[inext]-lxfront[i],lyfront[inext]-lyfront[i] , 0 );
         
-        // vectors used to get from the hexagonal points the different rotation angles
-        G4ThreeVector v1(lxback[i]-lxfront[i],lyback[i]-lyfront[i],length);
-        G4ThreeVector v2( (lxfront[inext]+lxfront[i]) , (lyfront[inext]+lyfront[i]) , 0);
-        //
-        G4ThreeVector offset(edge_width,0,0);
-        //
-        G4RotationMatrix rot;
-        //
-        rot.rotateY(v1.theta());
-        rot.rotateZ(v2.phi());
-        //
-        offset = rot * offset; //
-
-        T.setX( ((lxfront[inext]+lxfront[i])/2.) + offset.getX() );
-        T.setY( ((lyfront[inext]+lyfront[i])/2.) + offset.getY() );
-        T.setZ( -length / 2. + offset.getZ() );
-        // G4cout << v1.theta() / CLHEP::deg << " " << v1.phi() / CLHEP::deg  << G4endl;
+        // the total rotation matrix on the edge
+        G4RotationMatrix R;
+        R.set(0,0,0);
+        R.rotateX(v_RotX_1.theta());
+        R.rotateZ(v_RotZ_1.phi());
+        // the translation to bring the edge at the center of the cylinder
+        T.setX( (lxback[inext]+lxfront[i])/2. );
+        T.setY( (lyback[inext]+lyfront[i])/2. );
+        T.setZ( zback / 2. );
+        // the additionnal offset to take into account the wdth of the edge
+        G4ThreeVector offset( std::cos(v_RotZ_0.phi())*edge_width_y, std::sin(v_RotZ_0.phi())*edge_width_y , 0 );
         
-        result = new G4SubtractionSolid(tmp, result, edge, G4Transform3D(rot,T) );
+#ifdef L_DEBUG
+        G4cout << "Building Edges " << tmp << G4endl;
+        G4cout << " hexogone def @ 0 and " << zback
+        << " " << lxfront[i] << " " << lyfront[i] << " " << lxback[i] << " " << lyback[i] << G4endl;
+        G4cout << " RotX[theta] " << v_RotX_1.theta()/CLHEP::deg << " RotZ[phi] "  << v_RotZ_1.phi()/CLHEP::deg << G4endl;
+        G4cout << "Translation to bring to center  " << T << G4endl;
+        G4cout << "Additionnal offset due to edge width " << offset << G4endl;
+#endif
+        
+        T = T + offset;
+        tmp  = name; tmp += "_step_";
+        std::stringstream s2;
+        s2 << i;
+        tmp += s2.str();
+        result = new G4SubtractionSolid(tmp, result, edge, G4Transform3D(R,T) );
+        // used for visualization
+        //result = new G4UnionSolid(tmp, result, edge, G4Transform3D((R),T) );
     }
-
+    
     return result;
 }
-
-G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACapsule(G4String detname, G4String opt)
+/*
+G4LogicalVolume *SToGS::SemiConductorGeDF::MakeAGATACapsule(G4String detname, G4String opt)
 {
-    G4VPhysicalVolume *theDetector = 0x0; G4bool do_caps = true, do_passive = false; G4String tmp, innername("ARed");
+    G4bool do_caps = true, do_passive = false; G4String tmp;
     
-// cotations
+    // cotations
     G4double px[6], py[6], pX[6], pY[6], pz[6], pZ[6]; // definition of the front/back hexagone
     
     G4double HoleR;		// Coaxial hole with radius HoleR
@@ -166,32 +192,32 @@ G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACapsule(G4String detname, 
 	G4double ColY;		// RGB color components
 	G4double ColZ;		// RGB color components
     
-    G4double eps = 0.0*CLHEP::mm;
+    G4double eps = 0.*CLHEP::mm;
     // to avoid overlapping in G4, add/remove atrificially this quantities at borders between caps and Ge
-
-// file to read cotations
+    
+    // file to read cotations
     ifstream infil; infil.open("DetectorFactory/SemiConductors/Ge/Builders/agata_capsule.geo");
     if ( !infil.is_open() ) {
         G4cout << "[SToGS] *** Cannot open file " << "DetectorFactory/SemiConductors/Ge/Builders/agata_capsule.geo"
-                << endl; // end read the file.
+        << endl; // end read the file.
         return 0x0 ;
     }
     
-// Options: bare -> no capsules, passive -> add passive
+    // Options: bare -> no capsules, passive -> add passive
     G4int which_id = 0;
     if ( detname.contains("Green") ) {
         which_id = 1;
-        innername = "BGreen";
+//        innername = "BGreen";
     }
     if ( detname.contains("Blue") ) {
         which_id = 2;
-        innername = "CBlue";
+//        innername = "CBlue";
     }
-//    if ( detname.contains("bare") )
-        do_caps = false;
-//    if ( detname.contains("passive") )
-//        which_id = 2;
-
+    //    if ( detname.contains("bare") )
+    do_caps = false;
+    //    if ( detname.contains("passive") )
+    //        which_id = 2;
+    
     int i1,i2,i3, nb_line = 0, nb_point = 0; double x,y,z,X,Y,Z; std::string line;
     while( infil.good() ) {
         
@@ -248,27 +274,12 @@ G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACapsule(G4String detname, 
     } // while good
     infil.close();
     G4cout << " the file " << "DetectorFactory/SemiConductors/Ge/Builders/agata_capsule.geo"
-           << " has been read  " << endl; // end read the file.
-
+            << " has been read  " << endl; // end read the file.
+    
     // use a physical as a container to describe the detector
     G4RotationMatrix R; G4ThreeVector T; G4Transform3D Tr;
-    //
-    G4LogicalVolume *detlogicWorld;
-    G4Box *detWorld;
-	detWorld = new G4Box(detname,10.*CLHEP::cm,10.*CLHEP::cm,25.*CLHEP::cm);
-	detlogicWorld=
-        new G4LogicalVolume(detWorld, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"), detname, 0, 0, 0);
-	detlogicWorld->SetVisAttributes(G4VisAttributes::Invisible); // hide the world
-	//  Must place the World Physical volume unrotated at (0,0,0).
-	theDetector = new G4PVPlacement(0,         // no rotation
-                                    G4ThreeVector(), // at (0,0,0)
-                                    detlogicWorld,      // its logical volume
-                                    detname,      // its name
-                                    0,               // its mother  volume
-                                    false,           // no boolean operations
-                                    -1);              // copy number
     
-// the coax part :
+    // the coax part :
     // the raw crystal
     G4double *zSliceGe = new G4double[4];
     zSliceGe[0] = (-CylL/2.+eps)*CLHEP::mm;
@@ -299,14 +310,14 @@ G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACapsule(G4String detname, 
     
     // set attributes of the capsule and place it
     G4LogicalVolume *crystal_logic =
-        new G4LogicalVolume(crystal,
-                    SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Ge"),tmp,0,0,0);
+    new G4LogicalVolume(crystal,
+                        SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Ge"),tmp,0,0,0);
 	G4VisAttributes *crystal_visatt = new G4VisAttributes( G4Colour(ColX, ColY, ColZ,1) );
 	crystal_logic->SetVisAttributes( crystal_visatt );
     crystal_logic->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );
-// the coax part
+    // the coax part
     
-// encapsulation of the crystal
+    // encapsulation of the crystal
     G4LogicalVolume *capsule_logic = 0x0, *spacing_logic = 0x0;
     if (do_caps) {
         // spacing filled with air
@@ -330,9 +341,9 @@ G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACapsule(G4String detname, 
         //
         // set attributes
         spacing_logic = new G4LogicalVolume(spacing,
-                        SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"),tmp,0,0,0);
-  //      G4VisAttributes *spacing_visatt = new G4VisAttributes( G4Colour(ColX, ColY, ColZ,0.4) );
-  //      spacing_logic->SetVisAttributes( spacing_visatt );
+                                            SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"),tmp,0,0,0);
+        //      G4VisAttributes *spacing_visatt = new G4VisAttributes( G4Colour(ColX, ColY, ColZ,0.4) );
+        //      spacing_logic->SetVisAttributes( spacing_visatt );
         spacing_logic->SetVisAttributes( G4VisAttributes::Invisible );
         
         // spacing filled with air
@@ -356,50 +367,280 @@ G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACapsule(G4String detname, 
         //
         // set attributes
         capsule_logic = new G4LogicalVolume(capsule,
-                            SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"),tmp,0,0,0);
+                                            SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"),tmp,0,0,0);
         G4VisAttributes *capsule_visatt = new G4VisAttributes( G4Colour(0.3, 0.3, 0.3,0.8) );
         capsule_logic->SetVisAttributes( capsule_visatt );
     }
     
-    // place volumes 
     if ( capsule_logic && spacing_logic ) {
-        T.setX( 0.0 );
-        T.setY( 0.0 );
+        return capsule_logic;
+    }
+    
+    return crystal_logic;
+}
+ */
+
+
+G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACapsule(G4String detname, G4String opt, G4String geo_file)
+{
+    G4VPhysicalVolume *theDetector = 0x0; G4bool do_caps = true, do_passive = false;
+    G4String tmp, crystal_name = "ARed", filename = geo_file; // file with definition
+    
+    // cotations
+    G4double px[6], py[6], pX[6], pY[6], pz[6], pZ[6]; // definition of the front/back hexagone
+    
+    G4double HoleR;		// Coaxial hole with radius HoleR
+	G4double HoleL; 	// Hole starts at the depth HoleL
+	
+	G4double CylR;		// Radius of the cylinder that is the base of the shaped crystal
+	G4double CylL;		// Length of the cylinder that is the base of the shaped crystal
+	G4double CylX;		// Additionnal offset
+	G4double CylY;		// Additionnal offset
+	G4double CylZ;		// Additionnal offset
+	
+	G4double ThickB;	// Thickness of the passive area (back)
+	G4double ThickC; 	// Thickness of the passive area (coaxial)
+	G4double CapS;		// The crystal-encapsulation spacing is capS
+	G4double CapT;		// The capsule is capT thick
+	G4double Tolerance;	// CapS+CapT+tol
+	
+	G4double ColX;		// RGB color components
+	G4double ColY;		// RGB color components
+	G4double ColZ;		// RGB color components
+    
+    G4double eps = 0.*CLHEP::mm;
+    // to avoid overlapping in G4, add/remove atrificially this quantities at borders between caps and Ge
+    
+    // file to read cotations
+    ifstream infil; infil.open(filename.data());
+    if ( !infil.is_open() ) {
+        G4cout << "[SToGS] *** Cannot open file " << filename.data() << endl; // end read the file.
+        return 0x0 ;
+    }
+    
+    // Options: bare -> no capsules, passive -> add passive
+    G4int which_id = 0;
+    if ( detname.contains("Green") ) {
+        crystal_name = "BGreen";
+        which_id = 1;
+    }
+    if ( detname.contains("Blue") ) {
+        crystal_name = "CBlue";
+        which_id = 2;
+    }
+    if ( opt.contains("bare") )
+        do_caps = false;
+    //    if ( detname.contains("passive") )
+    //        which_id = 2;
+    
+// The detector
+    G4LogicalVolume *detlogicWorld;
+    G4Box *detWorld;
+	detWorld = new G4Box(detname,10.*CLHEP::cm,10.*CLHEP::cm,25.*CLHEP::cm);
+	detlogicWorld=
+        new G4LogicalVolume(detWorld, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"), detname, 0, 0, 0);
+	detlogicWorld->SetVisAttributes(G4VisAttributes::Invisible); // hide the world
+	//  Must place the World Physical volume unrotated at (0,0,0).
+	theDetector = new G4PVPlacement(0,         // no rotation
+                                    G4ThreeVector(0,0,0), // at (0,0,0)
+                                    detlogicWorld,      // its logical volume
+                                    detname,      // its name
+                                    0,               // its mother  volume
+                                    false,           // no boolean operations
+                                    -1);              // copy number
+
+    
+    int i1,i2,i3, nb_line = 0, nb_point = 0; double x,y,z,X,Y,Z; std::string line;
+    while( infil.good() ) {
         
-        T.setZ( CylL / 2. + CapT + CapS );
-        tmp  = detname;
-        tmp += "_capsule";
-        new G4PVPlacement(0,T,capsule_logic,tmp,detlogicWorld,false,-1);
+        getline(infil,line);
+        //
+        if ( line.size() < 2u )
+            continue;
+        if ( line[0] == '#' )
+            continue;
         
-        T.setZ( 0.0 );
-        tmp  = detname;
-        tmp += "_capsule_spacing";
-        new G4PVPlacement(0,T,spacing_logic,tmp,capsule_logic,false,-1);
-        tmp  = detname;
-        tmp += "_crystal";
-        new G4PVPlacement(0,T,crystal_logic,tmp,spacing_logic,false,AddGCopyNb());
+        // decode the line
+        if(sscanf(line.data(),"%d %d %d %lf %lf %lf %lf %lf %lf", &i1, &i2, &i3, &x, &y, &z, &X, &Y, &Z) != 9) {
+            break;
+        }
+        
+        if(which_id != i1) { // a new crystal is being defined, so init a new ASolid structure
+            continue;
+        }
+        else nb_line++;
+        
+        if(i2==0 && i3==0) { // basic shape for the crystal
+            HoleR = x * CLHEP::mm;
+            CylR  = y * CLHEP::mm;
+            CylL  = z * CLHEP::mm;
+            CylX  = X * CLHEP::mm;
+            CylY  = Y * CLHEP::mm;
+            CylZ  = Z * CLHEP::mm;
+        }
+        else if(i2==0 && i3==1) { // passive and capsule
+            HoleL  = x * CLHEP::mm;
+            ThickB = y * CLHEP::mm;
+            ThickC = z * CLHEP::mm;
+            CapS   = X * CLHEP::mm;
+            CapT   = Y * CLHEP::mm;
+            Tolerance   = Z * CLHEP::mm;
+        }
+        else if(i2==0 && i3==2) { // colors
+            ColX     = x;
+            ColY     = y;
+            ColZ     = z;
+        }
+        else { // a new point to define the ploygon
+            
+            px[i3] = x * CLHEP::mm;
+            py[i3] = y * CLHEP::mm;
+            pX[i3] = X * CLHEP::mm;
+            pY[i3] = Y * CLHEP::mm;
+            
+            pz[i3] = z * CLHEP::mm;
+            pZ[i3] = Z * CLHEP::mm;
+            
+            nb_point++;
+        }
+    } // while good
+    infil.close();
+    G4cout << " the file " << filename.data() << " has been read  " << endl; // end read the file.
+    
+    // use a physical as a container to describe the detector
+    G4RotationMatrix R; G4ThreeVector T; G4Transform3D Tr;
+    
+    // the coax part :
+    // the raw crystal
+    G4double *zSliceGe = new G4double[4];
+    zSliceGe[0] = (0)*CLHEP::mm;
+    zSliceGe[1] = (HoleL)*CLHEP::mm;
+    zSliceGe[2] = (HoleL+0.1)*CLHEP::mm;
+    zSliceGe[3] = (+CylL)*CLHEP::mm;
+    //
+    G4double *InnRadGe = new G4double[4];
+    InnRadGe[0] = 0.;
+    InnRadGe[1] = 0.;
+    InnRadGe[2] = HoleR*CLHEP::mm;
+    InnRadGe[3] = HoleR*CLHEP::mm;
+    //
+    G4double *OutRadGe = new G4double[4];
+    OutRadGe[0] = CylR*CLHEP::mm;
+    OutRadGe[1] = CylR*CLHEP::mm;
+    OutRadGe[2] = CylR*CLHEP::mm;
+    OutRadGe[3] = CylR*CLHEP::mm;
+    //
+    tmp  = crystal_name;
+    tmp += "ShapeCoax";
+    G4Polycone *coax = new G4Polycone(tmp, 0.*deg, 360.*deg, 4, zSliceGe, InnRadGe, OutRadGe ) ;
+    // out of the shaper, the crystal with its complex shape
+    tmp  = crystal_name;
+    tmp += "ShapeCrystal";
+    G4VSolid *crystal = AGATAShaper(coax,px,py,pX,pY,CylL);
+    crystal->SetName(tmp);
+    // set attributes of the capsule and place it
+    tmp  = crystal_name;
+    tmp += "LV";
+    G4LogicalVolume *crystal_logic =
+    new G4LogicalVolume(crystal,
+                        SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Ge"),tmp,0,0,0);
+	G4VisAttributes *crystal_visatt = new G4VisAttributes( G4Colour(ColX, ColY, ColZ,1) );
+	crystal_logic->SetVisAttributes( crystal_visatt );
+    crystal_logic->SetSensitiveDetector( SToGS::UserActionInitialization::GetTrackerSD() );
+    
+    // encapsulation of the crystal
+    G4LogicalVolume *capsule_logic = 0x0, *spacing_logic = 0x0;
+    // spacing filled with air
+    zSliceGe[0] = (0.0)*CLHEP::mm;
+    zSliceGe[1] = (CylL + 2*CapS)*CLHEP::mm;
+    //
+    InnRadGe[0] = 0.;
+    InnRadGe[1] = 0.;
+    //
+    OutRadGe[0] = (CylR + CapS)*CLHEP::mm;
+    OutRadGe[1] = (CylR + CapS)*CLHEP::mm;
+    //
+    tmp  = crystal_name;
+    tmp += "ShapeCoaxSpacing";
+    G4Polycone *coax_spacing_shape = new G4Polycone(tmp, 0.*deg, 360.*deg, 2, zSliceGe, InnRadGe, OutRadGe);
+    //
+    tmp  = crystal_name;
+    tmp += "ShapeSpacing";
+    G4VSolid *spacing = AGATAShaper(coax_spacing_shape,px,py,pX,pY,CylL,CapS);
+    spacing->SetName(tmp);
+    //
+    // set attributes
+    tmp  = crystal_name;
+    tmp += "SpacingLV";
+    spacing_logic = new G4LogicalVolume(spacing,
+                                        SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"),tmp,0,0,0);
+    G4VisAttributes *spacing_visatt = new G4VisAttributes( G4Colour(1, 1, 1,0.5) );
+    spacing_logic->SetVisAttributes( spacing_visatt );
+    
+    // capsule filled with Al ... or AIR in case one would like to have only the Ge crystal ... to be used to know lost due to encapsulation
+    zSliceGe[0] = (0.0)*CLHEP::mm;
+    zSliceGe[1] = (CylL + 2*(CapT + CapS))*CLHEP::mm;
+    //
+    InnRadGe[0] = 0.;
+    InnRadGe[1] = 0.;
+    //
+    OutRadGe[0] = (CylR + CapT + CapS)*CLHEP::mm;
+    OutRadGe[1] = (CylR + CapT + CapS)*CLHEP::mm;
+    //
+    tmp  = crystal_name;
+    tmp += "ShapeCoaxEncapsulation";
+    G4Polycone *coax_caps_shape = new G4Polycone(tmp, 0.*deg, 360.*deg, 2, zSliceGe, InnRadGe, OutRadGe);
+    //
+    tmp  = crystal_name;
+    tmp += "ShapeCapsule";
+    G4VSolid *capsule = AGATAShaper(coax_caps_shape,px,py,pX,pY,CylL,(CapT+CapS));
+    capsule->SetName(tmp);
+    //
+    // set attributes
+    tmp  = crystal_name;
+    tmp += "CapsuleLV";
+    // in case the capsule is not there, just set it as air
+    if (do_caps) {
+        capsule_logic = new G4LogicalVolume(capsule,
+                                            SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"),tmp,0,0,0);
+        G4VisAttributes *capsule_visatt = new G4VisAttributes( G4Colour(0.6, 0.6, 0.6, 0.75) );
+        capsule_logic->SetVisAttributes( capsule_visatt );
     }
     else {
+        capsule_logic = new G4LogicalVolume(capsule,
+                                            SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"),tmp,0,0,0);
+        G4VisAttributes *capsule_visatt = new G4VisAttributes( G4Colour(1, 1, 1, 0.5) );
+        capsule_logic->SetVisAttributes( capsule_visatt );
+    }
+    
+    // place volumes
+    if ( capsule_logic && spacing_logic ) {
+        tmp  = crystal_name;
+        tmp += "Caps";
         T.setX( 0.0 );
         T.setY( 0.0 );
-        T.setZ( CylL / 2. + CapT + CapS );
-       // T.setZ( 0 );
-      
-        tmp  = detname;
-        tmp += "_crystal";
-        new G4PVPlacement(0,T,crystal_logic,tmp,detlogicWorld,false,AddGCopyNb());
+        T.setZ( 0.0 );
+        new G4PVPlacement(0,T,capsule_logic,tmp,detlogicWorld,false,0);
+        //
+        tmp  = crystal_name;
+        tmp += "Spacing";
+        T.setZ( CapT );
+        new G4PVPlacement(0,T,spacing_logic,tmp,capsule_logic,false,-1);
+        //
+        T.setZ( CapS + CapT );
+        new G4PVPlacement(0,T,crystal_logic,crystal_name,spacing_logic,false,0);
     }
 
-    return theDetector;
+    return theDetector;    
 }
 
-G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACluster(G4String detname, G4String opt)
+G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACluster(G4String detname, G4String opt,G4String geo_file)
 {
-    G4VPhysicalVolume *theDetector = 0x0, *caps; std::vector < G4LogicalVolume * > capsules(3);
+    G4VPhysicalVolume *theDetector = 0x0, *asubdetector = 0x0, *caps; std::vector < G4String > capsules(3);
     
-    ifstream infil; infil.open("DetectorFactory/SemiConductors/Ge/Builders/agata_cluster.geo");
+    ifstream infil; infil.open(geo_file.data());
     if ( !infil.is_open() ) {
-        G4cout << "[SToGS] *** Cannot open file " << "DetectorFactory/SemiConductors/Ge/Builders/agata_cluster.geo"
+        G4cout << "[SToGS] *** Cannot open file " << geo_file.data()
         << endl; // end read the file.
         return 0x0 ;
     }
@@ -420,21 +661,29 @@ G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACluster(G4String detname, 
                                     false,           // no boolean operations
                                     -1);              // copy number
 
-    
-    // Should be at the beginning before def of new theDetector
-    G4String base_element = "DetectorFactory/Scintillators/ParisPW_";
-    base_element += opt;
-    
-    caps = DetectorFactory::theMainFactory()->Get("DetectorFactory/SemiConductors/Ge/AGATA-ARed_bare");
-    capsules[0] = caps->GetLogicalVolume()->GetDaughter(0)->GetLogicalVolume();
-    caps = DetectorFactory::theMainFactory()->Get("DetectorFactory/SemiConductors/Ge/AGATA-BGreen_bare");
-    capsules[1] = caps->GetLogicalVolume()->GetDaughter(0)->GetLogicalVolume();
-    caps = DetectorFactory::theMainFactory()->Get("DetectorFactory/SemiConductors/Ge/AGATA-CBlue_bare");
-    capsules[2] = caps->GetLogicalVolume()->GetDaughter(0)->GetLogicalVolume();
+    // treatment option ... careful, the real detection volume could be inside a capsule ...
+    // one should then look for it before setting copy number ...
+    //
+    if ( opt.contains("bare") && !opt.contains("bare1") ) {
+        capsules[0] = "DetectorFactory/SemiConductors/Ge/AGATA-ARed_bare";
+        capsules[1] = "DetectorFactory/SemiConductors/Ge/AGATA-BGreen_bare";
+        capsules[2] = "DetectorFactory/SemiConductors/Ge/AGATA-CBlue_bare";
+
+    }
+    else { // Ge encapsulation on
+        capsules[0] = "DetectorFactory/SemiConductors/Ge/AGATA-ARed";
+        capsules[1] = "DetectorFactory/SemiConductors/Ge/AGATA-BGreen";
+        capsules[2] = "DetectorFactory/SemiConductors/Ge/AGATA-CBlue";
+    }
+    // Remap capsuel to give copy number 0 1 2 to Red, Green Blue
+    ReMap(Get(capsules[0]),0);
+    ReMap(Get(capsules[1]),1);
+    ReMap(Get(capsules[2]),2);
 
     G4int i1,i2,i3, nb_line = 0, which = 0; G4double x,y,z,ps, th, ph; std::string line;
     while( infil.good() ) {
         
+        // get euler angles from files
         getline(infil,line);
         //
         if ( line.size() < 2u )
@@ -445,19 +694,20 @@ G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACluster(G4String detname, 
             break;
         }
         
-        G4ThreeVector T(x*CLHEP::mm,y*CLHEP::mm,z*CLHEP::mm+100*CLHEP::mm); G4RotationMatrix R /* = new G4RotationMatrix() */;
+        G4ThreeVector T;G4RotationMatrix R; R.set(0,0,0);
+        which = i2;
+        //
+        T.setX(x*CLHEP::mm);
+        T.setY(y*CLHEP::mm);
+        T.setZ(z*CLHEP::mm);
+        //
         R.rotateZ(G4double(ps)*CLHEP::deg);
         R.rotateY(G4double(th)*CLHEP::deg);
         R.rotateZ(G4double(ph)*CLHEP::deg);
-
+        //
         G4Transform3D Tr(R,T);
-        G4String tmp  = detname;
-        tmp += "_Cluster";
-        new G4PVPlacement(Tr,capsules[which],tmp,detlogicWorld,false,-1);
-        
-        which++;
+        Set(capsules[which],theDetector,0,&Tr);
     }
-
     infil.close();
     
     return theDetector;
@@ -550,11 +800,11 @@ G4VPhysicalVolume * SToGS::SemiConductorGeDF::Make(G4String name, G4String versi
             theDetector =
                 MakeAGATACapsule(detname,version_string);
         }
-        if ( name == "AGATA-TC"  ) { // AGATA Capsules
-            detname = GetDetName(name,version_string);
-            theDetector =
-                MakeAGATACluster(detname,version_string);
-        }
+    }
+    if ( name == "ATC"  ) { // ATC
+        detname = GetDetName(name,version_string);
+        theDetector =
+        MakeAGATACluster(detname,version_string);
     }
     return theDetector;
 }
@@ -575,7 +825,18 @@ void SToGS::SemiConductorGeDF::MakeStore()
     SToGS::DetectorFactory::SetGCopyNb(0);
     MakeInStore("AGATA-CBlue","bare");
     SToGS::DetectorFactory::SetGCopyNb(0);
-    MakeInStore("AGATA-TC","bare");
+    MakeInStore("ATC","bare");
+    SToGS::DetectorFactory::theMainFactory()->Clean();
+
+    SToGS::DetectorFactory::SetGCopyNb(0);
+    MakeInStore("AGATA-ARed","");
+    SToGS::DetectorFactory::SetGCopyNb(0);
+    MakeInStore("AGATA-BGreen","");
+    SToGS::DetectorFactory::SetGCopyNb(0);
+    MakeInStore("AGATA-CBlue","");
+    SToGS::DetectorFactory::theMainFactory()->Clean();
+    SToGS::DetectorFactory::SetGCopyNb(0);
+    MakeInStore("ATC","");
 }
 
 

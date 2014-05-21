@@ -67,6 +67,7 @@ set(SToGS_SRC ${SToGS_SRC}
     csrc/SToGS_MyStoreDF.cc
     csrc/SToGS_LoadFromDetectorFactory.cc
     csrc/SToGS_TwoShellsDetectorConstruction.cc
+        csrc/SToGS_AGATA.cc
     csrc/SToGS_GenericsDF.cc
     csrc/SToGS_ArraysDF.cc
 # Physics Lists related
@@ -97,6 +98,7 @@ set(SToGS_HEADER ${SToGS_HEADER}
     csrc/SToGS_TwoShellsDetectorConstruction.hh
     csrc/SToGS_GenericsDF.hh
     csrc/SToGS_ArraysDF.hh
+        csrc/SToGS_AGATA.hh
 # Physics Lists related
     csrc/SToGS_G4_GeneralPhysics.hh
     csrc/SToGS_ModularPhysicsList.hh

@@ -30,6 +30,7 @@
 #include "globals.hh"
 #include "G4VUserDetectorConstruction.hh"
 #include "G4RotationMatrix.hh"
+#include "G4Transform3D.hh"
 
 // std includes 
 #include <iostream>
@@ -133,6 +134,9 @@ namespace SToGS {
         {
             return gCopyNb;
         }
+        //! change copy number of the physical volume contained in the top volume
+        static void ChangeCopyNb(G4VPhysicalVolume *top, G4String which_det, G4int which_nb);
+
         //! to get the main factory
         static DetectorFactory *theMainFactory();
         
@@ -160,9 +164,13 @@ namespace SToGS {
         //! Get a particular SD. S means a SD while s is for Scorers
         static G4VSensitiveDetector * GetSD(G4String opt, const char sd_type = 'S');
         
-        //! From a top volume, it collects into collection all logical and physical volumes
+        //! From the given physical volume, it collects into collection all logical (sensitive) and physical volumes (including itself in first slot)
+        /*!
+            recursive call.
+        */
         static void CollectVolumes(G4VPhysicalVolume *theDetector,
-                                   std::vector<G4LogicalVolume *> &logical_stored, std::vector<G4VPhysicalVolume *> &phycical_stored);
+                                   std::vector<G4LogicalVolume *> &logical_stored,
+                                   std::vector<G4VPhysicalVolume *> &physical_stored, std::vector<G4VPhysicalVolume *> &physical_active);
         
         protected:
 // Methods to be overwritten in particular factory
@@ -174,9 +182,9 @@ namespace SToGS {
         //! recursively called in the tree struture
         void StoreMap(std::ofstream &amap, std::ofstream &dmap,
                       std::vector<G4LogicalVolume *> &logical_stored,
-                      std::vector<G4VPhysicalVolume *> &phycical_stored,
-                      G4VPhysicalVolume *theDetector /*,
-                                                      const G4String &mother_name */);
+                      std::vector<G4VPhysicalVolume *> &physical_stored,
+                      std::vector<G4VPhysicalVolume *> &physical_active,
+                      G4VPhysicalVolume *theDetector);
         
         //! extrac from the name of the detector the touchable part
         void StreamTouchable(std::ofstream &dmap, G4String);
@@ -217,14 +225,16 @@ namespace SToGS {
          
             Scintillators/ParisPW_2 --> DetectorFactory/Scintillators/ParisPW_2.gdml
          */
-        virtual G4VPhysicalVolume *Get(G4String basename, G4bool is_full = true);
+        virtual G4VPhysicalVolume *Get(G4String basename);
         G4AssemblyVolume  *GetAssembly(G4String basename);
         //! Read the amap file and apply atributes to the detector. if not found, it creates a deefault one from the sensitive detector founds
-        virtual void GetAttributes(G4String basename);
+        virtual void GetAttributes(G4String basename, G4bool do_amap = true, G4bool do_dmap = false);
         
-        //! to be used once a detector is fully contructed to simply place it the the world
-        G4bool Set(G4String basename, G4VPhysicalVolume *world, G4int copy_number_offset, G4ThreeVector *T = 0x0, G4RotationMatrix *R = 0x0);
-
+        //! to be used once a detector is fully contructed to simply place it in the world
+        G4int Set(G4String basename, G4VPhysicalVolume *world, G4int copy_number_offset,
+                   const G4ThreeVector *T = 0x0, const G4RotationMatrix *R = 0x0,  G4int main_copy_number = 0);
+        G4int Set(G4String basename, G4VPhysicalVolume *world, G4int copy_number_offset,
+                   const G4Transform3D *Tr, G4int main_copy_number = 0);
         //! clear factory i.e. in memory collections of physicals and assemblies
         void Clean();
 
@@ -269,9 +279,18 @@ namespace SToGS {
          
          */
         G4int DoMap(G4AssemblyVolume *assembly, G4VPhysicalVolume *volume_used_to_built_assembly, G4int copy_number_offset = 0, G4String opt = "->") const;
+        //! for the given volume, it changes all copy number of active volumes by starting with offset
+        /*!
+            It returns the number of actives volumes found in this detector
+         */
+        virtual G4int ReMap(G4VPhysicalVolume *adetector, G4int offset);
         
         //! built an array from the factory using the given input file
+        /*
+            The volume are reas as they are and only the top physical volume has its copy number affected
+         */
         virtual G4VPhysicalVolume * MakeAnArrayFromFactory(G4String input_file);
+
     };
 } // SToGS Namespace
 

@@ -127,6 +127,9 @@ int main(int argc, char** argv)
     G4UIsession *session = 0x0;
 #ifdef G4UI_USE
     G4UIExecutive * ui = new G4UIExecutive(argc,argv);
+    UImanager->ApplyCommand("/vis/ASCIITree/verbose 11");
+    UImanager->ApplyCommand("/vis/drawTree");
+    UImanager->ApplyCommand("/geometry/test/grid_test");
 #ifdef G4VIS_USE
     G4String cmd = "/control/execute ";
     cmd += macro_visu;
