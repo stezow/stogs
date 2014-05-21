@@ -532,7 +532,7 @@ G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACapsule(G4String detname, 
     //
     tmp  = crystal_name;
     tmp += "ShapeCoax";
-    G4Polycone *coax = new G4Polycone(tmp, 0.*deg, 360.*deg, 4, zSliceGe, InnRadGe, OutRadGe ) ;
+    G4Polycone *coax = new G4Polycone(tmp, 0.*CLHEP::deg, 360.*CLHEP::deg, 4, zSliceGe, InnRadGe, OutRadGe ) ;
     // out of the shaper, the crystal with its complex shape
     tmp  = crystal_name;
     tmp += "ShapeCrystal";
@@ -562,7 +562,7 @@ G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACapsule(G4String detname, 
     //
     tmp  = crystal_name;
     tmp += "ShapeCoaxSpacing";
-    G4Polycone *coax_spacing_shape = new G4Polycone(tmp, 0.*deg, 360.*deg, 2, zSliceGe, InnRadGe, OutRadGe);
+    G4Polycone *coax_spacing_shape = new G4Polycone(tmp, 0.*CLHEP::deg, 360.*CLHEP::deg, 2, zSliceGe, InnRadGe, OutRadGe);
     //
     tmp  = crystal_name;
     tmp += "ShapeSpacing";
