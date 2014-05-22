@@ -502,6 +502,11 @@ G4int SToGS::DetectorFactory::DoMap(G4AssemblyVolume *assembly,
                 (an_element)->SetCopyNo( copy_number_offset + impr*physical_active.size() + physical_stored[keep_j]->GetCopyNo() );
                 G4cout << " Set Copy Number of Imprinted Physical Volume " << (an_element)->GetName() << " to " << (an_element)->GetCopyNo() << G4endl;
             }
+            else {
+                (an_element)->SetName(hname.str());
+                (an_element)->SetCopyNo( physical_stored[keep_j]->GetCopyNo() );
+                G4cout << " Set Copy Number of Imprinted Physical Volume " << (an_element)->GetName() << " to " << (an_element)->GetCopyNo() << G4endl;
+            }
         }
         else {
             (an_element)->SetName(hname.str());
@@ -1077,6 +1082,7 @@ G4int SToGS::DetectorFactory::Set(G4String basename, G4VPhysicalVolume *mother,
         subdetector = volume_to_copy->GetDaughter(i);
     
         // get postion of this sub-detector with repect to its mother and combines with the new position
+        /*
         G4ThreeVector *T_ = new G4ThreeVector(); G4RotationMatrix *R_ = new G4RotationMatrix();
         //
         (*T_) = subdetector->GetObjectTranslation();
@@ -1087,6 +1093,8 @@ G4int SToGS::DetectorFactory::Set(G4String basename, G4VPhysicalVolume *mother,
             (*T_) += (*T);
         if ( R )
             (*R_) = (*R) * (*R_);
+        */
+
         
         // just a limitation ... to see how to deal with assemblemy, replica ...
         if ( dynamic_cast<G4PVPlacement *>(subdetector) == 0x0 ) {
@@ -1098,6 +1106,7 @@ G4int SToGS::DetectorFactory::Set(G4String basename, G4VPhysicalVolume *mother,
         ostringstream hname;
         hname << thefullDetector->GetName() << ":" << setw(3) << setfill('0') << imprint_number << ":" << subdetector->GetName() ;
         
+        /*
         if ( subdetector->GetLogicalVolume()->GetNoDaughters() == 0 ) {
             if ( subdetector->GetLogicalVolume()->GetSensitiveDetector() ) {
                 new G4PVPlacement(R_,(*T_),
@@ -1121,9 +1130,41 @@ G4int SToGS::DetectorFactory::Set(G4String basename, G4VPhysicalVolume *mother,
             G4cout << "---> Add to " << mother->GetName() << " " << hname.str() << " with top copy number "
                         << top_copy_number_offset + subdetector->GetCopyNo()<< G4endl;
         }
-
+         */
         
-        delete T_;
+        
+        G4Transform3D Ta(subdetector->GetObjectRotationValue(),subdetector->GetObjectTranslation());
+        //
+        const G4RotationMatrix *pRot = R;
+        if ( R == 0x0 ) {
+            pRot =
+            const_cast<G4RotationMatrix*>( &G4RotationMatrix::IDENTITY );
+        }
+        G4Transform3D Tm(*pRot,*T); G4Transform3D Tf = Tm * Ta;
+        //
+        if ( subdetector->GetLogicalVolume()->GetNoDaughters() == 0 ) {
+            if ( subdetector->GetLogicalVolume()->GetSensitiveDetector() ) {
+                new G4PVPlacement(Tf,
+                                  subdetector->GetLogicalVolume(),
+                                  hname.str(),
+                                  mother->GetLogicalVolume(),
+                                  false,
+                                  top_copy_number_offset + subdetector->GetCopyNo() );
+                G4cout << "---> Add to " << mother->GetName() << " " << hname.str() << " with top copy number "
+                << top_copy_number_offset + subdetector->GetCopyNo()<< G4endl;
+            }
+        }
+        else {
+            // name is the detector name followed by the copy_number_offset
+            new G4PVPlacement(Tf,
+                              subdetector->GetLogicalVolume(),
+                              hname.str(),
+                              mother->GetLogicalVolume(),
+                              false,
+                              top_copy_number_offset + subdetector->GetCopyNo() );
+            G4cout << "---> Add to " << mother->GetName() << " " << hname.str() << " with top copy number "
+            << top_copy_number_offset + subdetector->GetCopyNo()<< G4endl;
+        }
     }
     
     return phycical_active.size();
@@ -1154,7 +1195,7 @@ G4AssemblyVolume *SToGS::DetectorFactory::GetAssembly(G4String basename)
             break;
         }
     }
-    
+    //
     if ( theAssembly == 0x0 ) {
         theDetector = Get(basename);
         if (theDetector == 0x0 ) {
@@ -1322,12 +1363,8 @@ G4VPhysicalVolume * SToGS::DetectorFactory::MakeAnArrayFromFactory(G4String inpu
             }
             SToGS::DetectorFactory *where_to_load = SToGS::DetectorFactory::GetFactory(subdetector_name);
             if ( where_to_load ) {
-           /*     if ( is_Tr ) {
-                    G4Transform3D *Tr = new G4Transform3D(R->inverse(),T);
-                    where_to_load->Set(subdetector_name, theDetector, SToGS::DetectorFactory::GetGCopyNb(), Tr );
-                }
-                else */
-                G4int nb_added = where_to_load->Set(subdetector_name, theDetector, SToGS::DetectorFactory::GetGCopyNb(), &T, R);
+                G4int nb_added = 0;
+                nb_added = where_to_load->Set(subdetector_name, theDetector, SToGS::DetectorFactory::GetGCopyNb(), &T, R);
                 SToGS::DetectorFactory::SetGCopyNb( SToGS::DetectorFactory::GetGCopyNb() + nb_added );
                 // to do : Set return the number of active volumes
                 

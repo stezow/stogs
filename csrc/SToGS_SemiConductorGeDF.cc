@@ -1118,7 +1118,8 @@ G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACluster(G4String detname, 
         R.rotateZ(G4double(ph)*CLHEP::deg);
         //
         G4Transform3D Tr(R,T);
-        Set(capsules[which],theDetector,0,&Tr);
+        
+        Set(capsules[which],theDetector,0,&T,&R);
     }
     infil.close();
     
