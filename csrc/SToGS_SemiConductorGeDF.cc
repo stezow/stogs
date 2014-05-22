@@ -87,9 +87,9 @@ G4VPhysicalVolume * SToGS::SemiConductorGeDF::MakeEXOCLOVER(G4String detname, G4
 
   G4VPhysicalVolume *theDetector = 0x0; //it means is a pointer
 
-  const G4double world_x = 10.*CLHEP::cm;
-  const G4double world_y = 10.*CLHEP::cm;
-  const G4double world_z = 10.*CLHEP::cm;
+  const G4double world_x = 20.*CLHEP::cm;
+  const G4double world_y = 20.*CLHEP::cm;
+  const G4double world_z = 50.*CLHEP::cm;
 
  
  
