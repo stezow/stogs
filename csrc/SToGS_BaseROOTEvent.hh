@@ -34,45 +34,45 @@
 
 /*! SToGS Base Root Hit
  
- In case of primary particles (simulations)
- - fE : energy of the emitted particle
- - fPDG: PDG code of the emitted particle
- - fX : direction of the emitted particle
- - fY : direction of the emitted particle
- - fZ : direction of the emitted particle
- - fT : emission's time
- - fFlag : unique number in the list of emitted particles for an event
- - fUID  : user's id - unique detector number
- 
- In case of a real detector
- - fE : energy of one cell [detector unit]
- - fPDG: PDG code of the reconstructed particle. Likely to be unknown or determined at the analysis level
- - fX : direction of the cell fired
- - fY : direction of the cell fired
- - fZ : direction of the cell fired
- - fT : detection's time
- - fFlag : flag concerning the cell, in principle default value
- - fUID  : user's id - unique detector number
- 
- In case of simulated detector tacking mode [calo mode]
- - fE : energy of the impact [cell]
- - fPDG: PDG code of the particle giving the hit [unkown, several particle can deposited energy in a given cell]
- - fX : position of the impact [mean position in the cell]
- - fY : position of the impact [mean position in the cell]
- - fZ : position of the impact [mean position in the cell]
- - fT : time of the impact [mean time in the cell]
- - fFlag : unique number in the list of emitted particles for an event [number of hits in the cell]
- - fUID  : user's id - unique detector number
- 
- In case of output of algorithms
- - fE : energy of the cluster
- - fPDG: unique id that depends of the type of the particle
- - fX : direction of the cluster
- - fY : direction of the cluster
- - fZ : direction of the cluster
- - fT : detection's time
- - fFlag : flag concerning the constructed cluster (depends on the algorithm)
- - fUID  : user's id - unique detector number
+     In case of primary particles (simulations)
+     - fE : energy of the emitted particle
+     - fPDG: PDG code of the emitted particle
+     - fX : direction of the emitted particle
+     - fY : direction of the emitted particle
+     - fZ : direction of the emitted particle
+     - fT : emission's time
+     - fFlag : unique number in the list of emitted particles for an event
+     - fUID  : user's id - unique detector number
+     
+     In case of a real detector
+     - fE : energy of one cell [detector unit]
+     - fPDG: PDG code of the reconstructed particle. Likely to be unknown or determined at the analysis level
+     - fX : position of the cell fired
+     - fY : position of the cell fired
+     - fZ : position of the cell fired
+     - fT : detection's time
+     - fFlag : flag concerning the cell, in principle default value
+     - fUID  : user's id - unique detector number
+     
+     In case of simulated detector tacking mode [calo mode]
+     - fE : energy of the impact [cell]
+     - fPDG: PDG code of the particle giving the hit [unkown, several particle can deposited energy in a given cell]
+     - fX : position of the impact [mean position in the cell]
+     - fY : position of the impact [mean position in the cell]
+     - fZ : position of the impact [mean position in the cell]
+     - fT : time of the impact [mean time in the cell]
+     - fFlag : unique number in the list of emitted particles for an event [number of hits in the cell]
+     - fUID  : user's id - unique detector number
+     
+     In case of output of algorithms
+     - fE : energy of the cluster
+     - fPDG: unique id that depends of the type of the particle
+     - fX : direction of the cluster
+     - fY : direction of the cluster
+     - fZ : direction of the cluster
+     - fT : detection's time
+     - fFlag : flag concerning the constructed cluster (depends on the algorithm)
+     - fUID  : user's id - unique detector number
  */
 class SBRHit : public TObject
 {
@@ -83,6 +83,7 @@ public:
 	Double32_t fY;	// Y position
 	Double32_t fZ;	// Z position
 	Double32_t fT;	// time of flight
+    
 	Int_t fFlag;	// a flag
 	Int_t fUID;		// a universal ID
     
@@ -94,7 +95,7 @@ public:
 	SBRHit(const SBRHit &);
 	virtual ~SBRHit();
     
-	ClassDef( SBRHit , 1 ) // SToGS Basic ROOR  Hit
+	ClassDef( SBRHit , 1 ) // SToGS Basic ROOT  Hit
 };
 
 /*! A SToGS Basic ROOT event is a list of SBRHits. It adds also the sum energy and event fold
@@ -104,8 +105,8 @@ class SBREvent : public TObject
 private:
 	TClonesArray *fHits; //-> Collection of hits
 	
-	Double32_t fH;	// sum energy
-	Int_t fK;		// fold
+	Double32_t fETot;	// sum energy
+	Int_t fMultTot;		// fold
     
 public:
 	SBREvent();
@@ -114,10 +115,13 @@ public:
 	//! helper function
 	void CopyTo(std::vector <SBRHit *> &ordlist, Option_t *opt = "");
     
-	// number of hits in that event
+	//! number of hits in that event
 	Int_t GetNbHits() const
-    { return fHits->GetEntries(); }
+    {
+        return fHits->GetEntries();
+    }
 	
+    //! Check in the list of hits the one having
 	SBRHit *IsUID(Int_t uid, Int_t *which = 0x0)
 	{
 		TClonesArray &ar = *fHits;
@@ -140,24 +144,34 @@ public:
 	//! add a hit to the current event
 	SBRHit *AddHit();
 	
-	void AddHK(Double_t h, Int_t k = 1)
-    { fH += h; fK += k; }
+	void AddEMult(Double_t h, Int_t k = 1)
+    {
+        fETot += h;
+        fMultTot += k;
+    }
 	
-	void SetHK(Double_t h, Int_t k)
-    { fH = h; fK = k; }
+	void SetEMult(Double_t h, Int_t k)
+    {
+        fETot = h;
+        fMultTot = k;
+    }
 	
-	Double_t GetH() const
-    { return fH;}
-	Int_t GetK() const
-    { return fK; }
+	Double_t GetETot() const
+    {
+        return fETot;
+    }
+	Int_t GetMultTot() const
+    {
+        return fMultTot;
+    }
 	
 	//! clear the collection of hits, set H, K to 0
 	void Clear(Option_t *opt);
 	
-	ClassDef( SBREvent , 1 ) // SToGS Basic ROOR Event
+	ClassDef( SBREvent , 1 ) // SToGS Basic ROOT Event
 };
 
-/*! A SToGS Basic ROOT event is a list of SBRHits. It adds also the sum energy and event fold
+/*! A
  */
 class SBROpticalHit : public TObject
 {
@@ -182,7 +196,7 @@ public:
 	SBROpticalHit(const SBROpticalHit &);
 	virtual ~SBROpticalHit();
 	
-	ClassDef( SBROpticalHit , 1 ) // Paris Optical Hit
+	ClassDef( SBROpticalHit , 1 ) // SToGS Optical Hit
 };
 
 /*! A SToGS Basic ROOT event is a list of SBRHits. It adds also the sum energy and event fold
@@ -198,7 +212,9 @@ public:
     
 	// number of hits in that event
 	Int_t GetNbHits() const
-    { return fHits->GetEntries(); }
+    {
+        return fHits->GetEntries();
+    }
 	
 	//! to get a Hit
 	SBROpticalHit *GetHit(Int_t);
@@ -207,7 +223,7 @@ public:
 	
 	void Clear(Option_t *opt);
     
-	ClassDef( SBROpticalEvent , 1 ) // Paris Optical Event
+	ClassDef( SBROpticalEvent , 1 ) // SToGS Optical Event
 };
 
 #endif

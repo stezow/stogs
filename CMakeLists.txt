@@ -129,6 +129,8 @@ if (ROOT_FOUND)
     #
     set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOT.hh)
     set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOT.cc)
+    set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOTEvent.hh)
+    set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOTEvent.cc)
     #
     MESSAGE("[SToGS] SToGS Compiled with ROOT facilities ")
 else()
