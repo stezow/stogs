@@ -1,6 +1,6 @@
 #
 # First the world / detector envelop. if detector does not exist, box with dim given otherwise dim ignored
-w EXOGAM_bare +10. +10. +10. m 
+w EXOGAM_bare +10. +10. +10. m
 #
 #
 @ 0 ->
