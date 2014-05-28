@@ -129,8 +129,29 @@ if (ROOT_FOUND)
     #
     set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOT.hh)
     set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOT.cc)
-    set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOTEvent.hh)
-    set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOTEvent.cc)
+ 
+	#
+	# Now test whether or not libs for SToGS ROOT Events exists ... to do, call cmake to build it ...
+	#
+	if (EXISTS ${CMAKE_SOURCE_DIR}/analysis/SToGS/libSToGS_BaseROOTEvents.so)
+		#
+		ADD_DEFINITIONS(-DHAS_STOGS_ROOT_EVENTS)
+		include_directories(${CMAKE_SOURCE_DIR}/analysis/SToGS)
+		#
+		# corresponding actions managers can be added
+    	#set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOTEvent.hh)
+		#set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOTEvent.cc)
+		#
+		#
+		set (EXTRA_LIB ${ROOT_LIBRARIES} -L${CMAKE_SOURCE_DIR}/analysis/SToGS -lSToGS_BaseROOTEvents)
+		MESSAGE(" --> Cool, libSToGS_BaseROOTEvents.so found in analysis !")	
+		#
+	else()
+		MESSAGE(" --> libSToGS_BaseROOTEvents.so NOT FOUND in analysis, you may needed to compile it first to fully exploit ROOT facilities")	
+	endif()
+		
+    #set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOTEvent.hh)
+    #set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOTEvent.cc)
     #
     MESSAGE("[SToGS] SToGS Compiled with ROOT facilities ")
 else()
@@ -207,5 +228,6 @@ target_link_libraries(SToGS_DetectorBuilder ${Geant4_LIBRARIES} ${SToGS_EXTRA_LI
 #
 install(TARGETS SToGS_Source DESTINATION bin)
 install(TARGETS SToGS_DetectorBuilder DESTINATION bin)
+
 
 
