@@ -820,9 +820,6 @@ G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACapsule(G4String detname, 
 	G4double ColY;		// RGB color components
 	G4double ColZ;		// RGB color components
     
-    G4double eps = 0.*CLHEP::mm;
-    // to avoid overlapping in G4, add/remove atrificially this quantities at borders between caps and Ge
-    
     // file to read cotations
     ifstream infil; infil.open(filename.data());
     if ( !infil.is_open() ) {
@@ -1048,7 +1045,7 @@ G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACapsule(G4String detname, 
 
 G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACluster(G4String detname, G4String opt,G4String geo_file)
 {
-    G4VPhysicalVolume *theDetector = 0x0, *asubdetector = 0x0, *caps; std::vector < G4String > capsules(3);
+    G4VPhysicalVolume *theDetector = 0x0; std::vector < G4String > capsules(3);
     
     ifstream infil; infil.open(geo_file.data());
     if ( !infil.is_open() ) {
@@ -1092,7 +1089,7 @@ G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACluster(G4String detname, 
     ReMap(Get(capsules[1]),1);
     ReMap(Get(capsules[2]),2);
 
-    G4int i1,i2,i3, nb_line = 0, which = 0; G4double x,y,z,ps, th, ph; std::string line;
+    G4int i1,i2,i3, which = 0; G4double x,y,z,ps, th, ph; std::string line;
     while( infil.good() ) {
         
         // get euler angles from files
@@ -1118,7 +1115,7 @@ G4VPhysicalVolume *SToGS::SemiConductorGeDF::MakeAGATACluster(G4String detname, 
         R.rotateZ(G4double(ph)*CLHEP::deg);
         //
         G4Transform3D Tr(R,T);
-        
+        //
         Set(capsules[which],theDetector,0,&T,&R);
     }
     infil.close();

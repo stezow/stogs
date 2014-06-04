@@ -258,27 +258,9 @@ namespace SToGS {
         
         //! remap all the physical volumes produced by the Imprint method.
         /*
-         It loops over the produced physical volumes,
-         changes their names by adding the copy number to them taking into account i.e. mame -> name:#:
-         
-         In principle then at the end an active volume should have a name XXX:A:B:C: ...
-         where XXX is a generic string and A B C are numbers corresponding to touchable history as introduced by Geant4
-         
-         As well, if a volume is an active detector, its copy number is modified starting from copy_number_offset
-         
-         It returns the nmuber of active volume counted in the full assembly
-         
-         opt = down means in the copy number is set going into the detector tree struture from top
-         if imprint is the snapshot number, volumeid is the position of an active volume in one snapshot and tot_imprint and tot_volumeid the total number of them,
-         then \n
-         - if opt = down, a volume as for copy id  copy_number_offset + volumeid + tot_volumeid
-         - otherwise copy_number_offset + volumeid + tot_imprint
-         
-         if a detector is composed of several elements in case of down they are going to have consecutive copy numbers
-         while with other option,
-         
          */
-        G4int DoMap(G4AssemblyVolume *assembly, G4VPhysicalVolume *volume_used_to_built_assembly, G4int copy_number_offset = 0, G4String opt = "->") const;
+        G4int DoMap(G4AssemblyVolume *assembly, G4VPhysicalVolume *volume_used_to_built_assembly, G4int copy_number_offset = 0
+                    /*, G4String opt = "->" */) const;
         //! for the given volume, it changes all copy number of active volumes by starting with offset
         /*!
             It returns the number of actives volumes found in this detector

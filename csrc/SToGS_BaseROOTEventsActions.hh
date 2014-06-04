@@ -24,51 +24,54 @@
 // ********************************************************************
 //
 
-#ifndef SToGS_BaseROOTActions_h
-#define SToGS_BaseROOTActions_h 1
+#ifndef SToGS_BaseROOTEventsActions_h
+#define SToGS_BaseROOTEventsActions_h 1
 
 #include "SToGS_BaseROOT.hh"
 #include "SToGS_BaseROOTEvents.h"
 
 //! SToGS namespace to protect SToGS classes
 namespace SToGS {
-    //!
+    //! A Run
     /*!
      */
-    ParisEventRun : public BaseROOTTreeRun
+    class BaseROOTEventsRun : public BaseROOTTreeRun
     {
     protected:
         TTree *fTree;
     protected:
         // Events to be filled from G4 to ROOT
-        PEvent fPrimaryEvent;
-        PEvent fEvent;
+        SBRPEvent fPrimaryEvent;
+        SBREvent  fEvent;
         
     public:
-        ParisEventRun(TTree *tree);
-        virtual ~ParisEventRun()
+        BaseROOTEventsRun(TTree *tree);
+        virtual ~BaseROOTEventsRun()
         {;}
         
         virtual void RecordEvent(const G4Event* evt);
     };
 
-    //! The ParisUserAction defines the run,event,track and step actions
+    //! The BaseROOTEventsUserAction Stores in a ROOT Tree BaseROOTEvents [SBREvent, SBRPEvent etc ... see analysis/SToGS/BaseROOTEvents.h file]
     /*!
      */
-    class ParisUserAction : public SToGS::BaseROOTTreeAction
+    class BaseROOTEventsUserAction : public SToGS::BaseROOTTreeAction
     {
     protected:
         //! true if one has also photons from scintillations
         G4int fisOptical;
         //! emitted optical photons
-        POpticalEvent *fOpticalEventBeg;
+        SBROpticalEvent *fOpticalEventBeg;
         //! end of optical photons
-        POpticalEvent *fOpticalEventEnd;
+        SBROpticalEvent *fOpticalEventEnd;
         
     public:
-        ParisUserAction(G4String conffile = "setup/SToGS_Tree_actions.conf");
-        virtual ~ParisUserAction()
-        {;}
+        BaseROOTEventsUserAction(G4String conffile = "setup/SToGS_Tree_actions.conf");
+        virtual ~BaseROOTEventsUserAction()
+        {
+            delete fOpticalEventBeg;
+            delete fOpticalEventEnd;
+        }
         
         virtual G4Run* GenerateRun();
         
@@ -80,17 +83,17 @@ namespace SToGS {
         virtual void PostUserTrackingAction(const G4Track * /*atrack*/);
     };
 
-    //! The ParisUserActionInitialization is use to init G4 kernel with the actions defined in ParisUserAction
+    //! The BaseROOTEvents is use to init G4 kernel with the actions defined in BaseROOTEventsUserAction
     /*!
      */
-    class ParisUserActionInitialization : public SToGS::AllInOneUserActionInitialization<ParisUserAction>
+    class BaseROOTEvents : public SToGS::AllInOneUserActionInitialization<BaseROOTEventsUserAction>
     {
     public:
-        ParisUserActionInitialization(G4String conf = "setup/SToGS_Tree_actions.conf", G4String which_gene = "GPS",
+        BaseROOTEvents(G4String conf = "setup/SToGS_tree_actions.conf", G4String which_gene = "GPS",
                                       G4String which_gene_opt = "G4Macros/GPSPointLike.mac"):
-            AllInOneUserActionInitialization<ParisUserAction>(conf,which_gene,which_gene_opt)
+            AllInOneUserActionInitialization<BaseROOTEventsUserAction>(conf,which_gene,which_gene_opt)
         {;}
-        virtual ~ParisUserActionInitialization()
+        virtual ~BaseROOTEvents()
         {;}
     };
     

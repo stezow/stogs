@@ -58,7 +58,7 @@ G4String SToGS::GenericsDF::GetConf(G4String path_in_factory) const
     return result;
 }
 
-G4VPhysicalVolume *SToGS::GenericsDF::Get(G4String basename, G4bool is_full)
+G4VPhysicalVolume *SToGS::GenericsDF::Get(G4String basename)
 {
     G4VUserDetectorConstruction *theConstructor = 0x0; G4VPhysicalVolume *theDetector = 0x0; G4String conffile;
     
@@ -102,27 +102,26 @@ G4VPhysicalVolume *SToGS::GenericsDF::Get(G4String basename, G4bool is_full)
         fLoadedPhysical.push_back(p1);
         std::pair < G4String, G4VUserDetectorConstruction *> p2(basename,theConstructor);
         fLoadedUserDetectorConstruction.push_back(p2);
-        
-        if ( is_full ) {
 #if G4VERSION_NUMBER < 1000
+            theConstructor->ConstructSDandField(); // done at construction time for Geant4 < 10.0 otherwise in ConstructSDandField
 #else
-            theConstructor->ConstructSDandField();
 #endif
-        }
     }
 
     return theDetector;
 }
 
-void SToGS::GenericsDF::GetAttributes(G4String basename)
+void SToGS::GenericsDF::GetAttributes(G4String basename, bool do_amap, G4bool do_dmap)
 {
     // check is already loaded
 #if G4VERSION_NUMBER < 1000
 #else
-    for (size_t i = 0; i < fLoadedUserDetectorConstruction.size(); i++) {
-        if ( fLoadedUserDetectorConstruction[i].first == basename ) {
-            fLoadedUserDetectorConstruction[i].second->ConstructSDandField();
-            break;
+    if ( do_amap ) {
+        for (size_t i = 0; i < fLoadedUserDetectorConstruction.size(); i++) {
+            if ( fLoadedUserDetectorConstruction[i].first == basename ) {
+                fLoadedUserDetectorConstruction[i].second->ConstructSDandField();
+                break;
+            }
         }
     }
 #endif

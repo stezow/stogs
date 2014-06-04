@@ -55,9 +55,9 @@ namespace SToGS {
             {;}
         
         //! overwrite the Get method to retrieve the detector from the standard G4 way i.e. by calling Construct
-        virtual G4VPhysicalVolume *Get(G4String basename, G4bool is_full = true);
+        virtual G4VPhysicalVolume *Get(G4String basename);
         //! Read attrbiutes by calling COnstructSDandFileds
-        virtual void GetAttributes(G4String basename);
+        virtual void GetAttributes(G4String basename, G4bool do_amap = true, G4bool do_dmap = false);
 
         //! build the default store i.e. nothing here
         virtual void MakeStore()

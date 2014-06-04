@@ -139,19 +139,16 @@ if (ROOT_FOUND)
 		include_directories(${CMAKE_SOURCE_DIR}/analysis/SToGS)
 		#
 		# corresponding actions managers can be added
-    	#set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOTEvent.hh)
-		#set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOTEvent.cc)
+    	set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOTEventsActions.hh)
+		set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOTEventsActions.cc)
 		#
 		#
-		set (EXTRA_LIB ${ROOT_LIBRARIES} -L${CMAKE_SOURCE_DIR}/analysis/SToGS -lSToGS_BaseROOTEvents)
+		set (SToGS_EXTRA_LIB ${SToGS_EXTRA_LIB} -L${CMAKE_SOURCE_DIR}/analysis/SToGS -lSToGS_BaseROOTEvents)
 		MESSAGE(" --> Cool, libSToGS_BaseROOTEvents.so found in analysis !")	
 		#
 	else()
-		MESSAGE(" --> libSToGS_BaseROOTEvents.so NOT FOUND in analysis, you may needed to compile it first to fully exploit ROOT facilities")	
+		MESSAGE(" --> libSToGS_BaseROOTEvents.so NOT FOUND in analysis, you may needed to compile it first to fully exploit ROOT facilities")
 	endif()
-		
-    #set (SToGS_HEADER ${SToGS_HEADER} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOTEvent.hh)
-    #set (SToGS_SRC ${SToGS_SRC} ${PROJECT_SOURCE_DIR}/csrc/SToGS_BaseROOTEvent.cc)
     #
     MESSAGE("[SToGS] SToGS Compiled with ROOT facilities ")
 else()

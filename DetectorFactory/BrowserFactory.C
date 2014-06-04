@@ -122,6 +122,96 @@ void ShowInEve(const char *basename = "DetectorFactory/Scintillators/CParisPW_2"
 
 
 /*
+//! Read the detector in the factory and show it in open GL window
+TGeoVolume *GetDetector(const char *basename = "DetectorFactory/Scintillators/CParisPW_2")
+{
+    TString detname, fullname; TObjArray logical_stored; TObjArray phycical_stored;
+    
+    fullname  = basename;
+    fullname += ".gdml";
+    cout << fullname << endl;
+    
+    if ( gGeoManager == 0x0 ) {
+        new TGeoManager("GDMLImport", "Geometry imported from GDML");
+        gGeoManager->SetVisOption(0);
+    }
+    
+    TString cmd = TString::Format("TGDMLParse::StartGDML(\"%s\")", fullname.Data());
+    TGeoVolume* world = (TGeoVolume*)gROOT->ProcessLineFast(cmd);
+    if ( world == 0x0 ) {
+        return 0x0;
+    }
+    
+    // collect logical and physical (nodes) volumes
+    CollectVolumes(world->GetNode(0),logical_stored,phycical_stored);
+    
+    fullname  = basename; fullname += ".amap"; std::ifstream amap(fullname.Data());
+    if ( amap.is_open() ) {
+        
+        std::string touchable, aline;
+        
+        // logicals
+        getline(amap,aline);
+        while ( amap.good() ) {
+            
+            istringstream decode(aline); TString vname, key_sd, sd, key_color; Float_t r,g,b,a;
+            
+            decode >> vname
+            >> key_color
+            >> r
+            >> g
+            >> b
+            >> a
+            >> key_sd
+            >> sd
+            ;
+            
+            for (size_t i = 0; i < logical_stored.GetEntries(); i++) {
+                TString tmp = logical_stored[i]->GetName();
+                if ( tmp == vname ) {
+                    cout << " **** Set Attributes to: " << tmp << " using " << aline << endl;
+                    
+                    TGeoVolume *alogical = (TGeoVolume *)logical_stored[i];
+                    
+                    alogical->SetFillColor( TColor::GetColor(r,g,b) );
+                    alogical->SetLineColor( TColor::GetColor(r,g,b) );
+                    alogical->SetTransparency(100*(1-a));
+                }
+            }
+            
+            getline(amap,aline);
+        }
+    }
+    
+    return world;
+}
+
+void ShowInEveT()
+{
+    TEveManager::Create();
+    
+    TGeoVolume *det1 = GetDetector("DetectorFactory/SemiConductors/Ge/ATC");
+    TEveGeoTopNode* inn1 = new TEveGeoTopNode(gGeoManager, det1->GetNode(0));
+    gEve->AddGlobalElement(inn1);
+  
+    TGeoVolume *det2 = GetDetector("DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-AC");
+    TEveGeoTopNode* inn2 = new TEveGeoTopNode(gGeoManager, det2->GetNode(0));
+    gEve->AddGlobalElement(inn2);
+    
+    gEve->FullRedraw3D(kTRUE);
+    
+    // EClipType not exported to CINT (see TGLUtil.h):
+    // 0 - no clip, 1 - clip plane, 2 - clip box
+    TGLViewer *v = gEve->GetDefaultGLViewer();
+    v->GetClipSet()->SetClipType(1);
+    v->RefreshPadEditor(v);
+    
+    v->CurrentCamera().RotateRad(-.7, 0.5);
+    v->DoDraw();
+}
+*/
+
+/*
 void ExportToROOT(const Char_t *rfilename = "DetectorFactory.root")
 {
     // first canvas to draw

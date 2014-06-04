@@ -453,12 +453,12 @@ void SToGS::DetectorFactory::AssemblyRename(G4AssemblyVolume *assembly, const G4
 }
 
 G4int SToGS::DetectorFactory::DoMap(G4AssemblyVolume *assembly,
-                                    G4VPhysicalVolume *volume_used_to_built_assembly, G4int copy_number_offset, G4String opt) const
+                                    G4VPhysicalVolume *volume_used_to_built_assembly, G4int copy_number_offset) const
 {
 
     G4cout << "[+] Results of snapshots of " <<  volume_used_to_built_assembly->GetName() << endl;
 
-	std::string tmp; G4int item = 0; std::vector <G4int> items; // for each imprinted volumes, current number
+	std::string tmp; // std::vector <G4int> items; // for each imprinted volumes, current number
     
     // from the detector used to make the assembly, collect logical and physical to remap the imprinted volumes
     std::vector<G4LogicalVolume *> logical_stored; std::vector<G4VPhysicalVolume *> physical_stored; std::vector<G4VPhysicalVolume *> physical_active;
@@ -513,7 +513,6 @@ G4int SToGS::DetectorFactory::DoMap(G4AssemblyVolume *assembly,
             (an_element)->SetCopyNo( copy_number_offset + impr*physical_active.size() );
             G4cout << " Set Copy Number of Imprinted Physical Volume " << (an_element)->GetName() << " to " << (an_element)->GetCopyNo() << G4endl;
         }
-        
         //
         delete [] tmpname;
     }
@@ -521,7 +520,6 @@ G4int SToGS::DetectorFactory::DoMap(G4AssemblyVolume *assembly,
     G4cout << "[-] Results of snapshots of " <<  volume_used_to_built_assembly->GetName()  << endl;
     
     return physical_active.size();
-    
 }
 
 void SToGS::DetectorFactory::SetActive(G4LogicalVolume *pv, const G4String &opt)
@@ -862,7 +860,6 @@ void SToGS::DetectorFactory::GetAttributes(G4String basename, G4bool do_amap, G4
     //
     if ( dmap.is_open() && do_dmap ) {
         
-        G4int max_uid = 0;
         for (size_t i = 0; i < phycical_stored.size(); i++) {
             phycical_stored[i]->SetCopyNo(-1);
         }
