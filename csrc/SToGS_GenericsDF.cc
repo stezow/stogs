@@ -103,8 +103,8 @@ G4VPhysicalVolume *SToGS::GenericsDF::Get(G4String basename)
         std::pair < G4String, G4VUserDetectorConstruction *> p2(basename,theConstructor);
         fLoadedUserDetectorConstruction.push_back(p2);
 #if G4VERSION_NUMBER < 1000
-            theConstructor->ConstructSDandField(); // done at construction time for Geant4 < 10.0 otherwise in ConstructSDandField
 #else
+//        theConstructor->ConstructSDandField(); // done at construction time for Geant4 < 10.0 otherwise in ConstructSDandField
 #endif
     }
 

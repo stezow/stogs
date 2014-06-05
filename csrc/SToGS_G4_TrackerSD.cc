@@ -92,7 +92,22 @@ G4bool SToGS::TrackerSD::ProcessHits(G4Step* aStep, G4TouchableHistory * /*touch
 	newHit->SetToF ( aStep->GetPostStepPoint()->GetGlobalTime() );	
 	
 	newHit->SetDetName  (aStep->GetTrack()->GetVolume()->GetName());
-	newHit->SetDetID    (aStep->GetTrack()->GetVolume()->GetCopyNo());	
+    
+    const G4VTouchable *touchable = aStep->GetPreStepPoint()->GetTouchable();
+    G4int depth = touchable->GetHistoryDepth();
+    
+    G4int detector_number = touchable->GetCopyNumber(0); // get curent detector number and add offset of the on-top structure
+    if ( depth > 1 ) {
+        detector_number += touchable->GetCopyNumber(depth-1);
+        /*
+        G4cout << " 0 " << touchable->GetCopyNumber(0) << G4endl;;
+        G4cout << " 1 " << touchable->GetCopyNumber(1) << G4endl;;
+        G4cout << " 2 " << touchable->GetCopyNumber(2) << G4endl;;
+        G4cout << " 3 " << touchable->GetCopyNumber(3) << G4endl;;
+        */
+    }
+    
+	newHit->SetDetID(detector_number);
 	
 //	newHit->SetMotherDetName(touch->GetVolume()->GetName());
    	newHit->SetMotherID(aStep->GetPreStepPoint()->GetTouchableHandle()->GetReplicaNumber(1)); 

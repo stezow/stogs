@@ -11,6 +11,7 @@ experiment in Nuclear Structure.
 
 Organization: 
     SToGS is hosted in github at the following address: https://github.com/stezow/stogs
+    
         --> the wiki is used for announcement, tickets could be posted on the bug tracker
     
     An html documentation of the sources is produced on daily bases with doxygen, browsable here: 

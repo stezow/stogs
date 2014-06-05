@@ -690,17 +690,6 @@ G4VPhysicalVolume *SToGS::DetectorFactory::Import(G4String gdmlfile, G4String de
     return theDetector;
 }
 
-/*
-G4VPhysicalVolume *SToGS::DetectorFactory::Get(G4String basename)
-{
-    G4VPhysicalVolume *theDetector = GetGeometry(basename);
-    if ( theDetector ) {
-        GetAttributes(basename);
-    }
-    return theDetector;
-}
- */
-
 G4VPhysicalVolume *SToGS::DetectorFactory::Get(G4String basename)
 {
     G4VPhysicalVolume *theDetector = 0x0; G4String detname, fullname;
@@ -779,109 +768,103 @@ void SToGS::DetectorFactory::GetAttributes(G4String basename, G4bool do_amap, G4
     //
     CollectVolumes(theDetector, logical_stored, phycical_stored, physical_active);
     //
-    if ( amap.is_open() && do_amap ) {
-        
-        // logicals
-        getline(amap,aline);
-        while ( amap.good()  && !amap.eof() ) {
-            
-            istringstream decode(aline);
-            G4String vname, key_sd, sd, key_color, touchable; G4double r,g,b,a;
-            
-            decode >> vname
-            >> key_color
-            >> r
-            >> g
-            >> b
-            >> a
-            >> key_sd
-            >> sd
-            ;
-            
-            for (size_t i = 0; i < logical_stored.size(); i++) {
-                if ( vname == logical_stored[i]->GetName() ) {
-                    //G4cout << " Change attributes [colors] of " << vname << " to " << G4Color(r,g,b,a) << G4endl;
-                    //
-                    G4VisAttributes visatt(G4Color(r,g,b,a));
-                    if ( key_color == "C" )
-                        visatt.SetVisibility(true);
-                    else
-                        visatt.SetVisibility(false);
-                    
-                    logical_stored[i]->SetVisAttributes(visatt);
-                    
-                    // SD
-                    if ( sd != "-" ) { // means a sensitive detector so look for it and assign to the volume
-                        G4VSensitiveDetector * sensdet = GetSD(sd);
-                        if (sensdet) {
-                            // G4cout << " Change attribute [sensitive] of " << vname << " to " << sd << G4endl;
-                            logical_stored[i]->SetSensitiveDetector(sensdet);
+    
+    if ( do_amap ) {
+        if ( amap.is_open() ) {
+            // logicals
+            getline(amap,aline);
+            while ( amap.good()  && !amap.eof() ) {
+                
+                istringstream decode(aline);
+                G4String vname, key_sd, sd, key_color, touchable; G4double r,g,b,a;
+                
+                decode >> vname
+                    >> key_color
+                    >> r
+                    >> g
+                    >> b
+                    >> a
+                    >> key_sd
+                    >> sd
+                    ;
+                
+                for (size_t i = 0; i < logical_stored.size(); i++) {
+                    if ( vname == logical_stored[i]->GetName() ) {
+                        //G4cout << " Change attributes [colors] of " << vname << " to " << G4Color(r,g,b,a) << G4endl;
+                        //
+                        G4VisAttributes visatt(G4Color(r,g,b,a));
+                        if ( key_color == "C" )
+                            visatt.SetVisibility(true);
+                        else
+                            visatt.SetVisibility(false);
+                        
+                        logical_stored[i]->SetVisAttributes(visatt);
+                        
+                        // SD
+                        if ( sd != "-" ) { // means a sensitive detector so look for it and assign to the volume
+                            G4VSensitiveDetector * sensdet = GetSD(sd);
+                            if (sensdet) {
+                                // G4cout << " Change attribute [sensitive] of " << vname << " to " << sd << G4endl;
+                                logical_stored[i]->SetSensitiveDetector(sensdet);
+                            }
                         }
+                        // others ... field etc ...
+                        
+                        break;
                     }
-                    // others ... field etc ...
+                }
+                aline = "";
+                getline(amap,aline);
+            }
+        }
+        else { // do an amap file with all the sensitive detectors
+            fullname  = basename; fullname += ".amap"; std::ofstream amap_(fullname.data());
+            
+            if ( amap_.is_open() ) {
+                has_done_amap = true;
+                for (size_t i = 0; i < logical_stored.size(); i++) {
                     
-                    break;
+                    //TODO take into account SD in case of import of pure GDML file into factory
+                    //               if ( logical_stored[i] == theDetector->GetLogicalVolume() ) { // mother is not a
+                    //                   continue;
+                    //               }
+                    
+                    amap_ << logical_stored[i]->GetName()
+                    << "\t"
+                    << "C "
+                    << setprecision(2)
+                    << "0.5"
+                    << " "
+                    << "0.5"
+                    << " "
+                    << "0.5"
+                    << " "
+                    << "0.5"
+                    << "\t"
+                    << " S -"
+                    << " F -"
+                    << endl;
                 }
             }
-            aline = "";
-            getline(amap,aline);
-        }
-    }
-    else { // do an amap file with all the sensitive detectors
-        fullname  = basename; fullname += ".amap"; std::ofstream amap_(fullname.data());
-        
-        if ( amap_.is_open() ) {
-            has_done_amap = true;
-            for (size_t i = 0; i < logical_stored.size(); i++) {
-                
-                //               if ( logical_stored[i] == theDetector->GetLogicalVolume() ) { // mother is not a
-                //                   continue;
-                //               }
-                
-                amap_ << logical_stored[i]->GetName()
-                << "\t"
-                << "C "
-                << setprecision(2)
-                << "0.5"
-                << " "
-                << "0.5"
-                << " "
-                << "0.5"
-                << " "
-                << "0.5"
-                << "\t"
-                << " S -"
-                << " F -"
-                << endl;
-            }
-        }
-    }
-    
-    //
-    if ( dmap.is_open() && do_dmap ) {
-        
-        for (size_t i = 0; i < phycical_stored.size(); i++) {
-            phycical_stored[i]->SetCopyNo(-1);
         }
 
-        // physicals
-        getline(dmap,aline);
-        while ( dmap.good() && !dmap.eof()) {
+    }
+    //
+    if ( do_dmap ) {
+        if ( dmap.is_open() ) {
             
-            G4String pname, unit, firstpname; G4double x,y,z; G4int uid, top_id, id;
-            istringstream decode(aline);
+            for (size_t i = 0; i < phycical_stored.size(); i++) {
+                phycical_stored[i]->SetCopyNo(-1);
+            }
             
-            /*
-            decode >> uid
-            >> pname
-            >> touchable
-            >> x
-            >> y
-            >> z
-            >> unit
-            ;
-            */
-            decode >> uid
+            // physicals
+            getline(dmap,aline);
+            while ( dmap.good() && !dmap.eof()) {
+                
+                G4String pname, unit, firstpname; G4double x,y,z; G4int uid, top_id, id;
+                istringstream decode(aline);
+                
+                decode >> uid
                 >> firstpname
                 >> top_id
                 >> pname
@@ -890,75 +873,76 @@ void SToGS::DetectorFactory::GetAttributes(G4String basename, G4bool do_amap, G4
                 >> y
                 >> z
                 >> unit
-            ;
-            
-            //               cout << " Change Copy number of " << pname << phycical_stored.size() << endl;
-            G4cout << " Load Copy number of " << firstpname << " [" << top_id << "] and " << pname << " [" << id << "] " << G4endl;
-            
-            // std::vector<G4bool> is_changed(phycical_stored.size(),0); // to avoid applying modification more that once
-            for (size_t i = 0; i < phycical_stored.size(); i++) {
-                if ( firstpname == phycical_stored[i]->GetName() ) {
-                    // G4cout << " Load Copy number of " << firstpname << " [" << top_id << "] " << G4endl;
-                    //
-                    phycical_stored[i]->SetCopyNo(top_id);
+                ;
+                
+                //               cout << " Change Copy number of " << pname << phycical_stored.size() << endl;
+                G4cout << " Load Copy number of " << firstpname << " [" << top_id << "] and " << pname << " [" << id << "] " << G4endl;
+                
+                // std::vector<G4bool> is_changed(phycical_stored.size(),0); // to avoid applying modification more that once
+                for (size_t i = 0; i < phycical_stored.size(); i++) {
+                    if ( firstpname == phycical_stored[i]->GetName() ) {
+                        // G4cout << " Load Copy number of " << firstpname << " [" << top_id << "] " << G4endl;
+                        //
+                        phycical_stored[i]->SetCopyNo(top_id);
+                    }
+                    if ( pname == phycical_stored[i]->GetName() ) {
+                        // G4cout << " Load Copy number of " << pname << " [" << id << "] " << G4endl;
+                        //
+                        phycical_stored[i]->SetCopyNo(id);
+                    }
                 }
-                if ( pname == phycical_stored[i]->GetName() ) {
-                    // G4cout << " Load Copy number of " << pname << " [" << id << "] " << G4endl;
-                    //
-                    phycical_stored[i]->SetCopyNo(id);
-                }
+                //
+                aline = "";
+                getline(dmap,aline);
             }
-            //
-            aline = "";
-            getline(dmap,aline);
+            //SToGS::DetectorFactory::SetGCopyNb( SToGS::DetectorFactory::GetGCopyNb() + max_uid );
+            // in principle consecutive copy numbers ... but just in case take the highest found ...
         }
-        //SToGS::DetectorFactory::SetGCopyNb( SToGS::DetectorFactory::GetGCopyNb() + max_uid );
-        // in principle consecutive copy numbers ... but just in case take the highest found ...
-    }
-    else {
-        for (size_t i = 0; i < phycical_stored.size(); i++) {
-            phycical_stored[i]->SetCopyNo(-1);
-        }
-        
-        if ( !has_done_amap ) { // already an amap, change copy # of active volumes and store results in dmap
-            
-            fullname  = basename; fullname += ".dmap"; std::ofstream dmap_(fullname.data());
-            
+        else {
             for (size_t i = 0; i < phycical_stored.size(); i++) {
-                if ( phycical_stored[i]->GetLogicalVolume()->GetSensitiveDetector() ) {
-                    cout << " Change Name and Copy number of "
-                    << phycical_stored[i]->GetName() << " -> "
-                    << phycical_stored[i]->GetName() << ": " << SToGS::DetectorFactory::GetGCopyNb() << " "
-                    << SToGS::DetectorFactory::GetGCopyNb() << endl;
-                    //
-                    ostringstream tmp; tmp << phycical_stored[i]->GetName(); tmp << ":"; tmp << SToGS::DetectorFactory::GetGCopyNb();
-                    
-                    phycical_stored[i]->SetName(tmp.str());
-                    phycical_stored[i]->SetCopyNo( SToGS::DetectorFactory::AddGCopyNb() );
-                    
-                    if ( dmap_.is_open() ) {
-                        dmap_ << setw(5) << setfill('0')
-                        << phycical_stored[i]->GetCopyNo() << "\t"
-                        << phycical_stored[i]->GetName() << "\t";
-                        StreamTouchable(dmap_, phycical_stored[i]->GetName()); dmap_ << "\t";
+                phycical_stored[i]->SetCopyNo(-1);
+            }
+            
+            if ( !has_done_amap ) { // already an amap, change copy # of active volumes and store results in dmap
+                
+                fullname  = basename; fullname += ".dmap"; std::ofstream dmap_(fullname.data());
+                
+                for (size_t i = 0; i < phycical_stored.size(); i++) {
+                    if ( phycical_stored[i]->GetLogicalVolume()->GetSensitiveDetector() ) {
+                        cout << " Change Name and Copy number of "
+                        << phycical_stored[i]->GetName() << " -> "
+                        << phycical_stored[i]->GetName() << ": " << SToGS::DetectorFactory::GetGCopyNb() << " "
+                        << SToGS::DetectorFactory::GetGCopyNb() << endl;
+                        //
+                        ostringstream tmp; tmp << phycical_stored[i]->GetName(); tmp << ":"; tmp << SToGS::DetectorFactory::GetGCopyNb();
                         
-                        if ( phycical_stored[i]->GetTranslation().getX() < 0.0 )
-                            dmap_ << phycical_stored[i]->GetTranslation().getX()/CLHEP::cm << " ";
-                        else
-                            dmap_ << "+" << phycical_stored[i]->GetTranslation().getX()/CLHEP::cm << " ";
+                        phycical_stored[i]->SetName(tmp.str());
+                        phycical_stored[i]->SetCopyNo( SToGS::DetectorFactory::AddGCopyNb() );
                         
-                        if ( phycical_stored[i]->GetTranslation().getY() < 0.0 )
-                            dmap_ << phycical_stored[i]->GetTranslation().getY()/CLHEP::cm << " ";
-                        else
-                            dmap_ << "+" << phycical_stored[i]->GetTranslation().getY()/CLHEP::cm << " ";
-                        
-                        if ( phycical_stored[i]->GetTranslation().getZ() < 0.0 )
-                            dmap_ << phycical_stored[i]->GetTranslation().getZ()/CLHEP::cm << " ";
-                        else
-                            dmap_ << "+" << phycical_stored[i]->GetTranslation().getZ()/CLHEP::cm << " ";
-                        
-                        dmap_ << " cm\t";
-                        dmap_ << " "<< std::endl;
+                        if ( dmap_.is_open() ) {
+                            dmap_ << setw(5) << setfill('0')
+                            << phycical_stored[i]->GetCopyNo() << "\t"
+                            << phycical_stored[i]->GetName() << "\t";
+                            StreamTouchable(dmap_, phycical_stored[i]->GetName()); dmap_ << "\t";
+                            
+                            if ( phycical_stored[i]->GetTranslation().getX() < 0.0 )
+                                dmap_ << phycical_stored[i]->GetTranslation().getX()/CLHEP::cm << " ";
+                            else
+                                dmap_ << "+" << phycical_stored[i]->GetTranslation().getX()/CLHEP::cm << " ";
+                            
+                            if ( phycical_stored[i]->GetTranslation().getY() < 0.0 )
+                                dmap_ << phycical_stored[i]->GetTranslation().getY()/CLHEP::cm << " ";
+                            else
+                                dmap_ << "+" << phycical_stored[i]->GetTranslation().getY()/CLHEP::cm << " ";
+                            
+                            if ( phycical_stored[i]->GetTranslation().getZ() < 0.0 )
+                                dmap_ << phycical_stored[i]->GetTranslation().getZ()/CLHEP::cm << " ";
+                            else
+                                dmap_ << "+" << phycical_stored[i]->GetTranslation().getZ()/CLHEP::cm << " ";
+                            
+                            dmap_ << " cm\t";
+                            dmap_ << " "<< std::endl;
+                        }
                     }
                 }
             }
@@ -967,80 +951,6 @@ void SToGS::DetectorFactory::GetAttributes(G4String basename, G4bool do_amap, G4
     cout << "[..+] Loading Attributes from store " << basename << endl;
 }
 
-/*
-G4bool SToGS::DetectorFactory::Set(G4String basename, G4VPhysicalVolume *mother,
-                                   G4int copy_number_offset, G4String opt, const G4ThreeVector *T, const G4RotationMatrix *R)
-{
-    G4VPhysicalVolume *thefullDetector = 0x0, *subdetector ; G4LogicalVolume *volume_to_copy; G4int depth = -1;
-    
-    thefullDetector = Get(basename); // load from factory the detector, remove the envelop and copy the content into mother with all its attribute
-    if ( thefullDetector == 0x0 ) {
-        return false;
-    }
-    else { volume_to_copy = thefullDetector->GetLogicalVolume(); }
-    
-    // set copy number as known by full detector
-    for (G4int i = 0; i < volume_to_copy->GetNoDaughters(); i++) {
-        // get sub-detector
-        subdetector = volume_to_copy->GetDaughter(i);
-        
-        G4ThreeVector *T_ = new G4ThreeVector(); G4RotationMatrix *R_ = new G4RotationMatrix();
-        //
-        (*T_) = subdetector->GetObjectTranslation();
-        if ( subdetector->GetRotation() ) {
-            (*R_) = (*subdetector->GetRotation());
-        }
-        if ( T )
-            (*T_) += (*T);
-        if ( R )
-            (*R_) = (*R) * (*R_);
-        
-        G4int placement_mode = 0;
-        if ( dynamic_cast<G4PVPlacement *>(subdetector) == 0x0 ) {
-            G4cout << " Current limitation in cloning this kind of physical volume " << subdetector->GetName() << G4endl;
-            continue;
-        }
-        else placement_mode = 1;
-        //        cout << " + " << subdetector->GetName() << " " << subdetector->GetCopyNo() << endl;
-        
-        // à la StoGS i.e. just give unique positive copy number to Sensitive
-        // to be done: à la G4 i.e. copy number are touchables ...
-        G4int new_copy_number = depth;
-        if ( subdetector->GetLogicalVolume()->GetSensitiveDetector() ) {
-            new_copy_number = subdetector->GetCopyNo() + copy_number_offset;
-        }
-        
-        
-        
-        G4VPhysicalVolume *new_subdetector = new G4PVPlacement(R_,(*T_),
-                                                               subdetector->GetLogicalVolume(),
-                                                               subdetector->GetName(),
-                                                               mother->GetLogicalVolume(),
-                                                               false,
-                                                               new_copy_number);
-        // propagate the copy ... no need of additional Translation, Rotation
-        if ( subdetector->GetNoDaughters() > 0 )
-            Set(subdetector,new_subdetector);
-        
-        delete T_;
-    }
-    // now for all active volume, add offset
-    std::vector<G4LogicalVolume *> logical_stored; std::vector<G4VPhysicalVolume *> phycical_stored;
-    //
-    CollectVolumes(thefullDetector, logical_stored, phycical_stored);
-    //
-    for (size_t i = 0; i < phycical_stored.size(); i++) {
-        if ( phycical_stored[i]->GetLogicalVolume()->GetSensitiveDetector() ) {
-            G4cout << "Changing copy # of " << phycical_stored[i]->GetName() << " to "
-            << phycical_stored[i]->GetCopyNo() + copy_number_offset
-            << G4endl;
-            phycical_stored[i]->SetCopyNo( phycical_stored[i]->GetCopyNo() + copy_number_offset );
-        }
-    }
-    
-    return true;
-}
- */
 
 G4int SToGS::DetectorFactory::ReMap(G4VPhysicalVolume *adetector, G4int offset)
 {
