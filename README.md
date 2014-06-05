@@ -10,13 +10,12 @@ experiment in Nuclear Structure.
 
 
 Organization: 
+    SToGS is hosted in github at the following address: https://github.com/stezow/stogs
+        --> the wiki is used for announcement, tickets could be posted on the bug tracker
+    
+    An html documentation of the sources is produced on daily bases with doxygen, browsable here: 
+        http://www.ipnl.in2p3.fr/perso/stezowski/SToGS/shtmldoc/
+    
+    A User's guide is available on ATRIUM [https://atrium.in2p3.fr/], the latest being 
+        http:
 
-csrc: directory containing source files (.hh and .cc)
-
-
-To configure / compile
-cmake -DGeant4_DIR=/where/geant/has/been/built ../
-
-Stucture 
-Anything starting by SToGS_G4 is pure geant4 code and the .hh and .cc files could be moved to other G4 packages.
-Anything starting by SToGS is complex SToGS code. The .hh and .cc could be moved to other G4 packages.
