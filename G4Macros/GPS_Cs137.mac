@@ -2,20 +2,17 @@
 /gps/pos/type Point
 /gps/pos/centre 0. 0. 0 cm
 /gps/ang/type iso
-/gps/ene/type Lin
-/gps/ene/min  661.6 keV
-/gps/ene/max  661.8 keV
-/gps/ene/gradient  0 
-/gps/ene/intercept  1 
+/gps/ene/type Mono
+#/gps/ene/min  661.6 keV
+#/gps/ene/max  661.8 keV
+#/gps/ene/gradient  0 
+#/gps/ene/intercept  1 
+/gps/energy 661.7 keV
 
 # cone along z-axis
-/gps/ang/mintheta 155 deg
-/gps/ang/maxtheta 205 deg
-/gps/ang/minphi 0 deg
-/gps/ang/maxphi 360 deg
-
-#pencil like along z-axis
-#/gps/ang/mintheta 179 deg
-#/gps/ang/maxtheta 181 deg
+#/gps/ang/mintheta 155 deg
+#/gps/ang/maxtheta 180 deg
 #/gps/ang/minphi 0 deg
 #/gps/ang/maxphi 360 deg
+
+
