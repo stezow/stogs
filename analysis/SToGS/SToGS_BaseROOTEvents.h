@@ -159,7 +159,7 @@ public:
 	virtual ~SBREvent();
 	
 	//! helper function
-	void CopyTo(std::vector <SBRHit *> &ordlist, Option_t *opt = "");
+	// void CopyTo(std::vector <SBRHit *> &ordlist, Option_t *opt = "");
     
 	//! number of hits in that event
 	Int_t GetNbHits() const
@@ -232,7 +232,7 @@ public:
 	virtual ~SBRPEvent();
 	
 	//! helper function
-	void CopyTo(std::vector <SBRPHit *> &ordlist, Option_t *opt = "");
+	// void CopyTo(std::vector <SBRPHit *> &ordlist, Option_t *opt = "");
     
 	//! number of hits in that event
 	Int_t GetNbHits() const

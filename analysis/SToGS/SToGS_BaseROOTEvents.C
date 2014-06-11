@@ -271,6 +271,7 @@ bool CompE_DESCENDING(SBRHit *hit1, SBRHit *hit2)
 	return false;
 }
 
+/*
 void SBREvent::CopyTo(std::vector <SBRHit *> &ordlist, Option_t *opt)
 {
 	TString o = opt; TClonesArray &ar = *fHits;
@@ -286,12 +287,12 @@ void SBREvent::CopyTo(std::vector <SBRHit *> &ordlist, Option_t *opt)
 	}
 }
 
-void SBRPEvent::CopyTo(std::vector <SBRHit *> &ordlist, Option_t *opt)
+void SBRPEvent::CopyTo(std::vector <SBRPHit *> &ordlist, Option_t *opt)
 {
 	TString o = opt; TClonesArray &ar = *fHits;
     
 	for( Int_t i = 0; i < ar.GetEntries(); i++ ) {
-		ordlist.push_back( (SBRHit *)ar[i] );
+		ordlist.push_back( (SBRPHit *)ar[i] );
 	}
 	if ( o == "e>" ) {
 		std::sort( ordlist.begin(), ordlist.end(), CompE_ASCENDING );
@@ -300,6 +301,7 @@ void SBRPEvent::CopyTo(std::vector <SBRHit *> &ordlist, Option_t *opt)
 		std::sort( ordlist.begin(), ordlist.end(), CompE_DESCENDING );
 	}
 }
+ */
 
 
 
