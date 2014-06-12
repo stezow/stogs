@@ -6,9 +6,15 @@
 /gps/pos/centre 0. 0. 0 cm
 
 # Energy
-/gps/ene/type Lin
-/gps/ene/min  0.0 keV
-/gps/ene/max  2000.0 keV
+#/gps/ene/type Lin
+/gps/ene/min 0. MeV
+/gps/ene/max 2. MeV
+
+#Set the gradient for linear distribution
+/gps/ene/gradient  0 
+
+#Set the intercept for linear distribution
+/gps/ene/intercept  1 
 
 # Angular distribution: 
 /gps/ang/type iso
@@ -16,16 +22,6 @@
 /gps/ang/maxphi   360. deg
 /gps/ang/mintheta   0. deg
 /gps/ang/maxtheta 180. deg
-
-
-
-
-
-#Set the gradient for linear distribution
-#/gps/ene/gradient  0 
-
-#Set the intercept for linear distribution
-#/gps/ene/intercept  1 
 
 
 
