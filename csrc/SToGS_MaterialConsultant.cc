@@ -253,11 +253,12 @@ G4Material *SToGS::MaterialConsultant::BuildMaterial(G4String name_material)
     // element to build a composite material
     //------------
     if ( name_material == "SToGS_AIR" ) {
-        density = 1.290*CLHEP::g/CLHEP::cm3; nel = 2; mat = new G4Material(name="SToGS_AIR",density,nel);
+        density = 1.290*CLHEP::mg/CLHEP::cm3; nel = 2; mat = new G4Material(name="SToGS_AIR",density,nel);
         mat->AddElement(BuildElement("SToGS_N"), 70);
         mat->AddElement(BuildElement("SToGS_O"), 30);
         theMaterials.push_back(mat);
     }
+    
     if ( name_material == "SToGS_NaI" ) {
         density = 3.67*CLHEP::g/CLHEP::cm3, nel = 2; mat = new G4Material(name="SToGS_NaI",density,nel);
         mat->AddElement(BuildElement("SToGS_Na"), natoms = 1);

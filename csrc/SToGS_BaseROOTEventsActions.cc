@@ -97,9 +97,9 @@ void SToGS::BaseROOTEventsRun::RecordEvent(const G4Event* evt)
             //
 			hit->fE = (std::sqrt( prim->GetMomentum().mag2() + prim->GetMass() * prim->GetMass()) - prim->GetMass())/CLHEP::keV;
             //
- 			hit->fX = evt->GetPrimaryVertex(i)->GetX0();
-			hit->fY = evt->GetPrimaryVertex(i)->GetY0();
-			hit->fZ = evt->GetPrimaryVertex(i)->GetZ0();
+ 			hit->fX = evt->GetPrimaryVertex(i)->GetX0()/CLHEP::cm;
+			hit->fY = evt->GetPrimaryVertex(i)->GetY0()/CLHEP::cm;
+			hit->fZ = evt->GetPrimaryVertex(i)->GetZ0()/CLHEP::cm;
             //
             hit->fT = evt->GetPrimaryVertex(i)->GetT0();
             //
