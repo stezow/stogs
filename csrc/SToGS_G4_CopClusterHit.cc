@@ -68,6 +68,8 @@ SToGS::CopClusterHit::CopClusterHit(const SToGS::CopClusterHit &from) : G4VHit()
 		
 	detName = from.detName;
 	motherDetName = from.motherDetName;
+    
+    NbHits = from.NbHits;
 }
 
 const SToGS::CopClusterHit& SToGS::CopClusterHit::operator=(const SToGS::CopClusterHit &from)
@@ -86,6 +88,8 @@ const SToGS::CopClusterHit& SToGS::CopClusterHit::operator=(const SToGS::CopClus
 	detName = from.detName;
 	motherDetName = from.motherDetName;
 		
+    NbHits = from.NbHits;
+
 	return (*this);
 }
 
@@ -123,7 +127,9 @@ void SToGS::CopClusterHit::Print()
 
 void SToGS::CopClusterHit::EndOfEvent()
 {
-	if ( edep == 0.0 ) return;
+	if ( edep == 0.0 )
+        return;
+    
     ToF /= edep;
     pos /= edep;
 }

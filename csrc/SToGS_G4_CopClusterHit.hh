@@ -43,7 +43,7 @@ namespace SToGS {
     /*!
      In G4, one have to define a class (a hit) that inherits from G4VHit to keep informations during the tracking.
      This one is dedicated for tracking since it kept infomations of any single impact in sensitive detectors. Here is
-     the list of the available informations for each ParisCopClusterHit. Use Get/Set methods to obtain/change these values.
+     the list of the available informations for each CopClusterHit. Use Get/Set methods to obtain/change these values.
      
      - G4int primaryID: Primary vertex from which this hit is coming
      
@@ -82,13 +82,13 @@ namespace SToGS {
         {
             edep = de;
         }
-        void SetToF (G4double tf = 0.0)
+        void SetToF (G4double de, G4double tf = 0.0)
         {
-            ToF = tf;
+            ToF = de*tf;
         }
-        void SetPos(G4ThreeVector xyz = G4ThreeVector(0.,0.,0.))
+        void SetPos(G4double de, G4ThreeVector xyz = G4ThreeVector(0.,0.,0.))
         {
-            pos = xyz;
+            pos = de*xyz;
         }
         void SetDetName(G4String name)
         {
