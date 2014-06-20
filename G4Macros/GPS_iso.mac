@@ -6,7 +6,7 @@
 /gps/pos/centre 0. 0. 0 cm
 
 # Energy
-#/gps/ene/type Lin
+/gps/ene/type Lin
 /gps/ene/min 0. MeV
 /gps/ene/max 2. MeV
 
