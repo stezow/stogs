@@ -109,7 +109,8 @@ void SToGS::BaseROOTEventsRun::RecordEvent(const G4Event* evt)
 			
 			hit->fFlag = prim->GetTrackID()-1;
 			
-			H += (std::sqrt( prim->GetMomentum().mag2() + prim->GetMass() * prim->GetMass()) - prim->GetMass())/CLHEP::MeV;
+			//H += (std::sqrt( prim->GetMomentum().mag2() + prim->GetMass() * prim->GetMass()) - prim->GetMass())/CLHEP::MeV;
+			H += (std::sqrt( prim->GetMomentum().mag2() + prim->GetMass() * prim->GetMass()) - prim->GetMass())/CLHEP::keV;
 		}
 	}
 	fPrimaryEvent.SetEMult(H,K);
@@ -138,7 +139,8 @@ void SToGS::BaseROOTEventsRun::RecordEvent(const G4Event* evt)
 			hit->fFlag = (*THC)[i]->GetPrimaryID()-1 ;
 			hit->fUID  = (*THC)[i]->GetDetID();
             
-			H += (*THC)[i]->GetEdep()/CLHEP::MeV;
+			//H += (*THC)[i]->GetEdep()/CLHEP::MeV;
+			H += (*THC)[i]->GetEdep()/CLHEP::keV;
 		}
 		fEvent.SetEMult(H,K);
   	}
@@ -165,7 +167,8 @@ void SToGS::BaseROOTEventsRun::RecordEvent(const G4Event* evt)
 			hit->fFlag = (*CHC)[i]->GetNbHits() ;
 			hit->fUID  = (*CHC)[i]->GetDetID();
 			
-			H += (*CHC)[i]->GetEdep()/CLHEP::MeV;
+			//H += (*CHC)[i]->GetEdep()/CLHEP::MeV;
+			H += (*CHC)[i]->GetEdep()/CLHEP::keV;
 		}
 		fEvent.SetEMult(H,K);
 	}
