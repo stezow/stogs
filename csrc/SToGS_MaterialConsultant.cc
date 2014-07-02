@@ -135,7 +135,7 @@ G4Element *SToGS::MaterialConsultant::BuildElement(G4String name_element)
         G4Isotope* Ge74 = new G4Isotope(name="SToGS_Ge74", 32, 74, 73.9212*CLHEP::g/CLHEP::mole);
         G4Isotope* Ge76 = new G4Isotope(name="SToGS_Ge76", 32, 76, 75.9214*CLHEP::g/CLHEP::mole);
         // germanium defined via its isotopes
-        G4Element* elGe = new G4Element(name="SToGS_Germanium",symbol="Ge", 5);
+        G4Element* elGe = new G4Element(name="SToGS_Ge",symbol="Ge", 5);
         elGe->AddIsotope(Ge70, 0.2123);
         elGe->AddIsotope(Ge72, 0.2766);
         elGe->AddIsotope(Ge73, 0.0773);
@@ -260,18 +260,17 @@ G4Material *SToGS::MaterialConsultant::BuildMaterial(G4String name_material)
     }
     if ( name_material == "SToGS_Ge" ) {
       density = 5.323*CLHEP::mg/CLHEP::cm3; nel = 1; mat = new G4Material(name="SToGS_Ge",density,nel);
-      mat->AddElement(BuildElement("SToGS_Germanium"), 100);
+      mat->AddElement(BuildElement("SToGS_Ge"), 100*perCent);
       theMaterials.push_back(mat);
     }
-   
     if ( name_material == "SToGS_NaI" ) {
-        density = 3.67*CLHEP::g/CLHEP::cm3, nel = 2; mat = new G4Material(name="SToGS_NaI",density,nel);
-        mat->AddElement(BuildElement("SToGS_Na"), natoms = 1);
-        mat->AddElement(BuildElement("SToGS_I"), natoms = 1);
-        theMaterials.push_back(mat);
+      density = 3.67*CLHEP::g/CLHEP::cm3, nel = 2; mat = new G4Material(name="SToGS_NaI",density,nel);
+      mat->AddElement(BuildElement("SToGS_Na"), natoms = 1);
+      mat->AddElement(BuildElement("SToGS_I"), natoms = 1);
+      theMaterials.push_back(mat);
     }
     if ( name_material == "SToGS_LaCl3" ) {
-        density = 3.79*CLHEP::g/CLHEP::cm3, nel = 2; mat = new G4Material(name="SToGS_LaCl3",density,nel);
+      density = 3.79*CLHEP::g/CLHEP::cm3, nel = 2; mat = new G4Material(name="SToGS_LaCl3",density,nel);
         mat->AddElement(BuildElement("SToGS_La"), natoms = 1);
         mat->AddElement(BuildElement("SToGS_Cl"), natoms = 3);
         theMaterials.push_back(mat);
