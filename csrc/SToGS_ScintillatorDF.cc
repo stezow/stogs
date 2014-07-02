@@ -248,6 +248,15 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakeCdC(G4String detname, G4String opt
     return theDetector;
 }
 
+
+// PARIS phoswitch - Version 0
+// capsule = polyhedra closed at the front 
+// cristals are attached to the world
+// this shape may be the cause of singularities when the detector is used in simulation 
+// (pathologic treatment of projectiles impacting at (x=0, y=0), 
+// namely in the case of a centered beam or a point source emitting in z direction)
+
+/*
 G4VPhysicalVolume *SToGS::ScintillatorDF::MakePPW(G4String detname, G4double caps_width, G4double housing_width, G4String opt)
 {
     G4VPhysicalVolume *theDetector = 0x0; G4LogicalVolume *detlogicWorld; G4Box *detWorld; G4bool do_caps = false, do_housing = false;
@@ -362,6 +371,289 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakePPW(G4String detname, G4double cap
     
     return theDetector;
 }
+*/
+
+// PARIS phoswitch - Version 1
+// capsule = box, with a box of air inside
+// cristals are attached to the box of air inside the capsule
+/*
+G4VPhysicalVolume *SToGS::ScintillatorDF::MakePPW(G4String detname, G4double caps_width, G4double housing_width, G4String opt)
+{
+// Note : housing_width is not used in this version
+
+    G4VPhysicalVolume *theDetector = 0x0; G4LogicalVolume *detlogicWorld; G4Box *detWorld; G4bool do_caps = false, do_housing = false;
+    G4RotationMatrix R;
+	G4ThreeVector T;
+    G4Transform3D Tr;
+    
+    // Option
+    if ( caps_width != 0.0 ) {
+        if ( opt != "bare" ) {
+            do_caps = true;
+        }
+    }
+    if ( housing_width != 0.0 ) {
+        if ( opt != "bare" ) {
+            do_housing = true;
+        }
+    }
+    
+    // use a physical as a container to describe the detector
+	detWorld= new G4Box(detname,10.*CLHEP::cm,10.*CLHEP::cm,50.*CLHEP::cm);
+	detlogicWorld= new G4LogicalVolume(detWorld, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"), detname, 0, 0, 0);
+	
+	detlogicWorld->SetVisAttributes(G4VisAttributes::Invisible); // hide the world
+	//  Must place the World Physical volume unrotated at (0,0,0).
+	theDetector = new G4PVPlacement(0,         // no rotation
+                                    G4ThreeVector(), // at (0,0,0)
+                                    detlogicWorld,      // its logical volume
+                                    detname,      // its name
+                                    0,               // its mother  volume
+                                    false,           // no boolean operations
+                                    -1);              // copy number
+    
+	// material for first and second layer
+	const char *matInner = "LaBr3", *matOuter = "NaI", *matCapsule = "Al", *matHousing = "Al";
+	
+	// full lenght in X,Y,Z
+	G4double
+        InnerX = 2*2.54*CLHEP::cm, InnerY = 2*2.54*CLHEP::cm, InnerZ = 2*2.54*CLHEP::cm,
+        OuterX = 2*2.54*CLHEP::cm, OuterY = 2*2.54*CLHEP::cm, OuterZ = 6*2.54*CLHEP::cm;
+    // in case of housing longer at the back of the PW
+	G4double 
+		ExtraHousingBack = 20*CLHEP::mm, 
+		eps_caps = 0.1*CLHEP::mm, //caps_width / 100., eps remove in the capsule part to avoid overlapping	
+		Shift = 0.01*CLHEP::mm; // the detector entrance is not just at 0
+
+    // Encapsulation Al if on, otherwise set as AIR ... useful to check overlapping
+
+	G4Box *Capsule_solid = new G4Box("ShapePWCaps", 
+					InnerX/2.+caps_width, 
+					InnerY/2.+caps_width, 
+					(InnerZ+OuterZ+caps_width+ExtraHousingBack)/2.);
+    
+    G4LogicalVolume *Capsule_logic; G4VisAttributes *Capsule_visatt;
+    if ( do_caps ) {
+        Capsule_logic =
+            new G4LogicalVolume(Capsule_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matCapsule),"PWCaps",0,0,0);
+        
+        Capsule_visatt = new G4VisAttributes( G4Colour(0.8, 0.8, 0.8, 0.75) );
+        Capsule_visatt->SetVisibility(true);
+        Capsule_logic->SetVisAttributes( Capsule_visatt );
+    }
+    else {
+        Capsule_logic =
+            new G4LogicalVolume(Capsule_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"),"PWCaps",0,0,0);
+        
+        Capsule_visatt = new G4VisAttributes( G4Colour(1, 1, 1, 0.5) );
+        Capsule_visatt->SetVisibility(true);
+        Capsule_logic->SetVisAttributes( Capsule_visatt );
+    }
+
+    T.setX( 0.0 );
+    T.setY( 0.0 );
+    T.setZ( (InnerZ+OuterZ+caps_width+ExtraHousingBack)/2. + Shift);
+	new G4PVPlacement(0,T,Capsule_logic,"PwCaps",detlogicWorld,false,-1);
+
+    // Air box in the capsule box to make it hollow
+
+	G4Box * Air_solid = new G4Box("ShapePWAirBox",
+					InnerX/2.+eps_caps,
+					InnerY/2.+eps_caps,
+					(InnerZ+OuterZ+eps_caps+ExtraHousingBack)/2.);
+
+	G4LogicalVolume *Air_logic = 
+		new G4LogicalVolume(Air_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"),"PWAir",0,0,0);
+
+	G4VisAttributes *Air_visatt = new G4VisAttributes( G4Colour(1, 1, 1, 0.5) );
+	Air_visatt->SetVisibility(true);
+    Air_logic->SetVisAttributes( Air_visatt );
+	
+    T.setX( 0.0 );
+    T.setY( 0.0 );
+    T.setZ( (caps_width-eps_caps)/2. );
+	new G4PVPlacement(0,T,Air_logic,"PwAir",Capsule_logic,false,-1);
+
+	// Stage 0
+	G4Box *Inner_solid = new G4Box("ShapePW0", InnerX/2., InnerY/2., InnerZ/2.);
+	G4LogicalVolume *Inner_logic =
+        new G4LogicalVolume(Inner_solid, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matInner),"PWLV:0",0,0,0);
+	G4VisAttributes *Inner_visatt = new G4VisAttributes( G4Colour(0.0, 0.0, 1.0) );
+	Inner_visatt->SetVisibility(true);
+	Inner_logic->SetVisAttributes( Inner_visatt );
+    	Inner_logic->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );
+    
+	T.setX( 0.0 );
+    T.setY( 0.0 );
+    //T.setZ( housing_width + caps_width + InnerZ / 2. );
+    //new G4PVPlacement(0,T,Inner_logic,"PW:0:",detlogicWorld,false,0);
+	T.setZ( (eps_caps-OuterZ-ExtraHousingBack)/2. );	
+	new G4PVPlacement(0,T,Inner_logic,"PW:0:",Air_logic,false,0);
+
+	// Stage 1
+	G4Box *Outer_solid = new G4Box("ShapePW1", OuterX/2., OuterY/2., OuterZ/2.);
+	G4LogicalVolume *Outer_logic =
+        new G4LogicalVolume(Outer_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matOuter), "PWLV:1",0,0,0);
+	G4VisAttributes *Outer_visatt = new G4VisAttributes( G4Colour(1.0, 0.0, 0.0) );
+	Outer_visatt->SetVisibility(true);
+	Outer_logic->SetVisAttributes( Outer_visatt );
+    	Outer_logic->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );
+    
+	T.setX( 0.0 );
+    T.setY( 0.0 );
+    //T.setZ( housing_width + caps_width + InnerZ + OuterZ / 2. );
+    //new G4PVPlacement(0,T,Outer_logic,"PW:1:",detlogicWorld,false,1);
+    T.setZ( (eps_caps+InnerZ-ExtraHousingBack)/2. );
+    new G4PVPlacement(0,T,Outer_logic,"PW:1:",Air_logic,false,1);
+    
+    return theDetector;
+}
+*/
+
+// PARIS phoswitch - Version 2
+// capsule = polyhedra with a tap (box) in front
+// cristals are attached to the world
+
+G4VPhysicalVolume *SToGS::ScintillatorDF::MakePPW(G4String detname, G4double caps_width, G4double housing_width, G4String opt)
+{
+// Note : housing_width is not used in this version
+
+    G4VPhysicalVolume *theDetector = 0x0; G4LogicalVolume *detlogicWorld; G4Box *detWorld; G4bool do_caps = false, do_housing = false;
+    G4RotationMatrix R;
+	G4ThreeVector T;
+    G4Transform3D Tr;
+    
+    // Option
+    if ( caps_width != 0.0 ) {
+        if ( opt != "bare" ) {
+            do_caps = true;
+        }
+    }
+    if ( housing_width != 0.0 ) {
+        if ( opt != "bare" ) {
+            do_housing = true;
+        }
+    }
+    
+    // use a physical as a container to describe the detector
+	detWorld= new G4Box(detname,10.*CLHEP::cm,10.*CLHEP::cm,50.*CLHEP::cm);
+	detlogicWorld= new G4LogicalVolume(detWorld, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"), detname, 0, 0, 0);
+	
+	detlogicWorld->SetVisAttributes(G4VisAttributes::Invisible); // hide the world
+	//  Must place the World Physical volume unrotated at (0,0,0).
+	theDetector = new G4PVPlacement(0,         // no rotation
+                                    G4ThreeVector(), // at (0,0,0)
+                                    detlogicWorld,      // its logical volume
+                                    detname,      // its name
+                                    0,               // its mother  volume
+                                    false,           // no boolean operations
+                                    -1);              // copy number
+    
+	// material for first and second layer
+	const char *matInner = "LaBr3", *matOuter = "NaI", *matCapsule = "Al", *matHousing = "Al";
+	
+	// full lenght in X,Y,Z
+	G4double
+        InnerX = 2*2.54*CLHEP::cm, InnerY = 2*2.54*CLHEP::cm, InnerZ = 2*2.54*CLHEP::cm,
+        OuterX = 2*2.54*CLHEP::cm, OuterY = 2*2.54*CLHEP::cm, OuterZ = 6*2.54*CLHEP::cm;
+    // in case of housing longer at the back of the PW
+	G4double 
+		ExtraHousingBack = 20*CLHEP::mm, 
+		eps_caps = 0.1*CLHEP::mm, //caps_width / 100., eps remove in the capsule part to avoid overlapping	
+		Shift = 0.01*CLHEP::mm; // the detector entrance is not just at 0
+
+    // Encapsulation Al if on, otherwise set as AIR ... useful to check overlapping
+
+/*	G4Box *Capsule_solid = new G4Box("ShapePWCaps", 
+					InnerX/2.+caps_width, 
+					InnerY/2.+caps_width, 
+					(InnerZ+OuterZ+caps_width+ExtraHousingBack)/2.);
+*/
+
+    G4double zplane[2], rinner[2], router[2];
+    
+	zplane[0] = Shift+caps_width-eps_caps; 
+	zplane[1] = Shift+caps_width+InnerZ+OuterZ+ExtraHousingBack;
+    	rinner[0] = InnerX / 2. + eps_caps; rinner[1] = InnerX / 2. + eps_caps;
+    	router[0] = InnerX / 2. + caps_width ; router[1] = InnerX / 2. + caps_width;
+
+	G4Polyhedra *Capsule_solid = new G4Polyhedra("ShapePWCaps", 
+					45.0*CLHEP::deg,360.0*CLHEP::deg,
+					4,2,zplane,rinner,router
+					);
+	G4Box *CapsTap_solid = new G4Box("ShapeCapsTap",
+					InnerX/2.+caps_width,
+					InnerY/2.+caps_width,
+					caps_width-eps_caps);
+
+	G4LogicalVolume *Capsule_logic; 
+	G4LogicalVolume *CapsTap_logic;
+	G4VisAttributes *Capsule_visatt;
+
+    if ( do_caps ) {
+        Capsule_logic =
+            new G4LogicalVolume(Capsule_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matCapsule),"PWCaps",0,0,0);
+
+	CapsTap_logic =
+	    new G4LogicalVolume(CapsTap_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matCapsule),"PWCapsTaps",0,0,0);      
+
+        Capsule_visatt = new G4VisAttributes( G4Colour(0.8, 0.8, 0.8, 0.75) );
+        Capsule_visatt->SetVisibility(true);
+        Capsule_logic->SetVisAttributes( Capsule_visatt );
+        CapsTap_logic->SetVisAttributes( Capsule_visatt );
+    }
+    else {
+        Capsule_logic =
+            new G4LogicalVolume(Capsule_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"),"PWCaps",0,0,0);
+        
+	CapsTap_logic =
+	    new G4LogicalVolume(CapsTap_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"),"PWCapsTaps",0,0,0);
+  
+        Capsule_visatt = new G4VisAttributes( G4Colour(1, 1, 1, 0.5) );
+        Capsule_visatt->SetVisibility(true);
+        Capsule_logic->SetVisAttributes( Capsule_visatt );
+        CapsTap_logic->SetVisAttributes( Capsule_visatt );
+    }
+
+    T.setX( 0.0 );
+    T.setY( 0.0 );
+    T.setZ( 0.0 );
+	new G4PVPlacement(0,T,Capsule_logic,"PwCaps",detlogicWorld,false,-1);
+
+    T.setZ( Shift+(caps_width-eps_caps)/2. );
+	new G4PVPlacement(0,T,CapsTap_logic,"PwCapsTaps",detlogicWorld,false,-1);
+
+	// Stage 0
+	G4Box *Inner_solid = new G4Box("ShapePW0", InnerX/2., InnerY/2., InnerZ/2.);
+	G4LogicalVolume *Inner_logic =
+        new G4LogicalVolume(Inner_solid, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matInner),"PWLV:0",0,0,0);
+	G4VisAttributes *Inner_visatt = new G4VisAttributes( G4Colour(0.0, 0.0, 1.0) );
+	Inner_visatt->SetVisibility(true);
+	Inner_logic->SetVisAttributes( Inner_visatt );
+    	Inner_logic->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );
+    
+	T.setX( 0.0 );
+    	T.setY( 0.0 );
+	T.setZ( Shift + caps_width + InnerZ/2. );	
+	new G4PVPlacement(0,T,Inner_logic,"PW:0:",detlogicWorld,false,0);
+
+	// Stage 1
+	G4Box *Outer_solid = new G4Box("ShapePW1", OuterX/2., OuterY/2., OuterZ/2.);
+	G4LogicalVolume *Outer_logic =
+        new G4LogicalVolume(Outer_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matOuter), "PWLV:1",0,0,0);
+	G4VisAttributes *Outer_visatt = new G4VisAttributes( G4Colour(1.0, 0.0, 0.0) );
+	Outer_visatt->SetVisibility(true);
+	Outer_logic->SetVisAttributes( Outer_visatt );
+    	Outer_logic->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );
+    
+	T.setX( 0.0 );
+    	T.setY( 0.0 );
+	T.setZ( Shift + caps_width + InnerZ + OuterZ/2. );
+    new G4PVPlacement(0,T,Outer_logic,"PW:1:",detlogicWorld,false,1);
+    
+    return theDetector;
+}
+
 
 G4VPhysicalVolume *SToGS::ScintillatorDF::MakeCPPW(G4String detname, G4String opt)
 {
