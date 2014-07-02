@@ -258,7 +258,7 @@ G4VPhysicalVolume * SToGS::SemiConductorGeDF::MakeEXOCLOVER(G4String detname, G4
    Crystal_90deg -> rotateZ(90*CLHEP::deg);
 
    sprintf(sName, "ShapedCrystalA");
-   G4LogicalVolume *pCrystalA  = new G4LogicalVolume( coax_cut6, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Ge"), G4String(sName), 0, 0, 0 );
+   G4LogicalVolume *pCrystalA  = new G4LogicalVolume( coax_cut6, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("SToGS_Ge"), G4String(sName), 0, 0, 0 );
    pCrystalA->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );	
   
    CrystalA_phys = new G4PVPlacement(Crystal_90deg,         // no rotation
@@ -277,7 +277,7 @@ G4VPhysicalVolume * SToGS::SemiConductorGeDF::MakeEXOCLOVER(G4String detname, G4
    Crystal_180deg -> rotateZ(180*CLHEP::deg);
 
    sprintf(sName, "ShapedCrystalB");
-   G4LogicalVolume *pCrystalB  = new G4LogicalVolume( coax_cut6, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Ge"), G4String(sName), 0, 0, 0 );
+   G4LogicalVolume *pCrystalB  = new G4LogicalVolume( coax_cut6, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("SToGS_Ge"), G4String(sName), 0, 0, 0 );
    pCrystalB->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );	
   
    CrystalB_phys = new G4PVPlacement(Crystal_180deg,         // no rotation
@@ -296,7 +296,7 @@ G4VPhysicalVolume * SToGS::SemiConductorGeDF::MakeEXOCLOVER(G4String detname, G4
    Crystal_270deg -> rotateZ(270*CLHEP::deg);
 
    sprintf(sName, "ShapedCrystalC");
-   G4LogicalVolume *pCrystalC  = new G4LogicalVolume( coax_cut6, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Ge"), G4String(sName), 0, 0, 0 );
+   G4LogicalVolume *pCrystalC  = new G4LogicalVolume( coax_cut6, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("SToGS_Ge"), G4String(sName), 0, 0, 0 );
    pCrystalC->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );	
    
    CrystalC_phys = new G4PVPlacement(Crystal_270deg,         // no rotation
@@ -312,7 +312,7 @@ G4VPhysicalVolume * SToGS::SemiConductorGeDF::MakeEXOCLOVER(G4String detname, G4
 
    //Crystal D
    sprintf(sName, "ShapedCrystalD");
-   G4LogicalVolume *pCrystalD  = new G4LogicalVolume( coax_cut6, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Ge"), G4String(sName), 0, 0, 0 );
+   G4LogicalVolume *pCrystalD  = new G4LogicalVolume( coax_cut6, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("SToGS_Ge"), G4String(sName), 0, 0, 0 );
   
    pCrystalD->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );
 	
@@ -376,7 +376,7 @@ G4VPhysicalVolume * SToGS::SemiConductorGeDF::MakeEXOCLOVER(G4String detname, G4
 					  InnRad,
 					  OutRad);
       sprintf(sName, "Capsule");
-      G4LogicalVolume * pCapsule  = new G4LogicalVolume( caps, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"), G4String(sName), 0, 0, 0 );	
+      G4LogicalVolume * pCapsule  = new G4LogicalVolume( caps, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("SToGS_Al"), G4String(sName), 0, 0, 0 );	
 
    
       Capsule_phys = new G4PVPlacement(Cap_45deg,         // no rotation
@@ -395,7 +395,7 @@ G4VPhysicalVolume * SToGS::SemiConductorGeDF::MakeEXOCLOVER(G4String detname, G4
     // **************************************************************************
     // *                            BGO AntiCompton1                            *
     // **************************************************************************  
-
+/*
     // define a coaxial shape that will be modify with SubstractSolid
     
     G4int numZplane = 3;
@@ -472,7 +472,7 @@ G4VPhysicalVolume * SToGS::SemiConductorGeDF::MakeEXOCLOVER(G4String detname, G4
     pCsIBack  ->SetVisAttributes(CsIBack_VisAtt);
     // CsIBack_VisAtt->SetForceWireframe(true);
 
-
+*/
 
 
     return theDetector;

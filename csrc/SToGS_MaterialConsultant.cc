@@ -258,7 +258,12 @@ G4Material *SToGS::MaterialConsultant::BuildMaterial(G4String name_material)
         mat->AddElement(BuildElement("SToGS_O"), 30);
         theMaterials.push_back(mat);
     }
-    
+    if ( name_material == "SToGS_Ge" ) {
+      density = 5.323*CLHEP::mg/CLHEP::cm3; nel = 1; mat = new G4Material(name="SToGS_Ge",density,nel);
+      mat->AddElement(BuildElement("SToGS_Germanium"), 100);
+      theMaterials.push_back(mat);
+    }
+   
     if ( name_material == "SToGS_NaI" ) {
         density = 3.67*CLHEP::g/CLHEP::cm3, nel = 2; mat = new G4Material(name="SToGS_NaI",density,nel);
         mat->AddElement(BuildElement("SToGS_Na"), natoms = 1);

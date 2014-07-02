@@ -1,6 +1,6 @@
 /gps/particle gamma
 /gps/pos/type Point
-/gps/pos/centre 0. 0. 0 cm
+/gps/pos/centre 0. 0. -11.350 cm
 /gps/ang/type iso
 /gps/ene/type Mono
 #/gps/ene/min  661.6 keV
