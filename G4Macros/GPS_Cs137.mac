@@ -10,9 +10,9 @@
 /gps/energy 661.7 keV
 
 # cone along z-axis
-#/gps/ang/mintheta 155 deg
-#/gps/ang/maxtheta 180 deg
-#/gps/ang/minphi 0 deg
-#/gps/ang/maxphi 360 deg
+/gps/ang/mintheta 0 deg
+/gps/ang/maxtheta 90 deg
+/gps/ang/minphi 0 deg
+/gps/ang/maxphi 0 deg
 
 
