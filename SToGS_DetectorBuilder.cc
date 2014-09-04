@@ -65,20 +65,31 @@
 int main(int argc, char** argv)
 {
     // file to be given on the command line. If not, set a demo
-    G4int what_detector = -1; G4String filedfb = "", macro_visu = "G4Macros/vis.mac";
+  // G4int what_detector = -1; G4String filedfb = "", macro_visu = "G4Macros/vis.mac";
+  G4int what_detector = -1; G4String filedfb = "", phys_list = "general0", action_list = "", macro_visu = "G4Macros/vis.mac", file_GPS = "G4Macros/GPS.mac";
     for( G4int i = 1; i < argc ; i++) {
 		G4String arg = argv[i];
 		if ( arg == "-dfb" && i < argc - 1 ) {
 			filedfb = argv[i+1];
         }
-        if ( arg == "-myd" ) {
-            what_detector = 0;
-        }
-        if ( arg == "-vis" ) {
-			macro_visu = argv[i+1];
-        }
-	}
-    if ( filedfb == "" ) {
+		if ( arg == "-myd" ) {
+		  what_detector = 0;
+		}
+		if ( arg == "-vis" ) {
+		  macro_visu = argv[i+1];
+		}
+		if (arg == "-GPS" ) {
+		  file_GPS = argv[i+1];
+		}
+		if ( arg == "-phys_list" ) {
+		  phys_list = argv[i+1];
+		}
+		if ( arg == "-action_list" ) {
+		  action_list = argv[i+1];
+		}
+    }
+
+        if ( filedfb == "" ) {
         filedfb = "default.dfb";
     }
     
@@ -87,7 +98,8 @@ int main(int argc, char** argv)
     SToGS::DetectorFactory::theMainFactory()->MakeStore();
     // simple printout manager enough at the level of detector construction
     // it shows also how it can be directy used without having to go through ActionManager
-    SToGS::UserActionInitialization *user_action = new SToGS::PrintOut("run;event;track;step","GPS","G4Macros/GPSPointLike.mac");
+  //  SToGS::UserActionInitialization *user_action = new SToGS::PrintOut("run;event;track;step","GPS",file_GPS);
+    SToGS::UserActionInitialization *user_action = new SToGS::PrintOut(action_list,"GPS",file_GPS);
     
 	// Construct the default run manager which is necessary
     G4RunManager* theRunManager = new G4RunManager;
@@ -99,7 +111,8 @@ int main(int argc, char** argv)
             theRunManager->SetUserInitialization ( new SToGS::BuildFromDetectorFactory(filedfb) );
             break;
     }
-    theRunManager->SetUserInitialization ( new SToGS::ModularPhysicsList() );
+    //   theRunManager->SetUserInitialization ( new SToGS::ModularPhysicsList(";emstandard_opt0;") );
+     theRunManager->SetUserInitialization ( new SToGS::ModularPhysicsList( phys_list) );
 #if G4VERSION_NUMBER < 1000
     theRunManager->SetUserAction( user_action->GetGun() );
     theRunManager->SetUserAction( user_action->GetRunAction() );

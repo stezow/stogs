@@ -395,7 +395,7 @@ G4VPhysicalVolume * SToGS::SemiConductorGeDF::MakeEXOCLOVER(G4String detname, G4
     // **************************************************************************
     // *                            BGO AntiCompton1                            *
     // **************************************************************************  
-/*
+
     // define a coaxial shape that will be modify with SubstractSolid
     
     G4int numZplane = 3;
@@ -472,7 +472,7 @@ G4VPhysicalVolume * SToGS::SemiConductorGeDF::MakeEXOCLOVER(G4String detname, G4
     pCsIBack  ->SetVisAttributes(CsIBack_VisAtt);
     // CsIBack_VisAtt->SetForceWireframe(true);
 
-*/
+
 
 
     return theDetector;
