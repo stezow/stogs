@@ -260,7 +260,7 @@ G4Material *SToGS::MaterialConsultant::BuildMaterial(G4String name_material)
     }
     if ( name_material == "SToGS_Ge" ) {
       density = 5.323*CLHEP::mg/CLHEP::cm3; nel = 1; mat = new G4Material(name="SToGS_Ge",density,nel);
-      mat->AddElement(BuildElement("SToGS_Ge"), 100*perCent);
+        mat->AddElement(BuildElement("SToGS_Ge"), 100*CLHEP::perCent);
       theMaterials.push_back(mat);
     }
     if ( name_material == "SToGS_NaI" ) {
