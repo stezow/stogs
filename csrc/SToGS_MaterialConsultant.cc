@@ -127,7 +127,7 @@ G4Element *SToGS::MaterialConsultant::BuildElement(G4String name_element)
         a=18.9984032*CLHEP::g/CLHEP::mole;
         theElements.push_back(new G4Element(name="SToGS_F",symbol="F",z=9.,a));
     }
-    if ( name_element == "SToGS_Ge" ) {
+    if ( name_element == "SToGS_Germanium" ) {
         // Germanium isotopes
         G4Isotope* Ge70 = new G4Isotope(name="SToGS_Ge70", 32, 70, 69.9242*CLHEP::g/CLHEP::mole);
         G4Isotope* Ge72 = new G4Isotope(name="SToGS_Ge72", 32, 72, 71.9221*CLHEP::g/CLHEP::mole);
@@ -135,7 +135,7 @@ G4Element *SToGS::MaterialConsultant::BuildElement(G4String name_element)
         G4Isotope* Ge74 = new G4Isotope(name="SToGS_Ge74", 32, 74, 73.9212*CLHEP::g/CLHEP::mole);
         G4Isotope* Ge76 = new G4Isotope(name="SToGS_Ge76", 32, 76, 75.9214*CLHEP::g/CLHEP::mole);
         // germanium defined via its isotopes
-        G4Element* elGe = new G4Element(name="SToGS_Ge",symbol="Ge", 5);
+        G4Element* elGe = new G4Element(name="SToGS_Germanium",symbol="Ge", 5);
         elGe->AddIsotope(Ge70, 0.2123);
         elGe->AddIsotope(Ge72, 0.2766);
         elGe->AddIsotope(Ge73, 0.0773);
@@ -259,8 +259,9 @@ G4Material *SToGS::MaterialConsultant::BuildMaterial(G4String name_material)
         theMaterials.push_back(mat);
     }
     if ( name_material == "SToGS_Ge" ) {
-      density = 5.323*CLHEP::mg/CLHEP::cm3; nel = 1; mat = new G4Material(name="SToGS_Ge",density,nel);
-        mat->AddElement(BuildElement("SToGS_Ge"), 100*CLHEP::perCent);
+      density = 5.323*CLHEP::g/CLHEP::cm3; nel = 1; mat = new G4Material(name="SToGS_Ge",density,nel);
+       mat->AddElement(BuildElement("SToGS_Germanium"), 100*CLHEP::perCent);
+      // mat->AddElement(BuildElement("SToGS_Germanium"), 100.*perCent);
       theMaterials.push_back(mat);
     }
     if ( name_material == "SToGS_NaI" ) {
@@ -290,7 +291,7 @@ G4Material *SToGS::MaterialConsultant::BuildMaterial(G4String name_material)
     if ( name_material == "SToGS_BGO" ) {
         density = 7.13*CLHEP::g/CLHEP::cm3, nel = 3; mat = new G4Material(name="SToGS_BGO", density, nel);
         mat->AddElement(BuildElement("SToGS_Bi"), natoms = 4);
-        mat->AddElement(BuildElement("SToGS_Ge"), natoms = 3);
+        mat->AddElement(BuildElement("SToGS_Germanium"), natoms = 3);
         mat->AddElement(BuildElement("SToGS_O"), natoms = 12);
         theMaterials.push_back(mat);
     }
