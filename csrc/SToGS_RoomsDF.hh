@@ -46,6 +46,23 @@ namespace SToGS {
         virtual void MakeStore()
             {;}
     };
+    
+    //! Base classe to imported geometries
+    /*!
+        Geometrie imported into SToGS through gdml are stored in a particular folder
+     */
+    class ImportsDF : public DetectorFactory
+    {
+    public:
+        ImportsDF(G4String path = "Imports/") : DetectorFactory(path)
+        {;}
+        virtual ~ImportsDF()
+        {;}
+        
+        //! to be filled with default rooms
+        virtual void MakeStore()
+        {;}
+    };
 } // SToGS Namespace
 
 #endif

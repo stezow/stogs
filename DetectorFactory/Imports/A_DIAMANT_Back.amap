@@ -1,0 +1,6 @@
+DIAMANTQuadLV				C 0 0 0.8 1			S /SToGS/SD/CopCluster F -
+DIAMANTQuadsFoil135LV		C 1 0.39 0.39 0.5	S - F -
+DIAMANTQuadDelrinLV			C 0.39 0.39 0 0.5	S - F -
+DIAMANTBackCornerLV			C 0 0 0.8 1			S /SToGS/SD/CopCluster F -
+DIAMANTBackCornerAbsLV		C 1 0.39 0.39 0.5	S - F -
+DIAMANTBackCornerDelrinLV	C 0.39 0.39 0 0.5	S - F -

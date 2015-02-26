@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+
+  <define/>
+
+  <materials>
+    <material Z="13" name="AGATA_Aluminum" state="solid">
+      <MEE unit="eV" value="166"/>
+      <D unit="g/cm3" value="2.7"/>
+      <atom unit="g/mole" value="26.981538"/>
+    </material>
+    <isotope N="12" Z="6" name="C12">
+      <atom unit="g/mole" value="12"/>
+    </isotope>
+    <isotope N="13" Z="6" name="C13">
+      <atom unit="g/mole" value="13.0034"/>
+    </isotope>
+    <element name="AGATA_C">
+      <fraction n="0.9893" ref="C12"/>
+      <fraction n="0.0107" ref="C13"/>
+    </element>
+    <isotope N="1" Z="1" name="H1">
+      <atom unit="g/mole" value="1.00782503081372"/>
+    </isotope>
+    <isotope N="2" Z="1" name="H2">
+      <atom unit="g/mole" value="2.01410199966617"/>
+    </isotope>
+    <element name="AGATA_H">
+      <fraction n="0.999885" ref="H1"/>
+      <fraction n="0.000115" ref="H2"/>
+    </element>
+    <material name="AGATA_NW_liqSci" state="solid">
+      <MEE unit="eV" value="63.1967450089597"/>
+      <D unit="g/cm3" value="0.87"/>
+      <fraction n="0.904982494244877" ref="AGATA_C"/>
+      <fraction n="0.095017505755123" ref="AGATA_H"/>
+    </material>
+    <isotope N="1" Z="1" name="1">
+      <atom unit="g/mole" value="1.00782503081372"/>
+    </isotope>
+    <isotope N="2" Z="1" name="2">
+      <atom unit="g/mole" value="2.01410199966617"/>
+    </isotope>
+    <element name="AGATA_Vacuum_el">
+      <fraction n="0.999885" ref="1"/>
+      <fraction n="0.000115" ref="2"/>
+    </element>
+    <material name="AGATA_Vacuum" state="gas">
+      <T unit="K" value="0.1"/>
+      <P unit="pascal" value="1e-19"/>
+      <MEE unit="eV" value="19.2"/>
+      <D unit="g/cm3" value="1e-25"/>
+      <fraction n="1" ref="AGATA_Vacuum_el"/>
+    </material>
+    <isotope N="14" Z="7" name="N14">
+      <atom unit="g/mole" value="14.0031"/>
+    </isotope>
+    <isotope N="15" Z="7" name="N15">
+      <atom unit="g/mole" value="15.0001"/>
+    </isotope>
+    <element name="AGATA_N">
+      <fraction n="0.99632" ref="N14"/>
+      <fraction n="0.00368" ref="N15"/>
+    </element>
+    <isotope N="16" Z="8" name="O16">
+      <atom unit="g/mole" value="15.9949"/>
+    </isotope>
+    <isotope N="17" Z="8" name="O17">
+      <atom unit="g/mole" value="16.9991"/>
+    </isotope>
+    <isotope N="18" Z="8" name="O18">
+      <atom unit="g/mole" value="17.9992"/>
+    </isotope>
+    <element name="AGATA_O">
+      <fraction n="0.99757" ref="O16"/>
+      <fraction n="0.00038" ref="O17"/>
+      <fraction n="0.00205" ref="O18"/>
+    </element>
+    <material name="AGATA_AIR" state="gas">
+      <MEE unit="eV" value="85.7025495761375"/>
+      <D unit="g/cm3" value="0.00129"/>
+      <fraction n="0.7" ref="AGATA_N"/>
+      <fraction n="0.3" ref="AGATA_O"/>
+    </material>
+  </materials>
+
+  <solids>
+    <arb8 dz="73.5599975585938" lunit="mm" name="ShapeNWWallH1" v1x="-0.992508575320244" v1y="-68.5574350357056" v2x="-0.999041721224785" v2y="51.0187177658081" v3x="0.993466794490814" v3y="51.0187177658081" v4x="1" v4y="-68.5574350357056" v5x="-0.992508575320244" v5y="-68.5574350357056" v6x="-1.00095824897289" v6y="86.096152305603" v7x="0.991550326347351" v7y="86.096152305603" v8x="1" v8y="-68.5574350357056"/>
+    <arb8 dz="73.5599975585938" lunit="mm" name="ShapeNWScinH1Part1" v1x="-63.9390525817871" v1y="-47.1172094345093" v2x="-139.230728149414" v2y="65.6556024551392" v3x="139.2327709198" v3y="65.6556024551392" v4x="63.9373188018799" v4y="-47.1172094345093" v5x="-82.6952590942383" v5y="-82.1964254379272" v6x="-180.074066162109" v6y="63.6580324172974" v7x="180.076108932495" v7y="63.6580324172974" v8x="82.692907333374" v8y="-82.1964254379272"/>
+    <arb8 dz="73.5599975585938" lunit="mm" name="ShapeNWScinH1Part2" v1x="71.6665725708008" v1y="54.9223346710205" v2x="139.230926513672" v2y="-71.4621105194092" v3x="-139.232961654663" v3y="-71.4621105194092" v4x="-71.6648845672607" v4y="54.9223346710205" v5x="92.6896057128906" v5y="89.9994602203369" v6x="180.074264526367" v6y="-73.4596843719482" v7x="-180.076299667358" v7y="-73.4596843719482" v8x="-92.6872234344482" v8y="89.9994602203369"/>
+    <union name="ShapeNWScinH1">
+      <first ref="ShapeNWScinH1Part1"/>
+      <second ref="ShapeNWScinH1Part2"/>
+      <position name="ShapeNWScinH1_pos" unit="mm" x="0" y="137.116458274158" z="0"/>
+    </union>
+    <arb8 dz="12.5" lunit="mm" name="ShapeNWVacuumH1Part1" v1x="-81.3788833618164" v1y="-70.191650390625" v2x="-177.207977294922" v2y="73.3418655395508" v3x="177.210245132446" v3y="73.3418655395508" v4x="81.3766651153564" v4y="-70.191650390625" v5x="-84.5661087036133" v5y="-76.1526336669922" v6x="-184.148452758789" v6y="73.0024185180664" v7x="184.150720596313" v7y="73.0024185180664" v8x="84.5637912750244" v8y="-76.1526336669922"/>
+    <arb8 dz="12.5" lunit="mm" name="ShapeNWVacuumH1Part2" v1x="91.2144470214844" v1y="79.0234813690186" v2x="177.208206176758" v2y="-81.834077835083" v3x="-177.210458755493" v3y="-81.834077835083" v4x="-91.212251663208" v4y="79.0234813690186" v5x="94.7868728637695" v5y="84.9841136932373" v6x="184.148681640625" v6y="-82.1735172271729" v7x="-184.15093421936" v7y="-82.1735172271729" v8x="-94.7845630645752" v8y="84.9841136932373"/>
+    <union name="ShapeNWVacuumH1">
+      <first ref="ShapeNWVacuumH1Part1"/>
+      <second ref="ShapeNWVacuumH1Part2"/>
+      <position name="ShapeNWVacuumH1_pos" unit="mm" x="0" y="155.174595381469" z="0"/>
+    </union>
+    <arb8 dz="97.0599975585938" lunit="mm" name="ShapeNWHousingH1Part1" v1x="141.587080001831" v1y="69.5701141357422" v2x="65.0186214447021" v2y="-45.1093139648438" v3x="-65.0194931030273" v3y="-45.1093139648438" v4x="-141.585800170898" v4y="69.5701141357422" v5x="195.478513717651" v5y="66.9343872070312" v6x="89.7660045623779" v6y="-91.3951873779297" v7x="-89.767692565918" v7y="-91.3951873779297" v8x="-195.477233886719" v8y="66.9343872070312"/>
+    <arb8 dz="97.0599975585938" lunit="mm" name="ShapeNWHousingH1Part2" v1x="-141.587232589722" v1y="-75.1726388931274" v2x="-72.8765926361084" v2y="53.3489484786987" v3x="72.8775634765625" v3y="53.3489484786987" v4x="141.585800170898" v4y="-75.1726388931274" v5x="-195.478666305542" v5y="-77.8083734512329" v6x="-100.614873886108" v6y="99.6320638656616" v7x="100.616767883301" v7y="99.6320638656616" v8x="195.477233886719" v8y="-77.8083734512329"/>
+    <union name="ShapeNWHousingH1">
+      <first ref="ShapeNWHousingH1Part1"/>
+      <second ref="ShapeNWHousingH1Part2"/>
+      <position name="ShapeNWHousingH1_pos" unit="mm" x="0" y="144.742754218031" z="0"/>
+    </union>
+    <arb8 dz="73.5599975585938" lunit="mm" name="ShapeNWInWallH2" v1x="-0.998665899038315" v1y="-79.9216833114624" v2x="-0.999999970197678" v2y="59.4756059646606" v3x="0.998665869235992" v3y="59.4756059646606" v4x="1" v4y="-79.9216833114624" v5x="-0.998665899038315" v5y="-79.9216833114624" v6x="-0.999999970197678" v6y="100.367760658264" v7x="0.998665869235992" v7y="100.367760658264" v8x="1" v8y="-79.9216833114624"/>
+    <arb8 dz="73.5599975585938" lunit="mm" name="ShapeNWScinH2Part1" v1x="-63.9390525817871" v1y="-47.1172094345093" v2x="-139.230728149414" v2y="65.6556024551392" v3x="139.2327709198" v3y="65.6556024551392" v4x="63.9373188018799" v4y="-47.1172094345093" v5x="-82.6952590942383" v5y="-82.1964254379272" v6x="-180.074066162109" v6y="63.6580324172974" v7x="180.076108932495" v7y="63.6580324172974" v8x="82.692907333374" v8y="-82.1964254379272"/>
+    <arb8 dz="73.5599975585938" lunit="mm" name="ShapeNWScinH2Part2" v1x="71.6665725708008" v1y="54.9223346710205" v2x="139.230926513672" v2y="-71.4621105194092" v3x="-139.232961654663" v3y="-71.4621105194092" v4x="-71.6648845672607" v4y="54.9223346710205" v5x="92.6896057128906" v5y="89.9994602203369" v6x="180.074264526367" v6y="-73.4596843719482" v7x="-180.076299667358" v7y="-73.4596843719482" v8x="-92.6872234344482" v8y="89.9994602203369"/>
+    <union name="ShapeNWScinH2">
+      <first ref="ShapeNWScinH2Part1"/>
+      <second ref="ShapeNWScinH2Part2"/>
+      <position name="ShapeNWScinH2_pos" unit="mm" x="0" y="137.116458274158" z="0"/>
+    </union>
+    <arb8 dz="12.5" lunit="mm" name="ShapeNWVacuumH2Part1" v1x="-81.3788833618164" v1y="-70.191650390625" v2x="-177.207977294922" v2y="73.3418655395508" v3x="177.210245132446" v3y="73.3418655395508" v4x="81.3766651153564" v4y="-70.191650390625" v5x="-84.5661087036133" v5y="-76.1526336669922" v6x="-184.148452758789" v6y="73.0024185180664" v7x="184.150720596313" v7y="73.0024185180664" v8x="84.5637912750244" v8y="-76.1526336669922"/>
+    <arb8 dz="12.5" lunit="mm" name="ShapeNWVacuumH2Part2" v1x="91.2144470214844" v1y="79.0234813690186" v2x="177.208206176758" v2y="-81.834077835083" v3x="-177.210458755493" v3y="-81.834077835083" v4x="-91.212251663208" v4y="79.0234813690186" v5x="94.7868728637695" v5y="84.9841136932373" v6x="184.148681640625" v6y="-82.1735172271729" v7x="-184.15093421936" v7y="-82.1735172271729" v8x="-94.7845630645752" v8y="84.9841136932373"/>
+    <union name="ShapeNWVacuumH2">
+      <first ref="ShapeNWVacuumH2Part1"/>
+      <second ref="ShapeNWVacuumH2Part2"/>
+      <position name="ShapeNWVacuumH2_pos" unit="mm" x="0" y="155.174595381469" z="0"/>
+    </union>
+    <arb8 dz="97.0599975585938" lunit="mm" name="ShapeNWHousingH2Part1" v1x="141.510638571703" v1y="69.5325539359087" v2x="64.9667026776786" v2y="-45.0732932078623" v3x="-64.9675738275897" v3y="-45.0732933380322" v4x="-141.509359027988" v4y="69.5325537375205" v5x="195.392883465768" v5y="66.9050662943275" v6x="89.710152946035" v6y="-91.3383220984075" v7x="-89.7118402269392" v7y="-91.3383224319725" v8x="-195.391603784384" v8y="66.9050661535649"/>
+    <arb8 dz="97.0599975585938" lunit="mm" name="ShapeNWHousingH2Part2" v1x="-141.51167883833" v1y="-75.1325252842485" v2x="-72.8216250832705" v2y="53.308709754051" v3x="72.822595412714" v3y="53.3087099160145" v4x="141.510246747548" v4y="-75.1325250525884" v5x="-195.394300582612" v5y="-77.774792499407" v6x="-100.556264373484" v6y="99.5740268530475" v7x="100.55815764639" v7y="99.57402722833" v8x="195.392868341985" v8y="-77.7747923242621"/>
+    <union name="ShapeNWHousingH2">
+      <first ref="ShapeNWHousingH2Part1"/>
+      <second ref="ShapeNWHousingH2Part2"/>
+      <position name="ShapeNWHousingH2_pos" unit="mm" x="0" y="144.742754218031" z="0"/>
+    </union>
+    <box lunit="mm" name="hallBox" x="20000" y="20000" z="100000"/>
+  </solids>
+
+  <structure>
+    <volume name="NWWallH1LV">
+      <materialref ref="AGATA_Aluminum"/>
+      <solidref ref="ShapeNWWallH1"/>
+    </volume>
+    <volume name="NWScinH1LV">
+      <materialref ref="AGATA_NW_liqSci"/>
+      <solidref ref="ShapeNWScinH1"/>
+      <physvol name="H1Wall0">
+        <volumeref ref="NWWallH1LV"/>
+        <position name="H1Wall0_pos" unit="mm" x="60.459439301127" y="104.786826301452" z="0"/>
+        <rotation name="H1Wall0_rot" unit="deg" x="0" y="0" z="61.87"/>
+      </physvol>
+      <physvol name="H1Wall1">
+        <volumeref ref="NWWallH1LV"/>
+        <position name="H1Wall1_pos" unit="mm" x="-8.39558705464899e-15" y="3.90636390028547" z="0"/>
+        <rotation name="H1Wall1_rot" unit="deg" x="0" y="0" z="-180"/>
+      </physvol>
+      <physvol name="H1Wall2">
+        <volumeref ref="NWWallH1LV"/>
+        <position name="H1Wall2_pos" unit="mm" x="-60.459439301127" y="104.786826301452" z="0"/>
+        <rotation name="H1Wall2_rot" unit="deg" x="0" y="0" z="-61.87"/>
+      </physvol>
+    </volume>
+    <volume name="NWVacuumH1LV">
+      <materialref ref="AGATA_Vacuum"/>
+      <solidref ref="ShapeNWVacuumH1"/>
+    </volume>
+    <volume name="NWHousingH1LV">
+      <materialref ref="AGATA_Aluminum"/>
+      <solidref ref="ShapeNWHousingH1"/>
+      <physvol name="H1">
+        <volumeref ref="NWScinH1LV"/>
+        <position name="H1_pos" unit="mm" x="0" y="3.71052837371826" z="-21.5"/>
+      </physvol>
+      <physvol name="H1Vacuum">
+        <volumeref ref="NWVacuumH1LV"/>
+        <position name="H1Vacuum_pos" unit="mm" x="0" y="-6.66143894195557" z="84.56"/>
+      </physvol>
+    </volume>
+    <volume name="NWInWallH2LV">
+      <materialref ref="AGATA_Aluminum"/>
+      <solidref ref="ShapeNWInWallH2"/>
+    </volume>
+    <volume name="NWScinH2LV">
+      <materialref ref="AGATA_NW_liqSci"/>
+      <solidref ref="ShapeNWScinH2"/>
+      <physvol name="H2Wall0">
+        <volumeref ref="NWInWallH2LV"/>
+        <position name="H2Wall0_pos" unit="mm" x="79.8262677981471" y="68.5596431045482" z="0"/>
+        <rotation name="H2Wall0_rot" unit="deg" x="0" y="0" z="92.8"/>
+      </physvol>
+      <physvol name="H2Wall1">
+        <volumeref ref="NWInWallH2LV"/>
+        <position name="H2Wall1_pos" unit="mm" x="-37.6932722568631" y="1.98903260145339" z="0"/>
+        <rotation name="H2Wall1_rot" unit="deg" x="0" y="0" z="-151.86"/>
+      </physvol>
+      <physvol name="H2Wall2">
+        <volumeref ref="NWInWallH2LV"/>
+        <position name="H2Wall2_pos" unit="mm" x="-41.0909477784783" y="141.01312040604" z="0"/>
+        <rotation name="H2Wall2_rot" unit="deg" x="0" y="0" z="-30.94"/>
+      </physvol>
+    </volume>
+    <volume name="NWVacuumH2LV">
+      <materialref ref="AGATA_Vacuum"/>
+      <solidref ref="ShapeNWVacuumH2"/>
+    </volume>
+    <volume name="NWHousingH2LV">
+      <materialref ref="AGATA_Aluminum"/>
+      <solidref ref="ShapeNWHousingH2"/>
+      <physvol name="H2">
+        <volumeref ref="NWScinH2LV"/>
+        <position name="H2_pos" unit="mm" x="0" y="3.67041476483935" z="-21.5"/>
+      </physvol>
+      <physvol name="H2Vacuum">
+        <volumeref ref="NWVacuumH2LV"/>
+        <position name="H2Vacuum_pos" unit="mm" x="0" y="-6.70155255083448" z="84.56"/>
+      </physvol>
+    </volume>
+    <volume name="NWALL">
+      <materialref ref="AGATA_AIR"/>
+      <solidref ref="hallBox"/>
+      <physvol name="NW:00">
+        <volumeref ref="NWHousingH1LV"/>
+        <position name="NW:00_pos" unit="mm" x="169.275220301455" y="1.03647755162922e-14" z="587.97891137291"/>
+        <rotation name="NW:00_rot" unit="deg" x="0" y="-23.2426699442457" z="90"/>
+      </physvol>
+      <physvol name="NW:01">
+        <volumeref ref="NWHousingH1LV"/>
+        <position name="NW:01_pos" unit="mm" x="52.3089201892795" y="160.99030251396" z="587.978910831477"/>
+        <rotation name="NW:01_rot" unit="deg" x="22.2181490713521" y="-7.0044387203037" z="16.622982447672"/>
+      </physvol>
+      <physvol name="NW:02">
+        <volumeref ref="NWHousingH1LV"/>
+        <position name="NW:02_pos" unit="mm" x="-136.946530970339" y="99.4974788127548" z="587.978910831477"/>
+        <rotation name="NW:02_rot" unit="deg" x="14.1679289934298" y="18.618141870741" z="-51.6660256741688"/>
+      </physvol>
+      <physvol name="NW:03">
+        <volumeref ref="NWHousingH1LV"/>
+        <position name="NW:03_pos" unit="mm" x="-136.946530970339" y="-99.4974788127548" z="587.978910831477"/>
+        <rotation name="NW:03_rot" unit="deg" x="-14.1679289934298" y="18.618141870741" z="-128.333974325831"/>
+      </physvol>
+      <physvol name="NW:04">
+        <volumeref ref="NWHousingH1LV"/>
+        <position name="NW:04_pos" unit="mm" x="52.3089201892795" y="-160.99030251396" z="587.978910831477"/>
+        <rotation name="NW:04_rot" unit="deg" x="-22.2181490713521" y="-7.0044387203037" z="163.377017552328"/>
+      </physvol>
+      <physvol name="NW:05">
+        <volumeref ref="NWHousingH1LV"/>
+        <position name="NW:05_pos" unit="mm" x="488.630950530538" y="-67.4592563253476" z="362.025334938217"/>
+        <rotation name="NW:05_rot" unit="deg" x="0" y="-50.0654216654466" z="-28.13"/>
+      </physvol>
+      <physvol name="NW:06">
+        <volumeref ref="NWHousingH2LV"/>
+        <position name="NW:06_pos" unit="mm" x="348.409022839279" y="301.769793339704" z="402.400984474981"/>
+        <rotation name="NW:06_rot" unit="deg" x="28.3926205620594" y="-33.2041301112983" z="-165.561583018845"/>
+      </physvol>
+      <physvol name="NW:07">
+        <volumeref ref="NWHousingH1LV"/>
+        <position name="NW:07_pos" unit="mm" x="215.152833004167" y="443.869592933135" z="362.025334938217"/>
+        <rotation name="NW:07_rot" unit="deg" x="48.6445508627805" y="-13.7064431909051" z="-106.348714884968"/>
+      </physvol>
+      <physvol name="NW:08">
+        <volumeref ref="NWHousingH2LV"/>
+        <position name="NW:08_pos" unit="mm" x="-179.335819325861" y="424.608666038308" z="402.400984474981"/>
+        <rotation name="NW:08_rot" unit="deg" x="41.1728907589551" y="12.0739262703517" z="135.614496165179"/>
+      </physvol>
+      <physvol name="NW:09">
+        <volumeref ref="NWHousingH1LV"/>
+        <position name="NW:09_pos" unit="mm" x="-355.659186958132" y="341.785751330605" z="362.025334938217"/>
+        <rotation name="NW:09_rot" unit="deg" x="35.0735281470581" y="38.34070046107" z="-159.591136473342"/>
+      </physvol>
+      <physvol name="NW:10">
+        <volumeref ref="NWHousingH2LV"/>
+        <position name="NW:10_pos" unit="mm" x="-459.244654582971" y="-39.3472058102764" z="402.400984474981"/>
+        <rotation name="NW:10_rot" unit="deg" x="0" y="42.6018643176358" z="59.065"/>
+      </physvol>
+      <physvol name="NW:11">
+        <volumeref ref="NWHousingH1LV"/>
+        <position name="NW:11_pos" unit="mm" x="-434.962298955446" y="-232.634381740401" z="362.025334938217"/>
+        <rotation name="NW:11_rot" unit="deg" x="-35.0735281470581" y="38.34070046107" z="103.331136473342"/>
+      </physvol>
+      <physvol name="NW:12">
+        <volumeref ref="NWHousingH2LV"/>
+        <position name="NW:12_pos" unit="mm" x="-104.492986358121" y="-448.926576591396" z="402.400984474981"/>
+        <rotation name="NW:12_rot" unit="deg" x="-41.1728907589551" y="12.0739262703517" z="-17.4844961651787"/>
+      </physvol>
+      <physvol name="NW:13">
+        <volumeref ref="NWHousingH1LV"/>
+        <position name="NW:13_pos" unit="mm" x="86.8377023788734" y="-485.561706197991" z="362.025334938217"/>
+        <rotation name="NW:13_rot" unit="deg" x="-48.6445508627805" y="-13.7064431909051" z="50.0887148849676"/>
+      </physvol>
+      <physvol name="NW:14">
+        <volumeref ref="NWHousingH2LV"/>
+        <position name="NW:14_pos" unit="mm" x="394.664437427674" y="-238.104676976339" z="402.400984474981"/>
+        <rotation name="NW:14_rot" unit="deg" x="-28.3926205620594" y="-33.2041301112983" z="-76.3084169811551"/>
+      </physvol>
+    </volume>
+  </structure>
+
+  <setup name="Default" version="1.0">
+    <world ref="NWALL"/>
+  </setup>
+
+</gdml>

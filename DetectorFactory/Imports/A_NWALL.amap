@@ -1,0 +1,8 @@
+NWHousingH1LV	C 0.4 0.4 0.4 0.5	S - F -
+NWScinH1LV		C 0.8 0.2 0.3 1 	S /SToGS/SD/CopCluster F -
+NWWallH1LV		C 0.4 0.4 0.4 0.5	S - F -
+NWVacuumH1LV	C 0.8 0.8 0.8 0.7	S - F -
+NWHousingH2LV	C 0.4 0.4 0.4 0.5	S - F -
+NWScinH2LV		C 0.8 0.2 0.3 1 	S /SToGS/SD/CopCluster F -
+NWInWallH2LV	C 0.4 0.4 0.4 0.5	S - F -
+NWVacuumH2LV	C 0.8 0.8 0.8 0.7	S - F -
