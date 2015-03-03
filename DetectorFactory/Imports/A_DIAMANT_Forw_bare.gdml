@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+
+  <define/>
+
+  <materials>
+    <isotope N="133" Z="55" name="Cs133">
+      <atom unit="g/mole" value="132.905"/>
+    </isotope>
+    <element name="AGATA_Cs">
+      <fraction n="1" ref="Cs133"/>
+    </element>
+    <isotope N="127" Z="53" name="I127">
+      <atom unit="g/mole" value="126.904"/>
+    </isotope>
+    <element name="AGATA_I">
+      <fraction n="1" ref="I127"/>
+    </element>
+    <material name="AGATA_CsI" state="solid">
+      <MEE unit="eV" value="489.469924784909"/>
+      <D unit="g/cm3" value="4.51"/>
+      <fraction n="0.511548198527371" ref="AGATA_Cs"/>
+      <fraction n="0.488451801472629" ref="AGATA_I"/>
+    </material>
+    <isotope N="14" Z="7" name="N14">
+      <atom unit="g/mole" value="14.0031"/>
+    </isotope>
+    <isotope N="15" Z="7" name="N15">
+      <atom unit="g/mole" value="15.0001"/>
+    </isotope>
+    <element name="AGATA_N">
+      <fraction n="0.99632" ref="N14"/>
+      <fraction n="0.00368" ref="N15"/>
+    </element>
+    <isotope N="16" Z="8" name="O16">
+      <atom unit="g/mole" value="15.9949"/>
+    </isotope>
+    <isotope N="17" Z="8" name="O17">
+      <atom unit="g/mole" value="16.9991"/>
+    </isotope>
+    <isotope N="18" Z="8" name="O18">
+      <atom unit="g/mole" value="17.9992"/>
+    </isotope>
+    <element name="AGATA_O">
+      <fraction n="0.99757" ref="O16"/>
+      <fraction n="0.00038" ref="O17"/>
+      <fraction n="0.00205" ref="O18"/>
+    </element>
+    <material name="AGATA_AIR" state="gas">
+      <MEE unit="eV" value="85.7025495761375"/>
+      <D unit="g/cm3" value="0.00129"/>
+      <fraction n="0.7" ref="AGATA_N"/>
+      <fraction n="0.3" ref="AGATA_O"/>
+    </material>
+  </materials>
+
+  <solids>
+    <arb8 dz="1.5" lunit="mm" name="ShapeDIAMANTFrontCornerTriangle" v1x="-9.44765" v1y="5.45460327070937" v2x="9.44765" v2y="5.45460327070937" v3x="0" v3y="-10.9092065414187" v4x="0" v4y="-10.9092065414187" v5x="-8.66345" v5y="5.45460327070937" v6x="8.66345" v6y="5.45460327070937" v7x="0" v7y="-9.55093229812322" v8x="0" v8y="-9.55093229812322"/>
+    <trap alpha1="0" alpha2="0" aunit="deg" lunit="mm" name="ShapeDIAMANTFrontCornerTrap" phi="-90" theta="6.46258683" x1="18.8953" x2="29" x3="17.3269" x4="26.6466" y1="8.749887652" y2="8.07024246594" z="3"/>
+    <trap alpha1="0" alpha2="0" aunit="deg" lunit="mm" name="ShapeDIAMANTQuad" phi="45" theta="16.3294188800547" x1="14.5" x2="14.5" x3="13.257" x4="13.257" y1="14.5" y2="13.257" z="3"/>
+    <box lunit="mm" name="hallBox" x="20000" y="20000" z="100000"/>
+  </solids>
+
+  <structure>
+    <volume name="DIAMANTFrontCornerTriangleLV">
+      <materialref ref="AGATA_CsI"/>
+      <solidref ref="ShapeDIAMANTFrontCornerTriangle"/>
+    </volume>
+    <volume name="DIAMANTFrontCornerTrapLV">
+      <materialref ref="AGATA_CsI"/>
+      <solidref ref="ShapeDIAMANTFrontCornerTrap"/>
+    </volume>
+    <volume name="DIAMANTQuadLV">
+      <materialref ref="AGATA_CsI"/>
+      <solidref ref="ShapeDIAMANTQuad"/>
+    </volume>
+    <volume name="A_DIAMANT_Forw">
+      <materialref ref="AGATA_AIR"/>
+      <solidref ref="hallBox"/>
+      <physvol name="DIA-DT1A:08">
+        <volumeref ref="DIAMANTFrontCornerTriangleLV"/>
+        <position name="DIA-DT1A:08_pos" unit="mm" x="18.4429" y="18.4429" z="25.4285"/>
+        <rotation name="DIA-DT1A:08_rot" unit="deg" x="-134.999999997078" y="35.264389684132" z="150.000000001687"/>
+      </physvol>
+      <physvol name="DIA-DT2A:09">
+        <volumeref ref="DIAMANTFrontCornerTriangleLV"/>
+        <position name="DIA-DT2A:09_pos" unit="mm" x="-18.4429" y="18.4429" z="25.4285"/>
+        <rotation name="DIA-DT2A:09_rot" unit="deg" x="-134.999999997078" y="-35.264389684132" z="-150.000000001687"/>
+      </physvol>
+      <physvol name="DIA-T3A:10">
+        <volumeref ref="DIAMANTFrontCornerTriangleLV"/>
+        <position name="DIA-T3A:10_pos" unit="mm" x="-18.4429" y="-18.4429" z="25.4285"/>
+        <rotation name="DIA-T3A:10_rot" unit="deg" x="134.999999997078" y="-35.264389684132" z="-29.9999999983131"/>
+      </physvol>
+      <physvol name="DIA-T4A:11">
+        <volumeref ref="DIAMANTFrontCornerTriangleLV"/>
+        <position name="DIA-T4A:11_pos" unit="mm" x="18.4429" y="-18.4429" z="25.4285"/>
+        <rotation name="DIA-T4A:11_rot" unit="deg" x="134.999999997078" y="35.264389684132" z="29.9999999983131"/>
+      </physvol>
+      <physvol name="DIA-DT1B:12">
+        <volumeref ref="DIAMANTFrontCornerTrapLV"/>
+        <position name="DIA-DT1B:12_pos" unit="mm" x="22.3341" y="22.3341" z="17.6137"/>
+        <rotation name="DIA-DT1B:12_rot" unit="deg" x="-134.999999997078" y="35.264389684132" z="150.000000001687"/>
+      </physvol>
+      <physvol name="DIA-DT2B:13">
+        <volumeref ref="DIAMANTFrontCornerTrapLV"/>
+        <position name="DIA-DT2B:13_pos" unit="mm" x="-22.3341" y="22.3341" z="17.6137"/>
+        <rotation name="DIA-DT2B:13_rot" unit="deg" x="-134.999999997078" y="-35.264389684132" z="-150.000000001687"/>
+      </physvol>
+      <physvol name="DIA-DT3B:14">
+        <volumeref ref="DIAMANTFrontCornerTrapLV"/>
+        <position name="DIA-DT3B:14_pos" unit="mm" x="-22.3341" y="-22.4184" z="17.6137"/>
+        <rotation name="DIA-DT3B:14_rot" unit="deg" x="134.999999997078" y="-35.264389684132" z="-29.9999999983131"/>
+      </physvol>
+      <physvol name="DIA-DT4B:15">
+        <volumeref ref="DIAMANTFrontCornerTrapLV"/>
+        <position name="DIA-DT4B:15_pos" unit="mm" x="22.3341" y="-22.4184" z="17.6137"/>
+        <rotation name="DIA-DT4B:15_rot" unit="deg" x="134.999999997078" y="35.264389684132" z="29.9999999983131"/>
+      </physvol>
+      <physvol name="DIA-16-A2:16">
+        <volumeref ref="DIAMANTQuadLV"/>
+        <position name="DIA-16-A2:16_pos" unit="mm" x="29.132" y="7.06425" z="19.1415"/>
+        <rotation name="DIA-16-A2:16_rot" unit="deg" x="180" y="45" z="-90"/>
+      </physvol>
+      <physvol name="DIA-B1:17">
+        <volumeref ref="DIAMANTQuadLV"/>
+        <position name="DIA-B1:17_pos" unit="mm" x="7.06425" y="29.132" z="19.1415"/>
+        <rotation name="DIA-B1:17_rot" unit="deg" x="-135" y="0" z="-90"/>
+      </physvol>
+      <physvol name="DIA-B2:18">
+        <volumeref ref="DIAMANTQuadLV"/>
+        <position name="DIA-B2:18_pos" unit="mm" x="-7.06425" y="29.132" z="19.1415"/>
+        <rotation name="DIA-B2:18_rot" unit="deg" x="-135" y="0" z="0"/>
+      </physvol>
+      <physvol name="DIA-C1:19">
+        <volumeref ref="DIAMANTQuadLV"/>
+        <position name="DIA-C1:19_pos" unit="mm" x="-29.132" y="7.06425" z="19.1415"/>
+        <rotation name="DIA-C1:19_rot" unit="deg" x="-180" y="-45" z="0"/>
+      </physvol>
+      <physvol name="DIA-C2:20">
+        <volumeref ref="DIAMANTQuadLV"/>
+        <position name="DIA-C2:20_pos" unit="mm" x="-29.132" y="-7.06425" z="19.1415"/>
+        <rotation name="DIA-C2:20_rot" unit="deg" x="-180" y="-45" z="90"/>
+      </physvol>
+      <physvol name="DIA-D1:21">
+        <volumeref ref="DIAMANTQuadLV"/>
+        <position name="DIA-D1:21_pos" unit="mm" x="-7.06425" y="-29.132" z="19.1415"/>
+        <rotation name="DIA-D1:21_rot" unit="deg" x="135" y="0" z="90"/>
+      </physvol>
+      <physvol name="DIA-D2:22">
+        <volumeref ref="DIAMANTQuadLV"/>
+        <position name="DIA-D2:22_pos" unit="mm" x="7.06425" y="-29.132" z="19.1415"/>
+        <rotation name="DIA-D2:22_rot" unit="deg" x="135" y="0" z="-180"/>
+      </physvol>
+      <physvol name="DIA-A1:23">
+        <volumeref ref="DIAMANTQuadLV"/>
+        <position name="DIA-A1:23_pos" unit="mm" x="29.132" y="-7.06425" z="19.1415"/>
+        <rotation name="DIA-A1:23_rot" unit="deg" x="180" y="45" z="180"/>
+      </physvol>
+      <physvol name="DIA-A3:24">
+        <volumeref ref="DIAMANTQuadLV"/>
+        <position name="DIA-A3:24_pos" unit="mm" x="19.1415" y="7.06425" z="29.132"/>
+        <rotation name="DIA-A3:24_rot" unit="deg" x="-180" y="45" z="0"/>
+      </physvol>
+      <physvol name="DIA-B4:25">
+        <volumeref ref="DIAMANTQuadLV"/>
+        <position name="DIA-B4:25_pos" unit="mm" x="7.06425" y="19.1415" z="29.132"/>
+        <rotation name="DIA-B4:25_rot" unit="deg" x="-135" y="0" z="180"/>
+      </physvol>
+      <physvol name="DIA-B3:26">
+        <volumeref ref="DIAMANTQuadLV"/>
+        <position name="DIA-B3:26_pos" unit="mm" x="-7.06425" y="19.1415" z="29.132"/>
+        <rotation name="DIA-B3:26_rot" unit="deg" x="-135" y="0" z="90"/>
+      </physvol>
+      <physvol name="DIA-C4:27">
+        <volumeref ref="DIAMANTQuadLV"/>
+        <position name="DIA-C4:27_pos" unit="mm" x="-19.1415" y="7.06425" z="29.132"/>
+        <rotation name="DIA-C4:27_rot" unit="deg" x="180" y="-45" z="-90"/>
+      </physvol>
+      <physvol name="DIA-C3:28">
+        <volumeref ref="DIAMANTQuadLV"/>
+        <position name="DIA-C3:28_pos" unit="mm" x="-19.1415" y="-7.06425" z="29.132"/>
+        <rotation name="DIA-C3:28_rot" unit="deg" x="180" y="-45" z="180"/>
+      </physvol>
+      <physvol name="DIA-D4:29">
+        <volumeref ref="DIAMANTQuadLV"/>
+        <position name="DIA-D4:29_pos" unit="mm" x="-7.06425" y="-19.1415" z="29.132"/>
+        <rotation name="DIA-D4:29_rot" unit="deg" x="135" y="0" z="0"/>
+      </physvol>
+      <physvol name="DIA-D3:30">
+        <volumeref ref="DIAMANTQuadLV"/>
+        <position name="DIA-D3:30_pos" unit="mm" x="7.06425" y="-19.1415" z="29.132"/>
+        <rotation name="DIA-D3:30_rot" unit="deg" x="135" y="0" z="-90"/>
+      </physvol>
+      <physvol name="DIA-A4:31">
+        <volumeref ref="DIAMANTQuadLV"/>
+        <position name="DIA-A4:31_pos" unit="mm" x="19.1415" y="-7.06425" z="29.132"/>
+        <rotation name="DIA-A4:31_rot" unit="deg" x="-180" y="45" z="90"/>
+      </physvol>
+    </volume>
+  </structure>
+
+  <setup name="Default" version="1.0">
+    <world ref="A_DIAMANT_Forw"/>
+  </setup>
+
+</gdml>

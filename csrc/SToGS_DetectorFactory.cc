@@ -1195,7 +1195,7 @@ G4VPhysicalVolume * SToGS::DetectorFactory::MakeAnArrayFromFactory(G4String inpu
         
         decode >> key ;
         
-        if ( key == "#" ) {
+        if ( key.size() == 0 || key[0] == '#' ) {
             getline(g4map,aline);
             continue;
         }
@@ -1272,9 +1272,18 @@ G4VPhysicalVolume * SToGS::DetectorFactory::MakeAnArrayFromFactory(G4String inpu
             if ( where_to_load ) {
                 G4int nb_added = 0;
                 nb_added = where_to_load->Set(subdetector_name, theDetector, SToGS::DetectorFactory::GetGCopyNb(), &T, R);
+                if ( nb_added == 0 ) {
+                    cout << "[+..] Reading " << input_file << endl;
+                    cout << "  *** !! *** " << subdetector_name << " DOES NOT EXIST IN THE FACTORY " << where_to_load->GetFactoryName() << endl;
+                    cout << "[..+] Reading " << input_file << endl;
+                }
                 SToGS::DetectorFactory::SetGCopyNb( SToGS::DetectorFactory::GetGCopyNb() + nb_added );
                 // to do : Set return the number of active volumes
-                
+            }
+            else {
+                cout << "[+..] Reading " << input_file << endl;
+                cout << "  *** !! *** THE FACTORY DOES NOT EXIST " << endl;
+                cout << "[..+] Reading " << input_file << endl;
             }
         }
         if ( key == "*" && decode.good() && theDetector ) { // this is a detector going to be replicated in space using the assembly mechanism

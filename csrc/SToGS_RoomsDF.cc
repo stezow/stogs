@@ -31,6 +31,8 @@
 namespace  {
     // all rooms
     SToGS::RoomsDF theRooms("Rooms/");
+    // Imported gemoetries
+    SToGS::ImportsDF theImports("Imports/");
 }
 
 

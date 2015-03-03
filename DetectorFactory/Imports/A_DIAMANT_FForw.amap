@@ -1,0 +1,11 @@
+DIAMANTWallLV	C 0 0 0.8 1	S /SToGS/SD/CopCluster F -
+DIAMANTForAbsLV	C 1 0.39 0.39 0.5	S - F -
+DIAMANTWallDelrinLV	C 0.39 0.39 0 0.5	S - F -
+DIAMANTFrontCornerTriangleLV	C 0 0 0.8 1	S /SToGS/SD/CopCluster F -
+DIAMANTFrontCornerTrapLV	C 0 0 0.8 1	S /SToGS/SD/CopCluster F -
+DIAMANTForwCornerAbs	C 1 0.39 0.39 0.5	S - F -
+DIAMANTForwCornerDelrinLV	C 0.39 0.39 0 0.5	S - F -
+DIAMANTQuadLV	C 0 0 0.8 1	S /SToGS/SD/CopCluster F -
+DIAMANTQuadsFoil45LV	C 1 0.39 0.39 0.5	S - F -
+DIAMANTQuadsFoil90LV	C 1 0.39 0.39 0.5	S - F -
+DIAMANTQuadDelrinLV	C 0.39 0.39 0 0.5	S - F -
