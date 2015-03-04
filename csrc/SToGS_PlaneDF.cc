@@ -55,7 +55,7 @@
 #include <stdlib.h>
 
 // Project includes
-#include "SToGS_PlaneDetectorsConstruction.hh"
+#include "SToGS_PlaneDF.hh"
 
 #include "SToGS_DetectorFactory.hh"
 #include "SToGS_MaterialConsultant.hh"
@@ -66,10 +66,10 @@ using namespace std;
 // list of all specific factories
 namespace  {
     // all Plane Detectors
-    SToGS::PlaneDetectorsConstruction thePlaneFactory("PlaneDetectors/");
+    SToGS::PlaneDF thePlaneFactory("PlaneDetectors/");
 }
 
-G4VPhysicalVolume * SToGS::PlaneDetectorsConstruction::MakePLANE(G4String detname, G4String opt)
+G4VPhysicalVolume * SToGS::PlaneDF::MakePLANE(G4String detname, G4String opt)
 {
 
 // **************************************************************************
@@ -116,9 +116,9 @@ G4VPhysicalVolume * SToGS::PlaneDetectorsConstruction::MakePLANE(G4String detnam
   // **************************************************************************
 /*
   //box geometry for test
-  const G4double cube_x = 1.*mm;
-  const G4double cube_y = 1.*mm;
-  const G4double cube_z = 1.*mm;
+  const G4double cube_x = 1.*CLHEP::mm;
+  const G4double cube_y = 1.*CLHEP::mm;
+  const G4double cube_z = 1.*CLHEP::mm;
 
   G4VPhysicalVolume *thecube = 0x0; //it means is a pointer
 
@@ -151,11 +151,11 @@ G4VPhysicalVolume * SToGS::PlaneDetectorsConstruction::MakePLANE(G4String detnam
 
 //make a cylinder
 
-  G4double innerRadius = 10.*mm;
-  G4double outerRadius = 20.*mm;
-  G4double hz = 20.*mm;
-  G4double startAngle = 0.*deg;
-  G4double spanningAngle = 360.*deg;
+  G4double innerRadius = 10.*CLHEP::mm;
+  G4double outerRadius = 20.*CLHEP::mm;
+  G4double hz = 20.*CLHEP::mm;
+  G4double startAngle = 0.*CLHEP::deg;
+  G4double spanningAngle = 360.*CLHEP::deg;
 
   G4VPhysicalVolume *theTube = 0x0;
 
@@ -188,12 +188,12 @@ G4VPhysicalVolume * SToGS::PlaneDetectorsConstruction::MakePLANE(G4String detnam
   // **************************************************************************
 
   //make a sphere
-  G4double sphereRmin= 0.* mm;
-  G4double sphereRmax= 100*mm;
-  G4double sphereSPhi= 0.*mm;
-  G4double sphereDPhi= 360.*deg;//2*Pi
-  G4double sphereSTheta = 0 *deg;
-  G4double sphereDTheta = 180 *deg;
+  G4double sphereRmin= 0.* CLHEP::mm;
+  G4double sphereRmax= 100*CLHEP::mm;
+  G4double sphereSPhi= 0.*CLHEP::mm;
+  G4double sphereDPhi= 360.*CLHEP::deg;//2*Pi
+  G4double sphereSTheta = 0 *CLHEP::deg;
+  G4double sphereDTheta = 180 *CLHEP::deg;
 
 
   G4VPhysicalVolume *theSphere = 0x0;
@@ -227,7 +227,7 @@ G4VPhysicalVolume * SToGS::PlaneDetectorsConstruction::MakePLANE(G4String detnam
   return theDetector;
 }
 
-G4VPhysicalVolume * SToGS::PlaneDetectorsConstruction::Make(G4String name, G4String version_string)
+G4VPhysicalVolume * SToGS::PlaneDF::Make(G4String name, G4String version_string)
 {
     G4VPhysicalVolume *theDetector = 0x0; G4String detname;
 
@@ -249,7 +249,7 @@ G4VPhysicalVolume * SToGS::PlaneDetectorsConstruction::Make(G4String name, G4Str
     return theDetector;
 }
 
-void SToGS::PlaneDetectorsConstruction::MakeStore()
+void SToGS::PlaneDF::MakeStore()
 {
 
     // EUROGAM/BALL related

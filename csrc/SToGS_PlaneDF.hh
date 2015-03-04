@@ -24,8 +24,8 @@
 // ********************************************************************
 //
 
-#ifndef SToGS_PlaneDetectorsConstruction_h
-#define SToGS_PlaneDetectorsConstruction_h 1
+#ifndef SToGS_PlaneDF_h
+#define SToGS_PlaneDF_h 1
 
 #include "SToGS_DetectorFactory.hh"
 
@@ -36,7 +36,7 @@ namespace SToGS {
 //! Base classe to build all Ge like detectors
 /*!
  */
-class PlaneDetectorsConstruction : public DetectorFactory
+class PlaneDF : public DetectorFactory
 {
 public:
     //! Should be implemented in any sub factory. It built (C++) a detector and return it
@@ -46,9 +46,9 @@ public:
 
   G4VPhysicalVolume *MakePLANE(G4String detname, G4String opt = "");
 public:
-    PlaneDetectorsConstruction(G4String path) : DetectorFactory(path)
+    PlaneDF(G4String path) : DetectorFactory(path)
         {;}
-    virtual ~PlaneDetectorsConstruction()
+    virtual ~PlaneDF()
         {;}
     
     //! build the default store i.e. all the Ge detectors.

@@ -29,6 +29,8 @@
 
 #include "globals.hh"
 #include "G4ios.hh"
+#include "G4Version.hh"
+
 #include <iomanip>
 
 #include "G4LossTableManager.hh"
@@ -37,7 +39,7 @@
 #include "G4LossTableManager.hh"
 #include "G4PhysicsListHelper.hh"
 
-// particles
+// PARTICLE DEFINITIONS
 #include "G4ParticleDefinition.hh"
 #include "G4ParticleWithCuts.hh"
 #include "G4ParticleTypes.hh"
@@ -50,81 +52,91 @@
 #include "G4IonConstructor.hh"
 #include "G4ShortLivedConstructor.hh"
 #include "G4Neutron.hh"
+// to deal with version dependant interfaces
+#if G4VERSION_NUMBER < 1000
+#else
+#endif
 
-// gamma
+// PROCESSES FOR GAMMA
 #include "G4PhotoElectricEffect.hh"
 #include "G4LivermorePhotoElectricModel.hh"
-
 #include "G4ComptonScattering.hh"
 #include "G4LivermoreComptonModel.hh"
-
 #include "G4GammaConversion.hh"
 #include "G4LivermoreGammaConversionModel.hh"
-
 #include "G4RayleighScattering.hh" 
 #include "G4LivermoreRayleighModel.hh"
-
-// e-
+// PROCESSES FOR e-
 #include "G4eMultipleScattering.hh"
 #include "G4UniversalFluctuation.hh"
-
 #include "G4eIonisation.hh"
 #include "G4LivermoreIonisationModel.hh"
-
 #include "G4eBremsstrahlung.hh"
 #include "G4LivermoreBremsstrahlungModel.hh"
-
 #include "G4eIonisation.hh"
 #include "G4eBremsstrahlung.hh"
 #include "G4eplusAnnihilation.hh"
-
 #include "G4KleinNishinaModel.hh"
-
 #include "G4eMultipleScattering.hh"
-#include "G4UrbanMscModel96.hh"
-
-
 #include "G4MuMultipleScattering.hh"
 #include "G4MuIonisation.hh"
 #include "G4MuBremsstrahlung.hh"
 #include "G4MuPairProduction.hh"
-
 #include "G4hMultipleScattering.hh"
 #include "G4hIonisation.hh"
 #include "G4hBremsstrahlung.hh"
 #include "G4hPairProduction.hh"
-
 #include "G4ionIonisation.hh"
 #include "G4IonParametrisedLossModel.hh"
 #include "G4NuclearStopping.hh"
 #include "G4SystemOfUnits.hh"
+// to deal with version dependant interfaces
+#if G4VERSION_NUMBER < 1000
+    #if G4VERSION_NUMBER >= 960
+        #include "G4UrbanMscModel96.hh"
+        #define URBANMSCMODEL G4UrbanMscModel96
+    #else
+        #include "G4UrbanMscModel95.hh"
+        #define URBANMSCMODEL G4UrbanMscModel95
+    #endif
+#else
+#include "G4UrbanMscModel.hh"
+#define URBANMSCMODEL G4UrbanMscModel
+#endif
 
-//hadronic processes
+// hadronic processes
 #include "G4HadronElasticProcess.hh"
 #include "G4HadronElasticPhysicsHP.hh"
-#include "HadronPhysicsFTFP_BERT_HP.hh"
 #include "G4HadronElasticPhysics.hh"
 #include "G4HadronicProcess.hh"
 #include "G4HadronElastic.hh"
+// to deal with version dependant interfaces
+#if G4VERSION_NUMBER < 1000
+#else
+#include "FTFP_BERT_HP.hh"
+#endif
 
 //HPNeutron
 #include "G4NeutronHPThermalScatteringData.hh"
 #include "G4NeutronHPThermalScattering.hh"
-
+//
 #include "G4HadronFissionProcess.hh"
 #include "G4NeutronHPFissionData.hh"
 #include "G4NeutronHPFission.hh"
-
+//
 #include "G4NeutronHPElastic.hh"
 #include "G4NeutronHPElasticData.hh"
-
+//
 #include "G4HadronCaptureProcess.hh"
 #include "G4NeutronHPCapture.hh"
 #include "G4NeutronHPCaptureData.hh"
-
+//
 #include "G4NeutronInelasticProcess.hh"
 #include "G4NeutronHPInelastic.hh"
 #include "G4NeutronHPInelasticData.hh"
+#if G4VERSION_NUMBER < 1000
+#else
+#endif
 
 //c-s
 #include "G4TripathiCrossSection.hh"
@@ -173,6 +185,7 @@ void SToGS:: HadronPhysicsList::ConstructParticle()
 
 void SToGS::HadronPhysicsList::ConstructProcess()
 {
+    /* OS TODO - figure out
   theParticleIterator->reset();
   //
   while( (*theParticleIterator)() ){
@@ -204,7 +217,7 @@ void SToGS::HadronPhysicsList::ConstructProcess()
     } else if (particleName == "e-") {
 			
       G4eMultipleScattering* msc = new G4eMultipleScattering();
-      msc -> AddEmModel(0, new G4UrbanMscModel96());
+      msc -> AddEmModel(0, new URBANMSCMODEL() );
 		
       // Ionisation
       G4eIonisation* eIoni = new G4eIonisation();
@@ -218,8 +231,9 @@ void SToGS::HadronPhysicsList::ConstructProcess()
       pmanager->AddProcess(msc   ,-1, 1,1);
       pmanager->AddProcess(eIoni ,-1, 2,2);
       pmanager->AddProcess(eBrem ,-1,-1,3);
-			
+     
     }
+     */
  /*   // define EM physics for positron
     else if (particleName == "e+") {
 			
@@ -359,19 +373,20 @@ void SToGS::HadronPhysicsList::ConstructProcess()
    process4->RegisterMe(model4);   
 
  }*/
-  }
+ // }
     // ***********************************************
     // *             HADRONIC PHYSICS                *  
     // *********************************************** 
 
   // define hadronic elastic processes
+    /*
   G4HadronElasticPhysicsHP* hadronicElastic = new G4HadronElasticPhysicsHP();
   hadronicElastic->ConstructProcess();
 
   // define hadronic inelastic processes
   HadronPhysicsFTFP_BERT_HP* hadronicPhysics = new HadronPhysicsFTFP_BERT_HP();
   hadronicPhysics->ConstructProcess();
-  
+  */
    
   
 }

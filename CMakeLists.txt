@@ -59,67 +59,67 @@ endif()
 #
 set(SToGS_SRC ${SToGS_SRC}
 # Detector related
-        csrc/SToGS_MaterialConsultant.cc
-        csrc/SToGS_DetectorFactory.cc
+    csrc/SToGS_MaterialConsultant.cc
+    csrc/SToGS_DetectorFactory.cc
     csrc/SToGS_RoomsDF.cc
     csrc/SToGS_ScintillatorDF.cc
     csrc/SToGS_SemiConductorGeDF.cc
-    csrc/SToGS_PlaneDetectorsConstruction.cc
+    csrc/SToGS_PlaneDF.cc
     csrc/SToGS_MyStoreDF.cc
     csrc/SToGS_LoadFromDetectorFactory.cc
     csrc/SToGS_TwoShellsDetectorConstruction.cc
-        csrc/SToGS_AGATA.cc
+    csrc/SToGS_AGATA.cc
     csrc/SToGS_GenericsDF.cc
     csrc/SToGS_ArraysDF.cc
 # Physics Lists related
     csrc/SToGS_G4_GeneralPhysics.cc
     csrc/SToGS_ModularPhysicsList.cc
-    csrc/SToGS_LowEnergyEMPhysicsList.cc
+#    csrc/SToGS_LowEnergyEMPhysicsList.cc
     csrc/SToGS_HadronPhysicsList.cc
 # Generator related
     csrc/SToGS_G4_GPSPrimaryGeneratorAction.cc
 # User's Action related
-        csrc/SToGS_G4_TrackInformation.cc
-        csrc/SToGS_G4_CopClusterHit.cc
-        csrc/SToGS_G4_CopClusterSD.cc
-        csrc/SToGS_G4_TrackerHit.cc
-        csrc/SToGS_G4_TrackerSD.cc
-        csrc/SToGS_UserActionInitialization.cc
+    csrc/SToGS_G4_TrackInformation.cc
+    csrc/SToGS_G4_CopClusterHit.cc
+    csrc/SToGS_G4_CopClusterSD.cc
+    csrc/SToGS_G4_TrackerHit.cc
+    csrc/SToGS_G4_TrackerSD.cc
+    csrc/SToGS_UserActionInitialization.cc
     csrc/SToGS_PrintOut.cc
     csrc/SToGS_Ascii.cc
-        csrc/SToGS_UserActionManager.cc
+    csrc/SToGS_UserActionManager.cc
 )
 set(SToGS_HEADER ${SToGS_HEADER}
 # Detector related
-        csrc/SToGS_MaterialConsultant.hh
-        csrc/SToGS_DetectorFactory.hh
+    csrc/SToGS_MaterialConsultant.hh
+    csrc/SToGS_DetectorFactory.hh
     csrc/SToGS_RoomsDF.hh
     csrc/SToGS_ScintillatorDF.hh
     csrc/SToGS_SemiConductorGeDF.hh
-    csrc/SToGS_PlaneDetectorsConstruction.hh
+    csrc/SToGS_PlaneDF.hh
     csrc/SToGS_MyStoreDF.hh
     csrc/SToGS_LoadFromDetectorFactory.hh
     csrc/SToGS_TwoShellsDetectorConstruction.hh
     csrc/SToGS_GenericsDF.hh
     csrc/SToGS_ArraysDF.hh
-        csrc/SToGS_AGATA.hh
+    csrc/SToGS_AGATA.hh
 # Physics Lists related
     csrc/SToGS_G4_GeneralPhysics.hh
     csrc/SToGS_ModularPhysicsList.hh
-    csrc/SToGS_LowEnergyEMPhysicsList.hh
+#    csrc/SToGS_LowEnergyEMPhysicsList.hh
     csrc/SToGS_HadronPhysicsList.hh
 # Generator related
     csrc/SToGS_G4_GPSPrimaryGeneratorAction.hh
 # User's Action related
-        csrc/SToGS_G4_TrackInformation.hh
-        csrc/SToGS_G4_CopClusterHit.hh
-        csrc/SToGS_G4_CopClusterSD.hh
-        csrc/SToGS_G4_TrackerHit.hh
-        csrc/SToGS_G4_TrackerSD.hh
-        csrc/SToGS_UserActionManager.hh
+	csrc/SToGS_G4_TrackInformation.hh
+	csrc/SToGS_G4_CopClusterHit.hh
+	csrc/SToGS_G4_CopClusterSD.hh
+	csrc/SToGS_G4_TrackerHit.hh
+	csrc/SToGS_G4_TrackerSD.hh
+	csrc/SToGS_UserActionManager.hh
     csrc/SToGS_PrintOut.hh
     csrc/SToGS_Ascii.hh
-        csrc/SToGS_UserActionInitialization.hh
+	csrc/SToGS_UserActionInitialization.hh
 )
 #----------------------------------------------------------------------------
 #----------------------------------------------------------------------------
