@@ -78,8 +78,8 @@ set(SToGS_SRC ${SToGS_SRC}
     csrc/SToGS_HadronPhysicsList.cc
 # Generator related
     csrc/SToGS_G4_GPSPrimaryGeneratorAction.cc
-//    csrc/SToGS_G4_ROOTSingleParticleSource.hh
-//    csrc/SToGS_G4_ROOTGeneralParticleSource.cc
+#    csrc/SToGS_G4_ROOTSingleParticleSource.hh
+#    csrc/SToGS_G4_ROOTGeneralParticleSource.cc
 # User's Action related
     csrc/SToGS_G4_TrackInformation.cc
     csrc/SToGS_G4_CopClusterHit.cc
@@ -112,8 +112,8 @@ set(SToGS_HEADER ${SToGS_HEADER}
     csrc/SToGS_HadronPhysicsList.hh
 # Generator related
     csrc/SToGS_G4_GPSPrimaryGeneratorAction.hh
-//    csrc/SToGS_G4_ROOTSingleParticleSource.hh
-//    csrc/SToGS_G4_ROOTGeneralParticleSource.hh
+#    csrc/SToGS_G4_ROOTSingleParticleSource.hh
+#    csrc/SToGS_G4_ROOTGeneralParticleSource.hh
 # User's Action related
 	csrc/SToGS_G4_TrackInformation.hh
 	csrc/SToGS_G4_CopClusterHit.hh
