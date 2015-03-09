@@ -25,7 +25,9 @@
 //
 
 #include "SToGS_G4_GPSPrimaryGeneratorAction.hh"
+#ifdef TO_ROOTGPS
 #include "SToGS_G4_ROOTGeneralParticleSource.hh"
+#endif
 
 #include "G4Event.hh"
 #include "G4GeneralParticleSource.hh"
