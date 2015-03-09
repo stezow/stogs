@@ -67,7 +67,7 @@ set(SToGS_SRC ${SToGS_SRC}
     csrc/SToGS_MyStoreDF.cc
     csrc/SToGS_LoadFromDetectorFactory.cc
     csrc/SToGS_TwoShellsDetectorConstruction.cc
-        csrc/SToGS_AGATA.cc
+    csrc/SToGS_AGATA.cc
     csrc/SToGS_GenericsDF.cc
     csrc/SToGS_ArraysDF.cc
 # Physics Lists related
@@ -75,6 +75,8 @@ set(SToGS_SRC ${SToGS_SRC}
     csrc/SToGS_ModularPhysicsList.cc
 # Generator related
     csrc/SToGS_G4_GPSPrimaryGeneratorAction.cc
+//    csrc/SToGS_G4_ROOTSingleParticleSource.hh
+//    csrc/SToGS_G4_ROOTGeneralParticleSource.cc
 # User's Action related
 	csrc/SToGS_G4_TrackInformation.cc
 	csrc/SToGS_G4_CopClusterHit.cc
@@ -98,12 +100,14 @@ set(SToGS_HEADER ${SToGS_HEADER}
     csrc/SToGS_TwoShellsDetectorConstruction.hh
     csrc/SToGS_GenericsDF.hh
     csrc/SToGS_ArraysDF.hh
-        csrc/SToGS_AGATA.hh
+    csrc/SToGS_AGATA.hh
 # Physics Lists related
     csrc/SToGS_G4_GeneralPhysics.hh
     csrc/SToGS_ModularPhysicsList.hh
 # Generator related
     csrc/SToGS_G4_GPSPrimaryGeneratorAction.hh
+//    csrc/SToGS_G4_ROOTSingleParticleSource.hh
+//    csrc/SToGS_G4_ROOTGeneralParticleSource.hh
 # User's Action related
 	csrc/SToGS_G4_TrackInformation.hh
 	csrc/SToGS_G4_CopClusterHit.hh
@@ -187,7 +191,20 @@ if (MY_DIR)
         endif()
     #MESSAGE("[SToGS] --> Compile with ${MY_DET} " ${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_DET}DetectorConstruction)
     endif()
-
+    # ---------- MYPrimary ----------
+    if (MY_PRI)
+        if ( EXISTS "${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_PRI}PrimaryGeneratorAction.hh"
+                AND EXISTS "${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_PRI}PrimaryGeneratorAction.cc" )
+            #
+            ADD_DEFINITIONS(-DHAS_MYPRI)
+            #
+            MESSAGE("[SToGS] --> ADD ${MY_PRI}PrimaryGeneratorAction ")
+        else()
+            MESSAGE("[SToGS] --> Cannot find " ${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_PRI}PrimaryGeneratorAction.hh)
+            MESSAGE("[SToGS] --> Or " ${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_PRI}PrimaryGeneratorAction.cc)
+        endif()
+    #MESSAGE("[SToGS] --> Compile with ${MY_PRI} " ${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_PRI}PrimaryGeneratorAction)
+    endif()
     # ---------- MYActions ----------
     if (MY_ACT)
         if ( EXISTS "${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_ACT}UserAction.hh"
@@ -200,8 +217,9 @@ if (MY_DIR)
             MESSAGE("[SToGS] --> Cannot find " ${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_ACT}UserAction.hh)
             MESSAGE("[SToGS] --> Or " ${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_ACT}UserAction.cc)
         endif()
-    #MESSAGE("[SToGS] --> Compile with ${MY_ACT} " ${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_ACT})
+    #MESSAGE("[SToGS] --> Compile with ${MY_ACT} " ${PROJECT_SOURCE_DIR}/${MY_DIR}/${MY_ACT}UserAction)
     endif()
+
 endif()
 #
 configure_file (

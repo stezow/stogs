@@ -27,6 +27,7 @@
 //----------------------------------------------------------------------------------
 
 
+#include "SToGSConfig.hh"
 #include "SToGS_UserActionInitialization.hh"
 #include "SToGS_G4_TrackInformation.hh"
 
@@ -106,11 +107,29 @@ std::pair < G4String, G4String > SToGS::UserActionInitialization::SetWhichGenera
 // Primary Generators
 #include "SToGS_G4_GPSPrimaryGeneratorAction.hh"
 
+/*
+#ifdef HAS_MYPRI
+// based on My plugins defined in SToGSConfig, it build the detector name in factory
+if ( basename.contains(MYDET_) ) {
+    if ( conffile == "" ) {
+        theConstructor = new MYDET_CLASSTYPE();
+    }
+    else theConstructor = new MYDET_CLASSTYPE(conffile);
+        theDetector = theConstructor->Construct();
+        }
+#endif
+ */
+
 G4VUserPrimaryGeneratorAction *SToGS::UserActionInitialization::GetGun(G4String which, G4String opt) const
 {
     G4VUserPrimaryGeneratorAction *gun = 0x0;
     if ( which == "GPS" )
         gun = new SToGS::GPSPrimaryGeneratorAction(opt);
+    
+#ifdef HAS_MYPRI
+    if ( which == MYPRI_ )
+        gun = new MYPRI_CLASSTYPE(opt);
+#endif
     
     return gun;
 }

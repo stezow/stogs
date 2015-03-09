@@ -1,0 +1,23 @@
+
+This Directory contains many files that can be added to SToGS to enhance the possibilities. 
+They can be added using cmake as followed:
+
+In SToGS source directory:
+    cd SToGS_MY_Container
+    mkdir My_Customized_SToGS
+        --> Put in this directory all the files you need in your customized application. Ex MyPrimaryGeneratorAction.hh and .cc
+    cd ..
+    mkdir My_Customized_SToGS_Build
+    cd My_Customized_SToGS_Build
+    cmake -DGeant4_DIR=/PATH/TO/GEANT4DIR/ -DMY_DIR=./SToGS_MY_Container/My_Customized_SToGS -DMY_PRI=My ../
+
+
+
+
+****** Examples using the distributed directories ******
+
+toROOTGPS: this directory contains a PrimaryGenerator that reads ROOT files containing a TTree with events used as primary partciles [MT Safe]
+    cmake -DGeant4_DIR=/PATH/TO/GEANT4DIR/ -DMY_DIR=./SToGS_MY_Container/toROOTGPS -DMY_PRI=toROOTGPS ../
+
+PARIS: this directory contains a PARIS phoswich detector as well as some actions to get some out optical signals
+    cmake -DGeant4_DIR=/PATH/TO/GEANT4DIR/ -DMY_DIR=./SToGS_MY_Container/PARIS -DMY_PRI=toROOTGPS -DMY_DET=PW_Optical ../

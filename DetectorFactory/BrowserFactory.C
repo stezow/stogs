@@ -120,6 +120,29 @@ void ShowInEve(const char *basename = "DetectorFactory/Scintillators/CParisPW_2"
     v->DoDraw();
 }
 
+//! rename the three files
+void RenameSToGSDetector(const char *from, const char *to)
+{
+    TString t1,t2;
+    
+    t1  = from;
+    t1 += ".gdml";
+    t2  = to;
+    t2 += ".gdml";
+    gSystem->Rename(t1.Data(),t2.Data());
+    t1  = from;
+    t1 += ".amap";
+    t2  = to;
+    t2 += ".amap";
+    gSystem->Rename(t1.Data(),t2.Data());
+    t1  = from;
+    t1 += ".dmap";
+    t2  = to;
+    t2 += ".dmap";
+    gSystem->Rename(t1.Data(),t2.Data());
+}
+
+
 
 /*
 //! Read the detector in the factory and show it in open GL window

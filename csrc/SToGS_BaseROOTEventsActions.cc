@@ -342,4 +342,3 @@ void SToGS::BaseROOTEventsUserAction::PostUserTrackingAction(const G4Track *atra
 
 
 
-
