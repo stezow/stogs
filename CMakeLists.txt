@@ -59,11 +59,12 @@ endif()
 #
 set(SToGS_SRC ${SToGS_SRC}
 # Detector related
-	csrc/SToGS_MaterialConsultant.cc
-	csrc/SToGS_DetectorFactory.cc
+    csrc/SToGS_MaterialConsultant.cc
+    csrc/SToGS_DetectorFactory.cc
     csrc/SToGS_RoomsDF.cc
     csrc/SToGS_ScintillatorDF.cc
     csrc/SToGS_SemiConductorGeDF.cc
+    csrc/SToGS_PlaneDF.cc
     csrc/SToGS_MyStoreDF.cc
     csrc/SToGS_LoadFromDetectorFactory.cc
     csrc/SToGS_TwoShellsDetectorConstruction.cc
@@ -73,28 +74,31 @@ set(SToGS_SRC ${SToGS_SRC}
 # Physics Lists related
     csrc/SToGS_G4_GeneralPhysics.cc
     csrc/SToGS_ModularPhysicsList.cc
+#    csrc/SToGS_LowEnergyEMPhysicsList.cc
+    csrc/SToGS_HadronPhysicsList.cc
 # Generator related
     csrc/SToGS_G4_GPSPrimaryGeneratorAction.cc
 //    csrc/SToGS_G4_ROOTSingleParticleSource.hh
 //    csrc/SToGS_G4_ROOTGeneralParticleSource.cc
 # User's Action related
-	csrc/SToGS_G4_TrackInformation.cc
-	csrc/SToGS_G4_CopClusterHit.cc
-	csrc/SToGS_G4_CopClusterSD.cc
-	csrc/SToGS_G4_TrackerHit.cc
-	csrc/SToGS_G4_TrackerSD.cc
-	csrc/SToGS_UserActionInitialization.cc
+    csrc/SToGS_G4_TrackInformation.cc
+    csrc/SToGS_G4_CopClusterHit.cc
+    csrc/SToGS_G4_CopClusterSD.cc
+    csrc/SToGS_G4_TrackerHit.cc
+    csrc/SToGS_G4_TrackerSD.cc
+    csrc/SToGS_UserActionInitialization.cc
     csrc/SToGS_PrintOut.cc
     csrc/SToGS_Ascii.cc
-	csrc/SToGS_UserActionManager.cc
+    csrc/SToGS_UserActionManager.cc
 )
 set(SToGS_HEADER ${SToGS_HEADER}
 # Detector related
-	csrc/SToGS_MaterialConsultant.hh
-	csrc/SToGS_DetectorFactory.hh
+    csrc/SToGS_MaterialConsultant.hh
+    csrc/SToGS_DetectorFactory.hh
     csrc/SToGS_RoomsDF.hh
     csrc/SToGS_ScintillatorDF.hh
     csrc/SToGS_SemiConductorGeDF.hh
+    csrc/SToGS_PlaneDF.hh
     csrc/SToGS_MyStoreDF.hh
     csrc/SToGS_LoadFromDetectorFactory.hh
     csrc/SToGS_TwoShellsDetectorConstruction.hh
@@ -104,6 +108,8 @@ set(SToGS_HEADER ${SToGS_HEADER}
 # Physics Lists related
     csrc/SToGS_G4_GeneralPhysics.hh
     csrc/SToGS_ModularPhysicsList.hh
+#    csrc/SToGS_LowEnergyEMPhysicsList.hh
+    csrc/SToGS_HadronPhysicsList.hh
 # Generator related
     csrc/SToGS_G4_GPSPrimaryGeneratorAction.hh
 //    csrc/SToGS_G4_ROOTSingleParticleSource.hh
