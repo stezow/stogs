@@ -120,7 +120,7 @@ void toROOTGPSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
             new G4PrimaryParticle(aprimary->fPDG);
         
         particle->SetKineticEnergy( aprimary->fE*CLHEP::keV );
-        particle_momentum_direction.set(aprimary->fDX,aprimary->fDY,aprimary->fDZ);
+        particle_momentum_direction.set(aprimary->fPX,aprimary->fPY,aprimary->fPZ);
         particle->SetMomentumDirection( particle_momentum_direction.unit() );
 
         //particle->SetPolarization(0,0,0);
