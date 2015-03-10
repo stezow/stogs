@@ -103,9 +103,9 @@ void SToGS::BaseROOTEventsRun::RecordEvent(const G4Event* evt)
             //
             hit->fT = evt->GetPrimaryVertex(i)->GetT0();
             //
-			hit->fDX = prim->GetPx();
-			hit->fDY = prim->GetPy();
-			hit->fDZ = prim->GetPz();
+			hit->fPX = prim->GetPx();
+			hit->fPY = prim->GetPy();
+			hit->fPZ = prim->GetPz();
 			
 			hit->fFlag = prim->GetTrackID()-1;
 			
