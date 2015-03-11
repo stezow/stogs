@@ -44,7 +44,7 @@ public:
     
 public:
 
-  G4VPhysicalVolume *MakePLANE(G4String detname, G4String opt = "");
+ // G4VPhysicalVolume *MakePLANE(G4String detname, G4String opt = "");
 public:
     PlaneDF(G4String path) : DetectorFactory(path)
         {;}

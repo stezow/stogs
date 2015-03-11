@@ -46,11 +46,12 @@
 
 #include "G4OpticalPhysics.hh"
 
+#include "SToGS_HadronPhysicsList.hh"
 /*
-#include "SToGS::StandardEMPhysicsList.hh"
-#include "SToGS::LowEnergyEMPhysicsList.hh"
-#include "SToGS::PenelopeEMPhysicsList.hh"
-#include "SToGS::Hadron0.hh"
+#include "SToGS_StandardEMPhysicsList.hh"
+#include "SToGS_LowEnergyEMPhysicsList.hh"
+#include "SToGS_PenelopeEMPhysicsList.hh"
+#include "SToGS_HadronPhysicsList.hh"
 #include "SToGS::Hadron1.hh"
  */
 
@@ -114,7 +115,15 @@ SToGS::ModularPhysicsList::ModularPhysicsList(const G4String &option) : G4VModul
 			RegisterPhysics( new G4EmPenelopePhysics() );
 			//
 			G4cout << " ==> Physics list " << all_opt[i] << " registered " << G4endl;
-		}			
+		}
+
+	//SToGS:: hadron physics for list
+        if ( all_opt[i] == "SToGS_hadron" ) {
+			RegisterPhysics( new SToGS::HadronPhysicsList() );
+			//
+			G4cout << " ==> Physics list " << all_opt[i] << " registered " << G4endl;
+		}	
+		
 		// SToGS:: EM physics list
         /*
 		if ( all_opt[i] == "SToGS::StandardEM" ) {
@@ -158,6 +167,7 @@ SToGS::ModularPhysicsList::ModularPhysicsList(const G4String &option) : G4VModul
 			//
 			G4cout << " ==> Physics list " << all_opt[i] << " registered " << G4endl;
 		}
+
         /*
 		if ( all_opt[i] == "SToGS::Hadron0" ) {
 			RegisterPhysics( new SToGS::Hadron0() );

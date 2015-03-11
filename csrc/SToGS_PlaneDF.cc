@@ -69,52 +69,118 @@ namespace  {
     SToGS::PlaneDF thePlaneFactory("PlaneDetectors/");
 }
 
-G4VPhysicalVolume * SToGS::PlaneDF::MakePLANE(G4String detname, G4String opt)
+G4VPhysicalVolume * SToGS::PlaneDF::Make(G4String detname, G4String opt)
 {
 
 // **************************************************************************
 // *                              the WORLD                                 *
-// **************************************************************************
-    G4bool do_det = true;
-    // Option
-    if ( opt.contains("bare" ) )
-      {
-        do_det = false;
-      }
+    // **************************************************************************
+
+    G4VPhysicalVolume *theDetector = 0x0;
+
+    const G4double world_x = 10.*CLHEP::cm;
+    const G4double world_y = 10.*CLHEP::cm;
+    const G4double world_z = 10.*CLHEP::cm;
+
+    // use a physical as a container to describe the detector
+
+    G4Box *detWorld= new G4Box(detname,world_x,world_y,world_z);
+    G4LogicalVolume *detlogicWorld= new G4LogicalVolume(detWorld, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"), detname, 0, 0, 0);
+
+    detlogicWorld->SetVisAttributes(G4VisAttributes::Invisible); // hide the world
+
+    //  Must place the World Physical volume unrotated at (0,0,0).
+    theDetector = new G4PVPlacement(0,         // no rotation
+                                    G4ThreeVector(), // at (0,0,0)
+                                    detlogicWorld,      // its logical volume
+                                    detname,      // its name
+                                    0,               // its mother  volume
+                                    false,           // no boolean operations
+                                    -1);              // copy number
+
+    // **************************************************************************
+    // *                              the geometries                            *
+  // **************************************************************************
 
 
-  G4VPhysicalVolume *theDetector = 0x0; //it means is a pointer
+    //cube geometry
+    G4double cube_x = 1.*CLHEP::mm;
+    G4double cube_y = 1.*CLHEP::mm;
+    G4double cube_z = 1.*CLHEP::mm;
 
-  const G4double world_x = 10.*CLHEP::cm;
-  const G4double world_y = 10.*CLHEP::cm;
-  const G4double world_z = 10.*CLHEP::cm;
+    //tube geometry
+    G4double innerRadius = 10.*CLHEP::mm;
+    G4double outerRadius = 20.*CLHEP::mm;
+    G4double hz = 20.*CLHEP::mm;
+    G4double startAngle = 0.*CLHEP::deg;
+    G4double spanningAngle = 360.*CLHEP::deg;
+
+    //sphere geometry
+    G4double sphereRmin= 0.* CLHEP::mm;
+    G4double sphereRmax= 100*CLHEP::mm;
+    G4double sphereSPhi= 0.*CLHEP::mm;
+    G4double sphereDPhi= 360.*CLHEP::deg;//2*Pi
+    G4double sphereSTheta = 0 *CLHEP::deg;
+    G4double sphereDTheta = 180 *CLHEP::deg;
+
+
+    G4VSolid *planedetector = 0x0; G4VPhysicalVolume *plane_physical = 0x0; //it means is a pointer
+G4String tmp;
+tmp = detname;
+tmp += "_Shape";
+    if (detname="PLANE_cube")
+    {
+        tmp = detname;
+        tmp += "_Shape";
+        planedetector= new G4Box(tmp,cube_x,cube_y,cube_z);
+
+    }
+    if (detname="PLANE_tube")
+    {
+        planedetector = new G4Tubs(tmp,
+                                           innerRadius,
+                                           outerRadius,
+                                           hz,
+                                           startAngle,
+                                           spanningAngle);
+    }
+
+    if (detname="PLANE_sphere")
+    {
+        planedetector= new G4Sphere (tmp,
+                                               sphereRmin,
+                                               sphereRmax,
+                                               sphereSPhi,
+                                               sphereDPhi,
+                                               sphereSTheta,
+                                               sphereDTheta );
+    }
+tmp = detname;
+tmp += "_LV";
+    G4LogicalVolume *plane_logic= new G4LogicalVolume(planedetector, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"), tmp, 0, 0, 0);
+    plane_logic->SetSensitiveDetector( SToGS::UserActionInitialization::GetTrackerSD() );
+
+    G4VisAttributes *plane_logicVisAtt= new G4VisAttributes(G4Colour(1.0,0.0,0.0)); //red
+    plane_logic->SetVisAttributes(plane_logicVisAtt);
+
+    //  Must place the Detector Physical volume unrotated at (0,0,0).
+    plane_physical = new G4PVPlacement(0,         // no rotation
+                                G4ThreeVector(), // at (0,0,0)
+                                plane_logic,      // its logical volume
+                                "plane_P",      // its name
+                                detlogicWorld,               // its mother  volume
+                                false,           // no boolean operations
+                                0);              // copy number
 
 
 
-   // use a physical as a container to describe the detector
-
-  G4Box *detWorld= new G4Box(detname,world_x,world_y,world_z);
-  G4LogicalVolume *detlogicWorld= new G4LogicalVolume(detWorld, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"), detname, 0, 0, 0);
-
- detlogicWorld->SetVisAttributes(G4VisAttributes::Invisible); // hide the world
-
-/* G4VisAttributes *detlogicWorldVisAtt= new G4VisAttributes(G4Colour(0.0,1.0,1.0)); //turquoise
-  detlogicWorld->SetVisAttributes(detlogicWorldVisAtt);
-*/
-
-  //  Must place the World Physical volume unrotated at (0,0,0).
-  theDetector = new G4PVPlacement(0,         // no rotation
-                  G4ThreeVector(), // at (0,0,0)
-                  detlogicWorld,      // its logical volume
-                  detname,      // its name
-                  0,               // its mother  volume
-                  false,           // no boolean operations
-                  -1);              // copy number
 
   // **************************************************************************
   // *                              the CUBE                                 *
   // **************************************************************************
-/*
+
+
+  /*
   //box geometry for test
   const G4double cube_x = 1.*CLHEP::mm;
   const G4double cube_y = 1.*CLHEP::mm;
@@ -182,7 +248,7 @@ G4VPhysicalVolume * SToGS::PlaneDF::MakePLANE(G4String detname, G4String opt)
                   false,           // no boolean operations
                   0);              // copy number
 
-*/
+
   // **************************************************************************
   // *                              the SPHERE                                *
   // **************************************************************************
@@ -223,10 +289,11 @@ G4VPhysicalVolume * SToGS::PlaneDF::MakePLANE(G4String detname, G4String opt)
                   0);              // copy number
 
 
+*/
 
   return theDetector;
 }
-
+/*
 G4VPhysicalVolume * SToGS::PlaneDF::Make(G4String name, G4String version_string)
 {
     G4VPhysicalVolume *theDetector = 0x0; G4String detname;
@@ -237,32 +304,23 @@ G4VPhysicalVolume * SToGS::PlaneDF::Make(G4String name, G4String version_string)
     MakePLANE(detname,version_string);
     }
 
-    //
-/*
-    if ( name == "PLANE" ) {
-        detname = GetDetName("PLANE",version_string);
-        theDetector =
-            MakePLANE_CLOVER(detname,version_string);
-    }
-    */
+
 
     return theDetector;
 }
-
+*/
 void SToGS::PlaneDF::MakeStore()
 {
 
-    // EUROGAM/BALL related
-/*
-// EXOGAM
+
     SToGS::DetectorFactory::SetGCopyNb(0);
-    MakeInStore("PLANE","cube"); //
+    MakeInStore("PLANE_cube",""); //
 
   SToGS::DetectorFactory::SetGCopyNb(0);
-    MakeInStore("PLANE","tube");//
-*/
+    MakeInStore("PLANE_tube","");//
+
     SToGS::DetectorFactory::SetGCopyNb(0);
-      MakeInStore("PLANE","sphere");//
+      MakeInStore("PLANE_sphere","");//
 
 }
 
