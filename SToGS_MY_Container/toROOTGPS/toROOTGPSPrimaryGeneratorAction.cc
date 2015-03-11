@@ -50,7 +50,16 @@ namespace { G4Mutex buildMutex = G4MUTEX_INITIALIZER; G4Mutex runMutex = G4MUTEX
 
 using namespace std;
 
-toROOTGPSPrimaryGeneratorAction::toROOTGPSPrimaryGeneratorAction()
+
+//!
+toROOTGPSPrimaryGeneratorActionMessanger *theMessanger;
+
+toROOTGPSPrimaryGeneratorAction::toROOTGPSPrimaryGeneratorAction() :
+    G4VUserPrimaryGeneratorAction(),
+    theChainOfPrimaryEvents(0x0),
+    fPr(0x0),
+    fCurrentEntry(0L),
+    fEntries(0L)
 {
     fPr = new SBRPEvent(); fEntries = fCurrentEntry = 0L;
     /*
@@ -80,7 +89,12 @@ toROOTGPSPrimaryGeneratorAction::toROOTGPSPrimaryGeneratorAction()
     theMessanger = new toROOTGPSPrimaryGeneratorActionMessanger(this);
 }
 
-toROOTGPSPrimaryGeneratorAction::toROOTGPSPrimaryGeneratorAction(G4String filename)
+toROOTGPSPrimaryGeneratorAction::toROOTGPSPrimaryGeneratorAction(G4String filename) :
+    G4VUserPrimaryGeneratorAction(),
+    theChainOfPrimaryEvents(0x0),
+    fPr(0x0),
+    fCurrentEntry(0L),
+    fEntries(0L)
 {
     fPr = new SBRPEvent(); fEntries = fCurrentEntry = 0L;
 
@@ -110,11 +124,16 @@ void toROOTGPSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     
     
     // create a new vertex
-
     for (G4int i = 0; i < fPr->GetNbHits(); i++) {
         
         // get next Pr Particle
         SBRPHit *aprimary = fPr->GetHit(i);
+        
+        if ( aprimary->fPDG == 1000020040 ) {
+            G4PrimaryParticle* particle =
+                new G4PrimaryParticle(aprimary->fPDG);
+            continue;
+        }
         
         G4PrimaryParticle* particle =
             new G4PrimaryParticle(aprimary->fPDG);
@@ -224,8 +243,6 @@ void toROOTGPSPrimaryGeneratorAction::GetInputFiles(G4String filename)
 		return;
 	}
     
-    theChainOfPrimaryEvents = new TChain("SToGS");
-
     // read the file and get the cascade
     std::string aline, key, rfile; std::getline (file,aline);
 	while ( file.good() ) {
@@ -237,7 +254,17 @@ void toROOTGPSPrimaryGeneratorAction::GetInputFiles(G4String filename)
         
         // file to be added to the chain
         std::istringstream decode(aline);
-        decode >> rfile;
+        decode >> key >> rfile;
+        
+        if ( key == "tree_name" ) {
+            theChainOfPrimaryEvents = new TChain(rfile.data());
+            std::getline (file,aline);
+            continue;
+        }
+        // default is ROOTGPS
+        if ( theChainOfPrimaryEvents == 0x0 ) {
+            theChainOfPrimaryEvents = new TChain("ROOTGPS");
+        }
 		Int_t added = theChainOfPrimaryEvents->AddFile(rfile.data());
         if ( added ) {
             G4cout << " add the file to TChain " << rfile.data() << G4endl;
