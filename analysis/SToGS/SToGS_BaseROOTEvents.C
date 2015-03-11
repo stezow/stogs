@@ -69,9 +69,9 @@ SBRHit::~SBRHit()
 
 SBRPHit::SBRPHit(const SBRPHit &sbrphit) : SBRHit((SBRPHit &)sbrphit)
 {
-	fDX		= sbrphit.fDX;
-	fDY		= sbrphit.fDY;
-	fDZ		= sbrphit.fDZ;
+	fPX		= sbrphit.fPX;
+	fPY		= sbrphit.fPY;
+	fPZ		= sbrphit.fPZ;
 }
 
 SBROpticalHit::SBROpticalHit() : TObject(),

@@ -45,6 +45,14 @@
 #define MYDET_          "@MY_DET@"
 #define MYDET_CLASSTYPE  @MY_DET@DetectorConstruction
 #endif
+
+// MyPrimaryGeneratorAction
+#ifdef HAS_MYPRI
+#include "@MY_PRI@PrimaryGeneratorAction.hh"
+#define MYPRI_          "@MY_PRI@"
+#define MYPRI_CLASSTYPE  @MY_PRI@PrimaryGeneratorAction
+#endif
+
 // MyAction
 #ifdef HAS_MYACT
 #include "@MY_ACT@UserAction.hh"

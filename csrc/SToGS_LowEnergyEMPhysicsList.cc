@@ -25,7 +25,7 @@
 //
 //
 
-#include "ParisLowEnergyEMPhysicsList.hh"
+#include "SToGS_LowEnergyEMPhysicsList.hh"
 
 #include "G4ProcessManager.hh"
 #include "G4ProcessVector.hh"

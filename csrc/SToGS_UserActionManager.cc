@@ -103,7 +103,6 @@ SToGS::UserActionManager::UserActionManager(G4String filename) :
 
 #include "SToGS_PrintOut.hh"
 #include "SToGS_Ascii.hh"
-
 #ifdef HAS_STOGS_ROOT_EVENTS
 #include "SToGS_BaseROOTEventsActions.hh"
 #endif

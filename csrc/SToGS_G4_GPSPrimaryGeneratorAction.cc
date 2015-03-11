@@ -25,13 +25,23 @@
 //
 
 #include "SToGS_G4_GPSPrimaryGeneratorAction.hh"
+#ifdef TO_ROOTGPS
+#include "SToGS_G4_ROOTGeneralParticleSource.hh"
+#endif
 
 #include "G4Event.hh"
 #include "G4GeneralParticleSource.hh"
 #include "G4UImanager.hh"
 
+// to protect the classic GPS during the time required to set
+//#define TO_ROOTGPS 1
+
 SToGS::GPSPrimaryGeneratorAction::GPSPrimaryGeneratorAction(G4String mac)
 {
+#ifdef TO_ROOTGPS
+    // ROOTGPS + init à la main
+    particleGun = new SToGS::ROOTGeneralParticleSource();
+#else
     particleGun = new G4GeneralParticleSource();
     if ( mac != "" ) {
         G4bool is_mac = false; std::ifstream f(mac.c_str());
@@ -47,6 +57,7 @@ SToGS::GPSPrimaryGeneratorAction::GPSPrimaryGeneratorAction(G4String mac)
             G4UImanager::GetUIpointer()->ApplyCommand(command);
         }
     }
+#endif
 }
 
 SToGS::GPSPrimaryGeneratorAction::~GPSPrimaryGeneratorAction()

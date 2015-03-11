@@ -117,21 +117,21 @@ class SBRPHit : public SBRHit
 {
 public:
     //
-	Double32_t fDX;	// X Direction
-	Double32_t fDY;	// Y Direction
-	Double32_t fDZ;	// Z Direction
+	Double32_t fPX;	// X Direction
+	Double32_t fPY;	// Y Direction
+	Double32_t fPZ;	// Z Direction
 
 public:
 	void Clear(Option_t *opt)
     {
         SBRHit::Clear(opt);
-        fDX  = 0.0;
-        fDY  = 0.0;
-        fDZ  = 0.0;
+        fPX  = 0.0;
+        fPY  = 0.0;
+        fPZ  = 0.0;
     }
     
 public:
-	SBRPHit(): SBRHit(), fDX(0.0), fDY(0.0), fDZ(0.0)
+	SBRPHit(): SBRHit(), fPX(0.0), fPY(0.0), fPZ(0.0)
     {
         ;
     }
