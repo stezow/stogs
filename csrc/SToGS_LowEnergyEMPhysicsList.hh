@@ -25,13 +25,13 @@
 //
 //----------------------------------------------------------------------------
 
-#ifndef ParisLowEnergyEMPhysicsList_h
-#define ParisLowEnergyEMPhysicsList_h 1
+#ifndef LowEnergyEMPhysicsList_h
+#define LowEnergyEMPhysicsList_h 1
 
 #include "G4VPhysicsConstructor.hh"
 #include "globals.hh"
-
-using namespace std;
+#include "G4ios.hh"
+//using namespace std;
 
 //! SToGS namespace to protect SToGS classes
 namespace SToGS {
@@ -39,11 +39,11 @@ namespace SToGS {
 /*!
     
 */
-class ParisLowEnergyEMPhysicsList: public G4VPhysicsConstructor
+class LowEnergyEMPhysicsList: public G4VPhysicsConstructor
 {
 public:
-	ParisLowEnergyEMPhysicsList(const G4String& name = "ParisLowEnergyEM");
-   virtual ~ParisLowEnergyEMPhysicsList();
+	LowEnergyEMPhysicsList(const G4String& name = "LowEnergyEM");
+   virtual ~LowEnergyEMPhysicsList();
     
 protected:
 	//! these methods Construct particles 
