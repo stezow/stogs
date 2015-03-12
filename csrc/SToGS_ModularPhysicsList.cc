@@ -32,6 +32,9 @@
 #include "SToGS_ModularPhysicsList.hh"
 #include "SToGS_G4_GeneralPhysics.hh"
 
+#include "G4Version.hh"
+
+//Electromagnetic
 #include "G4EmStandardPhysics.hh"
 #include "G4EmStandardPhysics_option1.hh"
 #include "G4EmStandardPhysics_option2.hh"
@@ -41,12 +44,23 @@
 #include "G4EmConfigurator.hh"
 #include "G4UnitsTable.hh"
 
+// transport and decay
 #include "G4ProcessManager.hh"
 #include "G4Decay.hh"
 
+// scintillation
 #include "G4OpticalPhysics.hh"
 
+// hadrons
 #include "SToGS_HadronPhysicsList.hh"
+#if G4VERSION_NUMBER < 1000
+#include "HadronPhysicsQGSP_BIC_HP.hh"
+#define QGSP_BIC_HP_MODEL HadronPhysicsQGSP_BIC_HP
+#else
+#include "G4HadronPhysicsQGSP_BIC_HP.hh"
+#define QGSP_BIC_HP_MODEL G4HadronPhysicsQGSP_BIC_HP
+#endif
+
 /*
 #include "SToGS_StandardEMPhysicsList.hh"
 #include "SToGS_LowEnergyEMPhysicsList.hh"
@@ -117,13 +131,15 @@ SToGS::ModularPhysicsList::ModularPhysicsList(const G4String &option) : G4VModul
 			G4cout << " ==> Physics list " << all_opt[i] << " registered " << G4endl;
 		}
 
-	//SToGS:: hadron physics for list
+//SToGS:: hadron physics for list
         if ( all_opt[i] == "SToGS_hadron" ) {
 			RegisterPhysics( new SToGS::HadronPhysicsList() );
 			//
 			G4cout << " ==> Physics list " << all_opt[i] << " registered " << G4endl;
-		}	
-		
+		}
+        if ( all_opt[i] == "QGSP_BIC_HP" ) {
+            RegisterPhysics( new QGSP_BIC_HP_MODEL() );
+		}
 		// SToGS:: EM physics list
         /*
 		if ( all_opt[i] == "SToGS::StandardEM" ) {

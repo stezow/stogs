@@ -35,33 +35,26 @@
 
 //! SToGS namespace to protect SToGS classes
 namespace SToGS {
-//! Only Standard electromagnetic processes from the "low energy package"
-/*!
+    //! Only Standard electromagnetic processes from the "low energy package"
+    /*!
     
-*/
-class HadronPhysicsList: public G4VPhysicsConstructor
-{
-public:
-	HadronPhysicsList(const G4String& name = "hadron");
-   virtual ~HadronPhysicsList();
-    
-protected:
-	//! these methods Construct particles 
-	/*!
-	 Only gamma, e-, e+ and geantino
-    */
-	void ConstructParticle();
-	//! these methods Construct processes for gamma, e-, e+ and geantino
-	/*!
-    */	
-	void ConstructProcess();
+     */
+    class HadronPhysicsList: public G4VPhysicsConstructor
+    {
+    public:
+        HadronPhysicsList(const G4String& name = "SToGSHadron");
+        virtual ~HadronPhysicsList();
+        
+    protected:
+        //! these methods Construct particles
+        void ConstructParticle();
+        //! these methods Construct processes
+        /*!
+         */
+        void ConstructProcess();
 	
-	void SetCuts();
-
-  //private:
-  //  G4bool  fThermal;
-  // NeutronHPMessenger* fNeutronMessenger; 	
-};
+        void SetCuts();
+    };
 } // SToGS Namespace
 
 #endif
