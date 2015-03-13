@@ -52,7 +52,12 @@
 #include "G4OpticalPhysics.hh"
 
 // hadrons
-#include "SToGS_HadronPhysicsList.hh"
+#include "G4EmExtraPhysics.hh"
+#include "G4HadronElasticPhysics.hh"
+#include "G4HadronElasticPhysicsHP.hh"
+#include "G4StoppingPhysics.hh"
+#include "G4IonBinaryCascadePhysics.hh"
+#include "G4NeutronTrackingCut.hh"
 #if G4VERSION_NUMBER < 1000
 #include "HadronPhysicsQGSP_BIC_HP.hh"
 #define QGSP_BIC_HP_MODEL HadronPhysicsQGSP_BIC_HP
@@ -60,6 +65,8 @@
 #include "G4HadronPhysicsQGSP_BIC_HP.hh"
 #define QGSP_BIC_HP_MODEL G4HadronPhysicsQGSP_BIC_HP
 #endif
+#include "SToGS_HadronPhysicsList.hh"
+
 
 /*
 #include "SToGS_StandardEMPhysicsList.hh"
@@ -139,6 +146,10 @@ SToGS::ModularPhysicsList::ModularPhysicsList(const G4String &option) : G4VModul
 		}
         if ( all_opt[i] == "QGSP_BIC_HP" ) {
             RegisterPhysics( new QGSP_BIC_HP_MODEL() );
+            // It requires some addons ...
+            SetBuilderList0(true);
+            //
+            G4cout << " ==> Physics list " << all_opt[i] << " registered " << G4endl;
 		}
 		// SToGS:: EM physics list
         /*
@@ -223,6 +234,29 @@ SToGS::ModularPhysicsList::~ModularPhysicsList()
 {
 }
 
+void SToGS::ModularPhysicsList::SetBuilderList0(G4bool flagHP, G4int verboseLevel)
+{
+    RegisterPhysics(new G4EmExtraPhysics());
+    if(flagHP) {
+        RegisterPhysics( new G4HadronElasticPhysicsHP(verboseLevel) ) ;
+    } else {
+        RegisterPhysics( new G4HadronElasticPhysics(verboseLevel) );
+    }
+    RegisterPhysics( new G4StoppingPhysics(verboseLevel));
+    RegisterPhysics( new G4IonBinaryCascadePhysics(verboseLevel));
+    RegisterPhysics( new G4NeutronTrackingCut(verboseLevel));
+    /*
+    fHadronPhys.push_back( new G4EmExtraPhysics(verboseLevel));
+    if(flagHP) {
+        fHadronPhys.push_back( new G4HadronElasticPhysicsHP(verboseLevel) );
+    } else {
+        fHadronPhys.push_back( new G4HadronElasticPhysics(verboseLevel) );
+    }
+    fHadronPhys.push_back( new G4StoppingPhysics(verboseLevel));
+    fHadronPhys.push_back( new G4IonBinaryCascadePhysics(verboseLevel));
+    fHadronPhys.push_back( new G4NeutronTrackingCut(verboseLevel));
+     */
+}
 
 /*
 void SToGS::PhysicsList::AddIonGasModels()

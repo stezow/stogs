@@ -111,7 +111,7 @@ void toROOTGPSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 {
     G4ThreeVector particle_position(0,0,0), particle_momentum_direction;
     
-    G4PrimaryVertex* vertex = new G4PrimaryVertex(particle_position, 0);
+    G4PrimaryParticle* particle = 0x0; G4PrimaryVertex* vertex = new G4PrimaryVertex(particle_position, 0);
     
     {
 #if G4MULTITHREADED
@@ -130,12 +130,12 @@ void toROOTGPSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         SBRPHit *aprimary = fPr->GetHit(i);
         
         if ( aprimary->fPDG == 1000020040 ) {
-            G4PrimaryParticle* particle =
+            particle =
                 new G4PrimaryParticle(aprimary->fPDG);
             continue;
         }
         
-        G4PrimaryParticle* particle =
+        particle =
             new G4PrimaryParticle(aprimary->fPDG);
         
         particle->SetKineticEnergy( aprimary->fE*CLHEP::keV );
@@ -259,18 +259,21 @@ void toROOTGPSPrimaryGeneratorAction::GetInputFiles(G4String filename)
         if ( key == "tree_name" ) {
             theChainOfPrimaryEvents = new TChain(rfile.data());
             std::getline (file,aline);
+            
+            G4cout << " ==> TTree expected name is " << rfile.data() << G4endl;
             continue;
         }
         // default is ROOTGPS
         if ( theChainOfPrimaryEvents == 0x0 ) {
             theChainOfPrimaryEvents = new TChain("ROOTGPS");
+            G4cout << " ==> TTree expected name is ROOTGPS " << G4endl;
         }
 		Int_t added = theChainOfPrimaryEvents->AddFile(rfile.data());
         if ( added ) {
-            G4cout << " add the file to TChain " << rfile.data() << G4endl;
+            G4cout << " ==> add the file to TChain " << rfile.data() << G4endl;
         }
         else
-            G4cout << " Cannot add the file to TChain " << rfile.data() << G4endl;
+            G4cout << " !!! Cannot add the file to TChain " << rfile.data() << G4endl;
 
         std::getline (file,aline);
 

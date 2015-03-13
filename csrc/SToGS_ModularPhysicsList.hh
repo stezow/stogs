@@ -42,6 +42,14 @@ namespace SToGS {
      */
     class ModularPhysicsList: public G4VModularPhysicsList
     {
+    private:
+        // from hadronic extended , Hadr01
+        void SetBuilderList0(G4bool flagHP = false,  G4int verboseLevel = 0);
+        //void SetBuilderList1(G4bool flagHP = false);
+        //void SetBuilderList2(G4bool addStopping = false);
+        //void SetBuilderList3();
+        //void SetBuilderList4();
+        
     public:
         ModularPhysicsList(const G4String &file = "general0");
         virtual ~ModularPhysicsList();
@@ -50,6 +58,9 @@ namespace SToGS {
         {
             SetCutsWithDefault();   
         }
+        
+    private:
+        std::vector<G4VPhysicsConstructor*>  fHadronPhys;
     };
 } // SToGS Namespace
 
