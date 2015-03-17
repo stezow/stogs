@@ -37,7 +37,7 @@ namespace SToGS {
     class ScintillatorDF : public DetectorFactory
     {
     public:
-// All individual methods to build some detector units
+        // All individual methods to build some detector units
         // make PARIS PW with/without encapuslation, housing
         /*!
          Options \n

@@ -59,7 +59,7 @@ namespace SToGS {
         virtual ~ImportsDF()
         {;}
         
-        //! to be filled with default rooms
+        //! Nothing to be built internally 
         virtual void MakeStore()
         {;}
     };

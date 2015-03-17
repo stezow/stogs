@@ -107,7 +107,7 @@ namespace SToGS {
         
         //! One of the mandatory class to be implemented in order to have G4 working properly
         virtual G4VPhysicalVolume* Construct();
-        //! NEW G4.10
+        //! NEW G4.10 ... but also define for G4.9 except is is called explicitely at the end of Construct
         virtual void ConstructSDandField();
         
     private:

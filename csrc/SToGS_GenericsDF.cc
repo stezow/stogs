@@ -102,16 +102,14 @@ G4VPhysicalVolume *SToGS::GenericsDF::Get(G4String basename)
         fLoadedPhysical.push_back(p1);
         std::pair < G4String, G4VUserDetectorConstruction *> p2(basename,theConstructor);
         fLoadedUserDetectorConstruction.push_back(p2);
-#if G4VERSION_NUMBER < 1000
-#else
-//        theConstructor->ConstructSDandField(); // done at construction time for Geant4 < 10.0 otherwise in ConstructSDandField
-#endif
     }
+
+    GetAttributes(basename,true, true);
 
     return theDetector;
 }
 
-void SToGS::GenericsDF::GetAttributes(G4String basename, bool do_amap, G4bool do_dmap)
+void SToGS::GenericsDF::GetAttributes(G4String basename, G4bool do_amap, G4bool do_dmap)
 {
     // check is already loaded
 #if G4VERSION_NUMBER < 1000

@@ -322,7 +322,7 @@ G4VPhysicalVolume* SToGS::TwoShellsDetectorConstruction::Construct()
                                     Inner.Name,      // its name
                                     logicWorld,      // its mother  volume
                                     false,           // no boolean operations
-                                    SToGS::DetectorFactory::AddGCopyNb());              // copy number
+                                    0);              // copy number
     
     
 	asolidShell = new G4Sphere(Outer.Name, Outer.RMin, Outer.RMax, Outer.PhiStart, Outer.PhiDelta, Outer.ThetaStart, Outer.ThetaDelta);
@@ -337,7 +337,7 @@ G4VPhysicalVolume* SToGS::TwoShellsDetectorConstruction::Construct()
                                     Outer.Name,      // its name
                                     logicWorld,      // its mother  volume
                                     false,           // no boolean operations
-                                    SToGS::DetectorFactory::AddGCopyNb());              // copy number
+                                    1);              // copy number
     
     // do the same for other shells
 	for (unsigned int i = 0; i < otherShells.size() ; i++ ) {

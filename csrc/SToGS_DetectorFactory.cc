@@ -1060,6 +1060,15 @@ G4int SToGS::DetectorFactory::Set(G4String basename, G4VPhysicalVolume *mother,
                 G4cout << "---> Add to " << mother->GetName() << " " << hname.str() << " with top copy number "
                 << top_copy_number_offset + subdetector->GetCopyNo()<< G4endl;
             }
+            else {
+                new G4PVPlacement(Tf,
+                                  subdetector->GetLogicalVolume(),
+                                  hname.str(),
+                                  mother->GetLogicalVolume(),
+                                  false,
+                                  -1);
+                                G4cout << "---> Add to " << mother->GetName() << " " << hname.str() << " with top copy number -1 " << G4endl;
+            }
         }
         else {
             // name is the detector name followed by the copy_number_offset
