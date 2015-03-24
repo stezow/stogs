@@ -128,13 +128,6 @@ void toROOTGPSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         
         // get next Pr Particle
         SBRPHit *aprimary = fPr->GetHit(i);
-        
-        if ( aprimary->fPDG == 1000020040 ) {
-            particle =
-                new G4PrimaryParticle(aprimary->fPDG);
-            continue;
-        }
-        
         particle =
             new G4PrimaryParticle(aprimary->fPDG);
         
