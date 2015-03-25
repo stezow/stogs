@@ -1058,7 +1058,7 @@ G4int SToGS::DetectorFactory::Set(G4String basename, G4VPhysicalVolume *mother,
                                   false,
                                   top_copy_number_offset + subdetector->GetCopyNo() );
                 G4cout << "---> Add to " << mother->GetName() << " " << hname.str() << " with top copy number "
-                << top_copy_number_offset + subdetector->GetCopyNo()<< G4endl;
+                        << top_copy_number_offset + subdetector->GetCopyNo()<< G4endl;
             }
             else {
                 new G4PVPlacement(Tf,
@@ -1079,7 +1079,7 @@ G4int SToGS::DetectorFactory::Set(G4String basename, G4VPhysicalVolume *mother,
                               false,
                               top_copy_number_offset + subdetector->GetCopyNo() );
             G4cout << "---> Add to " << mother->GetName() << " " << hname.str() << " with top copy number "
-            << top_copy_number_offset + subdetector->GetCopyNo()<< G4endl;
+                    << top_copy_number_offset + subdetector->GetCopyNo()<< G4endl;
         }
     }
     
@@ -1184,7 +1184,7 @@ G4VPhysicalVolume *SToGS::DetectorFactory::MakeVCR(G4String name, G4double HalfX
 
 G4VPhysicalVolume * SToGS::DetectorFactory::MakeAnArrayFromFactory(G4String input_file)
 {
-    G4VPhysicalVolume *theDetector = 0x0; std::vector< std::pair< G4AssemblyVolume *,G4VPhysicalVolume * > > all_assembly;
+    G4VPhysicalVolume *theDetector = 0x0; std::vector< std::pair< G4AssemblyVolume *,G4VPhysicalVolume * > > all_assembly;  G4bool is_new_assembly = false;
 
     // open the file containing the array to be built
     std::ifstream g4map(input_file.data());
@@ -1194,7 +1194,8 @@ G4VPhysicalVolume * SToGS::DetectorFactory::MakeAnArrayFromFactory(G4String inpu
     }
     // first read the
     
-    G4String key, detector_name, subdetector_name, aline, unit1, what, option_copy_number; G4double X, Y, Z, r_value;
+    G4String key, detector_name, subdetector_name, aline, unit1, what, option_copy_number;
+    G4double X, Y, Z, r_value;
     
     // logicals
     getline(g4map,aline);
@@ -1227,6 +1228,23 @@ G4VPhysicalVolume * SToGS::DetectorFactory::MakeAnArrayFromFactory(G4String inpu
                 detector_name = SToGS::DetectorFactory::theMainFactory()->GetDetName(fullfactoryname);
                 theDetector = factory->Import(gdmlfile, detector_name, option_amap, option_dmap);
             }
+            getline(g4map,aline);
+            continue;
+        }
+
+        if ( key == "[" && theDetector ) { // this starts a new assembly
+            is_new_assembly = true;
+            getline(g4map,aline);
+            continue;
+        }
+        if ( key == "]" && theDetector ) { // this close a new assembly
+            
+            // treated @ the end i.e. after already built detector even if not in order in the input file
+            for (size_t i = 0; i < all_assembly.size(); i++ ) {
+                G4int nb_active = DoMap(all_assembly[i].first,all_assembly[i].second,SToGS::DetectorFactory::GetGCopyNb());
+                SToGS::DetectorFactory::SetGCopyNb(SToGS::DetectorFactory::GetGCopyNb() + nb_active);
+            }
+            all_assembly.clear(); is_new_assembly = false;
             getline(g4map,aline);
             continue;
         }
@@ -1295,7 +1313,8 @@ G4VPhysicalVolume * SToGS::DetectorFactory::MakeAnArrayFromFactory(G4String inpu
                 cout << "[..+] Reading " << input_file << endl;
             }
         }
-        if ( key == "*" && decode.good() && theDetector ) { // this is a detector going to be replicated in space using the assembly mechanism
+
+        if ( key == "*" && decode.good() && theDetector && is_new_assembly ) { // this is a detector going to be replicated in space using the assembly mechanism
             
             G4VPhysicalVolume *detector = SToGS::DetectorFactory::theMainFactory()->Get(subdetector_name.data());
             G4AssemblyVolume  *assembly = SToGS::DetectorFactory::theMainFactory()->GetAssembly(subdetector_name.data());
@@ -1349,12 +1368,6 @@ G4VPhysicalVolume * SToGS::DetectorFactory::MakeAnArrayFromFactory(G4String inpu
         }
 
         getline(g4map,aline);
-    }
-    
-    // treated @ the end i.e. after already built detector even if not in order in the input file
-    for (size_t i = 0; i < all_assembly.size(); i++ ) {
-        G4int nb_active = DoMap(all_assembly[i].first,all_assembly[i].second,SToGS::DetectorFactory::GetGCopyNb());
-        SToGS::DetectorFactory::SetGCopyNb(SToGS::DetectorFactory::GetGCopyNb() + nb_active);
     }
     
     return theDetector;

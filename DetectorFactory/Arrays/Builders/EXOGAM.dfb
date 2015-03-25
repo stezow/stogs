@@ -6,7 +6,7 @@ w EXOGAM_bare +10. +10. +10. m
 @ 0 ->
 #
 #
-*	
+[
 *	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm		Rz +0    Ry +45   Rt
 *	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm		Rz +0    Ry +90   Rt
 *	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm		Rz +0    Ry +135  Rt
@@ -25,7 +25,7 @@ w EXOGAM_bare +10. +10. +10. m
 *	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm	Rx -45	Rz +0    Ry +90   Rt
 *	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm	Rx +45	Rz +0    Ry +270  Rt
 *	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm	Rx -45	Rz +0    Ry +270  Rt
-	    
+]
 #
 # end
 

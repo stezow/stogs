@@ -6,6 +6,7 @@ w Chateau2Crystal +10. +10. +10. m
 @ 0 ->
 #
 #
+[
 *	DetectorFactory/Scintillators/aChateau2Crystal		200.0		0.0		0.0	mm	Rz +90 Ry +90	
 *	DetectorFactory/Scintillators/aChateau2Crystal		195.0		78.0		45.0	mm	Rz +90 Ry +90	    
 *	DetectorFactory/Scintillators/aChateau2Crystal		195.0		0.0		90.0	mm	Rz +90 Ry +90    
@@ -80,6 +81,7 @@ w Chateau2Crystal +10. +10. +10. m
 *	DetectorFactory/Scintillators/aChateau2Crystal		-30.5		234.0		-135.0 	mm	Rz +90 Ry -90
 *	DetectorFactory/Scintillators/aChateau2Crystal		-55.0		0.0		270.0  	mm	Rz +90 Ry -90
 *	DetectorFactory/Scintillators/aChateau2Crystal		-55.0		0.0		-270.0	mm	Rz +90 Ry -90
+]
 #
 # end
 

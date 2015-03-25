@@ -6,6 +6,7 @@ w AGATA_180 +2. +2. +2. m
 @ 0 -> 
 # 
 # 
+[
 * DetectorFactory/SemiConductors/Ge/ATC	+74.4705	+71.7883	-256.432	mm	Rz +344.302	Ry +158.032	Rz +43.9494
 * DetectorFactory/SemiConductors/Ge/ATC	-45.2621	+93.0094	-256.432	mm	Rz +344.302	Ry +158.032	Rz +115.949
 * DetectorFactory/SemiConductors/Ge/ATC	-102.444	-14.3054	-256.432	mm	Rz +344.302	Ry +158.032	Rz +187.949
@@ -66,5 +67,6 @@ w AGATA_180 +2. +2. +2. m
 * DetectorFactory/SemiConductors/Ge/ATC	-79.9879	+65.5847	+256.432	mm	Rz +164.302	Ry +21.9679	Rz +140.651
 * DetectorFactory/SemiConductors/Ge/ATC	-87.0923	-55.8063	+256.432	mm	Rz +164.302	Ry +21.9679	Rz +212.651
 * DetectorFactory/SemiConductors/Ge/ATC	+26.1619	-100.075	+256.432	mm	Rz +164.302	Ry +21.9679	Rz +284.651
+]
 # 
 # end 
