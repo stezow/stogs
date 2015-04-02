@@ -49,4 +49,4 @@
 /gps/ang/mintheta   0. deg
 /gps/ang/maxtheta 180. deg
 # uncommented, two lines emitted in one event. 
-# /gps/source/multiplevertex true
+/gps/source/multiplevertex true

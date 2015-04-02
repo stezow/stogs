@@ -56,17 +56,36 @@ void SToGS::CopClusterSD::Initialize(G4HCofThisEvent* HCE)
 }
 G4bool SToGS::CopClusterSD::ProcessHits(G4Step* aStep, G4TouchableHistory *touch)
 {
-	G4String tmp;
-	
 //	G4cout << " In SToGS::CopClusterSD::ProcessHits" << G4endl;
 	// nothing to be stored if no energy 
 	
-	G4double edep = aStep->GetTotalEnergyDeposit();  if ( edep == 0. ) return false;
+	G4double edep = aStep->GetTotalEnergyDeposit();
+    if ( edep == 0. )
+        return false;
+    
+    G4String tmp; G4int ; // get curent detector number and add offset of the on-top structure
+    
+    const G4VTouchable *touchable = aStep->GetPreStepPoint()->GetTouchable();
+    G4int depth = touchable->GetHistoryDepth(), detector_number = touchable->GetCopyNumber(0);
+    if ( depth > 1 ) {
+        detector_number += touchable->GetCopyNumber(depth-1);
+        /*
+         G4cout << " 0 " << touchable->GetCopyNumber(0) << G4endl;;
+         G4cout << " 1 " << touchable->GetCopyNumber(1) << G4endl;;
+         G4cout << " 2 " << touchable->GetCopyNumber(2) << G4endl;;
+         G4cout << " 3 " << touchable->GetCopyNumber(3) << G4endl;;
+         */
+    }
 	
-	G4bool anew = true; G4int id = aStep->GetTrack()->GetVolume()->GetCopyNo(); SToGS::CopClusterHit *newHit; 
-	
+	G4bool anew = true; SToGS::CopClusterHit *newHit;
+    
 	for( unsigned int i = 0; i < caloCollection->GetSize(); i++ ){ // look 
-		newHit = (SToGS::CopClusterHit *)caloCollection->GetHit(i); if ( id == newHit->GetDetID() ) { anew = false; break; }
+		newHit = (SToGS::CopClusterHit *)caloCollection->GetHit(i);
+        if ( detector_number == newHit->GetDetID() )
+        {
+            anew = false;
+            break;
+        }
 	}
 
 	if ( anew ) { // a new hit is created
@@ -77,26 +96,10 @@ G4bool SToGS::CopClusterSD::ProcessHits(G4Step* aStep, G4TouchableHistory *touch
 		newHit->SetToF( edep, aStep->GetPostStepPoint()->GetGlobalTime() );
 	
 		newHit->SetDetName  (aStep->GetTrack()->GetVolume()->GetName());
-        
-        const G4VTouchable *touchable = aStep->GetPreStepPoint()->GetTouchable();
-        G4int depth = touchable->GetHistoryDepth();
-        
-        G4int detector_number = touchable->GetCopyNumber(0); // get curent detector number and add offset of the on-top structure
-        if ( depth > 1 ) {
-            detector_number += touchable->GetCopyNumber(depth-1);
-            /*
-             G4cout << " 0 " << touchable->GetCopyNumber(0) << G4endl;;
-             G4cout << " 1 " << touchable->GetCopyNumber(1) << G4endl;;
-             G4cout << " 2 " << touchable->GetCopyNumber(2) << G4endl;;
-             G4cout << " 3 " << touchable->GetCopyNumber(3) << G4endl;;
-             */
-        }
         newHit->SetDetID(detector_number);
-		newHit->SetDetID    (id);	
 	
 		// newHit->SetMotherDetName(touch->GetVolume()->GetName());
-   		newHit->SetMotherID(aStep->GetPreStepPoint()->GetTouchableHandle()->GetReplicaNumber(1)); 
-	
+   		newHit->SetMotherID(aStep->GetPreStepPoint()->GetTouchableHandle()->GetReplicaNumber(1));
 		newHit->SetNbHits(1);
 		// add this hit to the collection
 		caloCollection->insert( newHit );
@@ -108,7 +111,6 @@ G4bool SToGS::CopClusterSD::ProcessHits(G4Step* aStep, G4TouchableHistory *touch
 		newHit->AddToF ( edep, aStep->GetPostStepPoint()->GetGlobalTime() );
 	}
 	
-
 //	G4cout << " Out SToGS::CopClusterSD::ProcessHits" << G4endl;
 	return true;
 }
