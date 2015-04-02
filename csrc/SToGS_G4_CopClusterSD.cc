@@ -63,10 +63,9 @@ G4bool SToGS::CopClusterSD::ProcessHits(G4Step* aStep, G4TouchableHistory *touch
     if ( edep == 0. )
         return false;
     
-    G4String tmp; G4int detector_number; // get curent detector number and add offset of the on-top structure
-    
+    // get curent detector number and add offset of the on-top structure
     const G4VTouchable *touchable = aStep->GetPreStepPoint()->GetTouchable();
-    G4int depth = touchable->GetHistoryDepth(), detector_number = touchable->GetCopyNumber(0);
+    G4String tmp;  G4int depth = touchable->GetHistoryDepth(), detector_number = touchable->GetCopyNumber(0);
     if ( depth > 1 ) {
         detector_number += touchable->GetCopyNumber(depth-1);
         /*
