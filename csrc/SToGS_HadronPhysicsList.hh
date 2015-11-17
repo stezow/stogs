@@ -31,6 +31,7 @@
 #include "G4VPhysicsConstructor.hh"
 #include "globals.hh"
 #include "G4ios.hh"
+
 //using namespace std;
 
 //! SToGS namespace to protect SToGS classes
@@ -54,7 +55,8 @@ namespace SToGS {
         void ConstructProcess();
 	
         void SetCuts();
-    };
+
+     };
 } // SToGS Namespace
 
 #endif
