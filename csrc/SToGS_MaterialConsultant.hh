@@ -74,19 +74,16 @@ namespace SToGS {
         //! attached to the given material some optical properties
         void SetOpticalProperties(G4Material *, G4String which_properties);
         
-        //! It looks into the different DATABASE and returns a G4Element
+        //! It looks into the SToGS DATABASE and returns a G4Element. The name to be given is XX and the element is SToGS_XX_El
         G4Element  *GetElement(G4String)  const;
         //! It looks into the different DATABASE and returns a G4Material
-        // G4Material *GetMaterial(G4String) const;
-        
-        //!
         G4Material *FindOrBuildMaterial(G4String what);
         
     private:
         static SToGS::MaterialConsultant *theMaterialConsultant;
         
     protected:
-        //! methods to be completed in case one would like to define differently some elements/materials
+        //! methods to be completed in case one would like to define differently some elements/materials. Cenventions 
         G4Element  *BuildElement(G4String name);
         //! methods to be completed in case one would like to define differently some elements/materials
         G4Material *BuildMaterial(G4String name);
@@ -97,6 +94,11 @@ namespace SToGS {
         
         //! if true (default) try and look in SToGS DB for new objects in FindOrBuidMaterial. Otherwise is is NIST used first
         G4bool fIsSToGDBSSearchedFirst;
+        
+    protected:
+        //! this is used to build a simple material using a single element
+        // ! this is a work around a possible big in gdml ... 
+        G4Material *BuildSimpleMaterial(G4String name, G4double d);
     };
 } // SToGS Namespace
 

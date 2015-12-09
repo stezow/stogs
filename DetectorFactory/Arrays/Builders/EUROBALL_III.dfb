@@ -1,0 +1,89 @@
+# 
+# First the world / detector envelop. if detector does not exist, box with dim given otherwise dim ignored 
+# 
+w EUROBALL_III +2. +2. +2. m
+# 
+@ 0 -> 
+# 
+# 
+[
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Ry +15.45	Rz +00.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Ry +15.45	Rz +72.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Ry +15.45	Rz +144.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Ry +15.45	Rz +216.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Ry +15.45	Rz +288.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +34.6	Rz +0.00	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0   Ry +34.6	Rz +36.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +34.6	Rz +72.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +34.6	Rz +108.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +34.6	Rz +144.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +34.6	Rz +180.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0   Ry +34.6	Rz +216.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +34.6	Rz +252.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +34.6	Rz +288.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +34.6	Rz +324.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +54.0	Rz +0.00	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0   Ry +54.0	Rz +24.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +54.0	Rz +48.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +54.0	Rz +72.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +54.0	Rz +96.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +54.0	Rz +120.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0   Ry +54.0	Rz +144.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +54.0	Rz +168.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +54.0	Rz +192.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +54.0	Rz +216.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +54.0	Rz +240.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0   Ry +54.0	Rz +264.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +54.0	Rz +288.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +54.0	Rz +312.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PI_colli	0.0  0.0 375.0 mm	Rz +150.0	Ry +54.0	Rz +336.0	Rt
+
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 275.0 mm	Ry +102.6	Rz +00.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 275.0 mm	Ry +102.6	Rz +27.6923	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 275.0 mm	Ry +102.6	Rz +55.3846	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 275.0 mm	Ry +102.6	Rz +83,0769	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 275.0 mm	Ry +102.6	Rz +110.7692	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 275.0 mm	Ry +102.6	Rz +138.4615	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 275.0 mm	Ry +102.6   Rz +166.1538	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 275.0 mm	Ry +102.6	Rz +193.8462	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 275.0 mm	Ry +102.6	Rz +221.5385	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 275.0 mm	Ry +102.6	Rz +249.2308	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 275.0 mm	Ry +102.6	Rz +276.9231	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 275.0 mm	Ry +102.6   Rz +304.6153	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 275.0 mm	Ry +102.6	Rz +332.3077	Rt
+
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 265.0 mm	Ry +77.4	Rz +00.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 265.0 mm	Ry +77.4	Rz +27.6923	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 265.0 mm	Ry +77.4	Rz +55.3846	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 265.0 mm	Ry +77.4	Rz +83,0769	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 265.0 mm	Ry +77.4	Rz +110.7692	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 265.0 mm	Ry +77.4	Rz +138.4615	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 265.0 mm	Ry +77.4    Rz +166.1538	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 265.0 mm	Ry +77.4	Rz +193.8462	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 265.0 mm	Ry +77.4	Rz +221.5385	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 265.0 mm	Ry +77.4	Rz +249.2308	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 265.0 mm	Ry +77.4	Rz +276.9231	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 265.0 mm	Ry +77.4    Rz +304.6153	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PII_colli	0.0  0.0 265.0 mm	Ry +77.4	Rz +332.3077	Rt
+
+* DetectorFactory/SemiConductors/Ge/EURO-PIII_colli	0.0  0.0 445.0 mm	Rz +30.0    Ry +129.44	Rz +00.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PIII_colli	0.0  0.0 445.0 mm	Rz +30.0    Ry +129.44	Rz +72.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PIII_colli	0.0  0.0 445.0 mm	Rz +30.0    Ry +129.44	Rz +144.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PIII_colli	0.0  0.0 445.0 mm	Rz +30.0    Ry +129.44	Rz +216.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PIII_colli	0.0  0.0 445.0 mm	Rz +30.0    Ry +129.44	Rz +288.0	Rt
+
+* DetectorFactory/SemiConductors/Ge/EURO-PIII_colli	0.0  0.0 445.0 mm   Ry +137.40	Rz +36.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PIII_colli	0.0  0.0 445.0 mm	Ry +137.40	Rz +108.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PIII_colli	0.0  0.0 445.0 mm	Ry +137.40	Rz +180.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PIII_colli	0.0  0.0 445.0 mm	Ry +137.40	Rz +252.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PIII_colli	0.0  0.0 445.0 mm	Ry +137.40	Rz +324.0	Rt
+
+* DetectorFactory/SemiConductors/Ge/EURO-PIII_colli	0.0  0.0 445.0 mm	Rz +30.0    Ry +156.76	Rz +00.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PIII_colli	0.0  0.0 445.0 mm	Rz +30.0    Ry +156.76	Rz +72.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PIII_colli	0.0  0.0 445.0 mm	Rz +30.0    Ry +156.76	Rz +144.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PIII_colli	0.0  0.0 445.0 mm	Rz +30.0    Ry +156.76	Rz +216.0	Rt
+* DetectorFactory/SemiConductors/Ge/EURO-PIII_colli	0.0  0.0 445.0 mm	Rz +30.0    Ry +156.76	Rz +288.0	Rt
+
+]
+# 
+# end 

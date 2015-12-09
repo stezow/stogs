@@ -31,6 +31,7 @@
 #include "G4Tubs.hh"
 #include "G4Polyhedra.hh"
 #include "G4Sphere.hh"
+#include "G4Polycone.hh"
 
 #include "G4LogicalVolume.hh"
 #include "G4AssemblyVolume.hh"
@@ -92,6 +93,16 @@ void SToGS::ScintillatorDF::MakeStore()
     // SToGS::DetectorFactory::theMainFactory()->Clean();
     SToGS::DetectorFactory::SetGCopyNb(0);
     MakeInStore("aChateau2Crystal","");
+    
+    // FATIMA
+    SToGS::DetectorFactory::SetGCopyNb(0);
+    MakeInStore("FATIMAM","bare");
+    SToGS::DetectorFactory::SetGCopyNb(0);
+    MakeInStore("FATIMAQ","bare");
+    SToGS::DetectorFactory::SetGCopyNb(0);
+    MakeInStore("FATIMAM","");
+    SToGS::DetectorFactory::SetGCopyNb(0);
+    MakeInStore("FATIMAQ","");
 
     // EDEN
     // SToGS::DetectorFactory::theMainFactory()->Clean();
@@ -137,6 +148,18 @@ G4VPhysicalVolume * SToGS::ScintillatorDF::Make(G4String name, G4String version_
         detname = GetDetName("aChateau2Crystal",version_string);
         theDetector = MakeCdC(detname,version_string);
     }
+    
+    // FATIMA
+    if ( name.index("FATIMA") == 0 ) {
+        if ( name == "FATIMAM" ) {
+            detname = GetDetName("FATIMAM",version_string);
+            theDetector = MakeFATIMAM(detname,version_string);
+        }
+        if ( name == "FATIMAQ" ) {
+            detname = GetDetName("FATIMAQ",version_string);
+            theDetector = MakeFATIMAQ(detname,version_string);
+        }
+    }
 
     // EDEN
     if ( name == "EDEN" ) {
@@ -146,6 +169,7 @@ G4VPhysicalVolume * SToGS::ScintillatorDF::Make(G4String name, G4String version_
     
     return theDetector;
 }
+
 
 G4VPhysicalVolume *SToGS::ScintillatorDF::MakeCdC(G4String detname, G4String opt)
 {
@@ -564,7 +588,7 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakePPW(G4String detname, G4double cap
                                     -1);              // copy number
     
 	// material for first and second layer
-	const char *matInner = "LaBr3", *matOuter = "NaI", *matCapsule = "Al", *matHousing = "Al";
+	const char *matInner = "LaBr3", *matOuter = "NaI", *matCapsule = "Al"; // *matHousing = "Al";
 	
 	// full lenght in X,Y,Z
 	G4double
@@ -744,17 +768,16 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakeCPPW(G4String detname, G4String op
     return theDetector;
 }
 
-
-G4VPhysicalVolume *SToGS::ScintillatorDF::MakeEDEN(G4String detname, G4double caps_width, G4double extra_back, G4String opt)
+G4VPhysicalVolume *SToGS::ScintillatorDF::MakeFATIMAM(G4String detname, G4String opt)
 {
-  G4VPhysicalVolume *theDetector = 0x0; 
-  G4LogicalVolume *detlogicWorld; 
-  G4Box *detWorld;
-  G4ThreeVector T;
-
-  // WORLD //
-  
-      // use a physical as a container to describe the detector
+    // Note : housing_width is not used in this version
+    
+    G4VPhysicalVolume *theDetector = 0x0; G4LogicalVolume *detlogicWorld; G4Box *detWorld; G4bool do_caps = true; // do_housing = false;
+    G4RotationMatrix R;
+	G4ThreeVector T;
+    G4Transform3D Tr;
+    
+    // use a physical as a container to describe the detector
 	detWorld= new G4Box(detname,10.*CLHEP::cm,10.*CLHEP::cm,50.*CLHEP::cm);
 	detlogicWorld= new G4LogicalVolume(detWorld, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"), detname, 0, 0, 0);
 	
@@ -767,14 +790,199 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakeEDEN(G4String detname, G4double ca
                                     0,               // its mother  volume
                                     false,           // no boolean operations
                                     -1);              // copy number
+    
+	// material for first and second layer
+	G4String matPMT = "Al", matShielding = "Pb", matWindow = "SToGS_Quartz", matSD = "LaBr3";
+    if ( opt.contains("bare") ) {
+        matPMT = "AIR";
+        matShielding = "AIR";
+        matWindow = "AIR";
+        
+        do_caps = false;
+    }
+    
+    // those numbers have been extracted from the AGATA code / Geometry of FATIMA implemented by M. Labiche, re-
+    const double    Labr_Length = 45.75*mm;         //length of the crystal (+5mm = 2inch)
+    const double    Labr_Rad    = 19.0*mm;          //radius of the crystal (*2 = 1.5 inch)
+    const double    Window_Length = 5.0*mm;         //quartz window length behind LaBr crystal
+    
+    // to build the Al housing and lead shielding
+    G4double zPlane1[16] =
+    {0.0*CLHEP::mm,1.0*CLHEP::mm,1.0*CLHEP::mm,1.5*CLHEP::mm,1.5*CLHEP::mm,46.0*CLHEP::mm,46.0*CLHEP::mm,56.0*CLHEP::mm,
+        56.0*CLHEP::mm,71.0*CLHEP::mm,71.0*CLHEP::mm,244.3*CLHEP::mm,244.3*CLHEP::mm,260.8*CLHEP::mm,260.8*CLHEP::mm,263.3*CLHEP::mm};
+    G4double rInner1[16] =
+    {19.0*CLHEP::mm,19.0*CLHEP::mm,0.0*CLHEP::mm,0.0*CLHEP::mm,Labr_Rad,Labr_Rad,Labr_Rad,Labr_Rad,
+        32.0*CLHEP::mm,32.0*CLHEP::mm,32.0*CLHEP::mm,32.0*CLHEP::mm,32.0*CLHEP::mm,32.0*CLHEP::mm, 0.0*CLHEP::mm,0.0*CLHEP::mm};
+    G4double rOuter1[16] =
+    {22.75*CLHEP::mm,22.75*CLHEP::mm,22.75*CLHEP::mm,22.75*CLHEP::mm,22.75*CLHEP::mm,22.75*CLHEP::mm,37.5*CLHEP::mm,37.5*CLHEP::mm,
+        37.5*CLHEP::mm,37.5*CLHEP::mm,35.0*CLHEP::mm,35.0*CLHEP::mm,37.5*CLHEP::mm,37.5*CLHEP::mm,37.5*CLHEP::mm,35.5*CLHEP::mm};
+    
+    G4Polycone *solid_PMT = new G4Polycone("ShapeFATIMAPMT", 0.0, 360.*CLHEP::deg, 16, zPlane1 ,rInner1, rOuter1);
+    G4LogicalVolume *logicPMT = new G4LogicalVolume( solid_PMT, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matPMT), "FATIMAPMTLV", 0, 0, 0 );
+    
+    // to build the Lead shielding
+    G4double zPlane2[5] = {0.0*CLHEP::mm  , 2.0*CLHEP::mm,   40.0*CLHEP::mm,  40.0*CLHEP::mm, 46.0*CLHEP::mm};
+    G4double rInner2[5] = {22.8*CLHEP::mm , 22.8*CLHEP::mm,  22.8*CLHEP::mm,  22.8*CLHEP::mm, 22.8*CLHEP::mm};
+    G4double rOuter2[5] = {25.75*CLHEP::mm, 27.75*CLHEP::mm, 27.75*CLHEP::mm, 37.5*CLHEP::mm, 37.5*CLHEP::mm};
+    G4Polycone *solid_Shielding = new G4Polycone("ShapeFATIMAShielding", 0.0, 360.*CLHEP::deg, 5, zPlane2 ,rInner2, rOuter2);
+    G4LogicalVolume *logicShielding = new G4LogicalVolume( solid_Shielding, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matShielding), "FATIMAShieldingLV", 0, 0, 0 );
+    
+    //Building the LaBr3 crystal + window:
+    G4Tubs *solid_Scintillator = new G4Tubs("ShapeFATIMAScintillator", 0.0*mm, Labr_Rad, Labr_Length/2 ,0, 360.*CLHEP::deg);
+    G4LogicalVolume *logicScintillator = new G4LogicalVolume( solid_Scintillator, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matSD), "FATIMAScintillatorLV", 0, 0, 0 );
+    
+    G4Tubs *solid_Window = new G4Tubs("ShapeFATIMAWindow", 0.0*mm, Labr_Rad, Window_Length/2 ,0, 360.*CLHEP::deg);
+    G4LogicalVolume *logicWindow = new G4LogicalVolume( solid_Window, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matWindow), "FATIMAWindowLV", 0, 0, 0 );
+    
+    G4VisAttributes *visatt;
+    
+    T.setX( 0.0 );
+    T.setY( 0.0 );
+    T.setZ( 0.0 );
+    if ( do_caps ) {
+        visatt = new G4VisAttributes( G4Colour(0.0, 1.0, 1.0, 0.75) );
+        visatt->SetVisibility(true);
+        logicPMT->SetVisAttributes( visatt );
+    }
+    else {
+        visatt = new G4VisAttributes( G4Colour(1.0, 1.0, 1.0, 0.5) );
+        visatt->SetVisibility(true);
+        logicPMT->SetVisAttributes( visatt );
+    }
+    new G4PVPlacement(0,T,logicPMT,"PMT",detlogicWorld,false,-1);
+    
+    T.setX( 0.0 );
+    T.setY( 0.0 );
+    T.setZ( 0.0 );
+    if ( do_caps ) {
+        visatt = new G4VisAttributes( G4Colour(1.0, 1.0, 0.0, 0.75) );
+        visatt->SetVisibility(true);
+        logicShielding->SetVisAttributes( visatt );
+    }
+    else {
+        visatt = new G4VisAttributes( G4Colour(1.0, 1.0, 1.0, 0.5) );
+        visatt->SetVisibility(true);
+        logicShielding->SetVisAttributes( visatt );
+    }
+    new G4PVPlacement(0,T,logicShielding,"Shield",detlogicWorld,false,-1);
+    
+    T.setX( 0.0 );
+    T.setY( 0.0 );
+    T.setZ( 2.*CLHEP::mm + Labr_Length/2. );
 
-  // EDEN //
+    visatt = new G4VisAttributes( G4Colour(0.0, 1.0, 0.0, 1) );
+    visatt->SetVisibility(true);
+    logicScintillator->SetVisAttributes( visatt );
+    logicScintillator->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );
+    new G4PVPlacement(0,T,logicScintillator,"Sensor",detlogicWorld,false,0);
+    
+    T.setX( 0.0 );
+    T.setY( 0.0 );
+    T.setZ( 2.*CLHEP::mm + Labr_Length + Window_Length/2. );
+    if ( do_caps ) {
+        visatt = new G4VisAttributes( G4Colour(0.0, 0.0, 1.0, 0.75) );
+        visatt->SetVisibility(true);
+        logicWindow->SetVisAttributes( visatt );
+    }
+    else {
+        visatt = new G4VisAttributes( G4Colour(1.0, 1.0, 1.0, 0.5) );
+        visatt->SetVisibility(true);
+        logicWindow->SetVisAttributes( visatt );
+    }
+    new G4PVPlacement(0,T,logicWindow,"Window",detlogicWorld,false,-1);
+
+    
+    return theDetector;
+}
+
+
+G4VPhysicalVolume *SToGS::ScintillatorDF::MakeFATIMAQ(G4String detname, G4String opt)
+{
+
+    G4VPhysicalVolume *theDetector = 0x0; G4LogicalVolume *detlogicWorld; G4Box *detWorld;
+    G4RotationMatrix R;
+	G4ThreeVector T;
+
+    // Should be at the beginning before def of new theDetector
+    G4String base_element = "DetectorFactory/Scintillators/FATIMAM";
+    if ( opt.size() ) {
+        base_element += "_";
+        base_element += opt;
+    }
+    
+    G4VPhysicalVolume    *a_it = DetectorFactory::theMainFactory()->Get(base_element.data());
+    G4AssemblyVolume *assembly = DetectorFactory::theMainFactory()->GetAssembly(base_element.data());
+    
+    // use a physical as a container to describe the detector
+	detWorld= new G4Box(detname,10.*CLHEP::cm,10.*CLHEP::cm,25.*CLHEP::cm);
+	detlogicWorld= new G4LogicalVolume(detWorld, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"), detname, 0, 0, 0);
+	
+	detlogicWorld->SetVisAttributes(G4VisAttributes::Invisible); // hide the world
+	
+	//  Must place the World Physical volume unrotated at (0,0,0).
+	theDetector = new G4PVPlacement(0,         // no rotation
+                                    G4ThreeVector(), // at (0,0,0)
+                                    detlogicWorld,      // its logical volume
+                                    detname,      // its name
+                                    0,               // its mother  volume
+                                    false,           // no boolean operations
+                                    -1);              // copy number
+    
+    T.setX( +37.5*CLHEP::mm );
+    T.setY( +37.5*CLHEP::mm  );
+    T.setZ( 0.0 );
+    assembly->MakeImprint( detlogicWorld, T, &R);
+    T.setX( +37.5*CLHEP::mm );
+    T.setY( -37.5*CLHEP::mm  );
+    T.setZ( 0.0 );
+    assembly->MakeImprint( detlogicWorld, T, &R);
+    T.setX( -37.5*CLHEP::mm );
+    T.setY( +37.5*CLHEP::mm  );
+    T.setZ( 0.0 );
+    assembly->MakeImprint( detlogicWorld, T, &R);
+    T.setX( -37.5*CLHEP::mm );
+    T.setY( -37.5*CLHEP::mm  );
+    T.setZ( 0.0 );
+    assembly->MakeImprint( detlogicWorld, T, &R);
+    
+    // remap assembly
+    DoMap(assembly,a_it,SToGS::DetectorFactory::GetGCopyNb());
+    
+    return theDetector;
+}
+
+
+
+G4VPhysicalVolume *SToGS::ScintillatorDF::MakeEDEN(G4String detname, G4double caps_width, G4double extra_back, G4String opt)
+{
+    G4VPhysicalVolume *theDetector = 0x0;
+    G4LogicalVolume *detlogicWorld;
+    G4Box *detWorld;
+    G4ThreeVector T;
+    
+    // WORLD //
+    
+    // use a physical as a container to describe the detector
+	detWorld= new G4Box(detname,10.*CLHEP::cm,10.*CLHEP::cm,50.*CLHEP::cm);
+	detlogicWorld= new G4LogicalVolume(detWorld, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"), detname, 0, 0, 0);
+	
+	detlogicWorld->SetVisAttributes(G4VisAttributes::Invisible); // hide the world
+	//  Must place the World Physical volume unrotated at (0,0,0).
+	theDetector = new G4PVPlacement(0,         // no rotation
+                                    G4ThreeVector(), // at (0,0,0)
+                                    detlogicWorld,      // its logical volume
+                                    detname,      // its name
+                                    0,               // its mother  volume
+                                    false,           // no boolean operations
+                                    -1);              // copy number
+    
+    // EDEN //
 	
 	// material
 	// version "v0"
-	const char 
-	*matScint = "XYLENE", 
-	*matCapsule = "STAINLESS-STEEL", 
+	const char
+	*matScint = "XYLENE",
+	*matCapsule = "STAINLESS-STEEL",
 	*matBack1 = "GLASS_PLATE", // Other possible options : air, vacuum, wet-air
 	*matBack2 = "AIR";	// Other possible options : vacuum, wet-air
 	
@@ -787,13 +995,13 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakeEDEN(G4String detname, G4double ca
 	eps = 0.1*CLHEP::mm, // Fixed distance at interfaces between materials
 	Shift = 0.01*CLHEP::mm;	 // the detector entrance is not just at 0
 	
-// version "v0"
-// Scintillator = cylindre, xylene
-// Capsule = tube, steel
-// Front = cylindre, steel
-// Back1 = cylindre, glass 
-// Back2 = cylindre, air
-
+    // version "v0"
+    // Scintillator = cylindre, xylene
+    // Capsule = tube, steel
+    // Front = cylindre, steel
+    // Back1 = cylindre, glass
+    // Back2 = cylindre, air
+    
 	//Sizes used to define the shapes
 	G4double
 	// scintillator
@@ -810,81 +1018,81 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakeEDEN(G4String detname, G4double ca
 	r_back = r_scint,
 	h_back1 = glass_width,
 	h_back2 = h_caps - h_scint - h_back1 - 2.*eps;
-
-G4Tubs * Scint_solid = new G4Tubs("ShapeEDENscint",0.*CLHEP::mm,r_scint,h_scint/2.,0.*CLHEP::deg,360.*CLHEP::deg);
-
-G4Tubs * Caps_solid = new G4Tubs("ShapeEDENcaps",rint_caps,rext_caps,h_caps/2.,0.*CLHEP::deg,360.*CLHEP::deg);
-
-G4Tubs * CapsFront_solid = new G4Tubs("ShapeEDENcapsfront",0.*CLHEP::mm,r_front,h_front/2.,0.*CLHEP::deg,360.*CLHEP::deg);
-
-G4Tubs * Back1_solid = new G4Tubs("ShapeEDENback1",0.*CLHEP::mm,r_back,h_back1/2.,0.*CLHEP::deg,360.*CLHEP::deg);
-
-G4Tubs * Back2_solid = new G4Tubs("ShapeEDENback2",0.*CLHEP::mm,r_back,h_back2/2.,0.*CLHEP::deg,360.*CLHEP::deg);
-
-// Logical volumes
-
-G4LogicalVolume *Scint_logic = new G4LogicalVolume(Scint_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matScint),"EDENscint",0,0,0);
-
-G4LogicalVolume *Caps_logic = new G4LogicalVolume(Caps_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matCapsule),"EDENcaps",0,0,0);
-
-G4LogicalVolume *CapsFront_logic = new G4LogicalVolume(CapsFront_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matCapsule),"EDENcapsfront",0,0,0);
-
-G4LogicalVolume *Back1_logic = new G4LogicalVolume(Back1_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matBack1),"EDENback1",0,0,0);
-
-G4LogicalVolume *Back2_logic = new G4LogicalVolume(Back2_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matBack2),"EDENback2",0,0,0);
-
-
-// Visual attributes
-
-G4VisAttributes *Scint_visatt = new G4VisAttributes( G4Colour(0.0, 1.0, 0.0) );
-Scint_visatt->SetVisibility(true);
-Scint_logic->SetVisAttributes( Scint_visatt );
-
-G4VisAttributes *Capsule_visatt = new G4VisAttributes( G4Colour(0.8, 0.8, 0.8, 0.75) );
-Capsule_visatt->SetVisibility(true);
-Caps_logic->SetVisAttributes( Capsule_visatt );
-CapsFront_logic->SetVisAttributes( Capsule_visatt );
-
-G4VisAttributes *Back1_visatt = new G4VisAttributes( G4Colour(0.0, 0.0, 1.0, 0.5) );
-Back1_visatt->SetVisibility(true);
-Back1_logic->SetVisAttributes( Back1_visatt );
-
-G4VisAttributes *Back2_visatt = new G4VisAttributes( G4Colour(0.0, 0.0, 1.0, 0.25) );
-Back2_visatt->SetVisibility(true);
-Back2_logic->SetVisAttributes( Back2_visatt );
-
-
-// Placements
-
+    
+    G4Tubs * Scint_solid = new G4Tubs("ShapeEDENscint",0.*CLHEP::mm,r_scint,h_scint/2.,0.*CLHEP::deg,360.*CLHEP::deg);
+    
+    G4Tubs * Caps_solid = new G4Tubs("ShapeEDENcaps",rint_caps,rext_caps,h_caps/2.,0.*CLHEP::deg,360.*CLHEP::deg);
+    
+    G4Tubs * CapsFront_solid = new G4Tubs("ShapeEDENcapsfront",0.*CLHEP::mm,r_front,h_front/2.,0.*CLHEP::deg,360.*CLHEP::deg);
+    
+    G4Tubs * Back1_solid = new G4Tubs("ShapeEDENback1",0.*CLHEP::mm,r_back,h_back1/2.,0.*CLHEP::deg,360.*CLHEP::deg);
+    
+    G4Tubs * Back2_solid = new G4Tubs("ShapeEDENback2",0.*CLHEP::mm,r_back,h_back2/2.,0.*CLHEP::deg,360.*CLHEP::deg);
+    
+    // Logical volumes
+    
+    G4LogicalVolume *Scint_logic = new G4LogicalVolume(Scint_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matScint),"EDENscint",0,0,0);
+    
+    G4LogicalVolume *Caps_logic = new G4LogicalVolume(Caps_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matCapsule),"EDENcaps",0,0,0);
+    
+    G4LogicalVolume *CapsFront_logic = new G4LogicalVolume(CapsFront_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matCapsule),"EDENcapsfront",0,0,0);
+    
+    G4LogicalVolume *Back1_logic = new G4LogicalVolume(Back1_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matBack1),"EDENback1",0,0,0);
+    
+    G4LogicalVolume *Back2_logic = new G4LogicalVolume(Back2_solid,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matBack2),"EDENback2",0,0,0);
+    
+    
+    // Visual attributes
+    
+    G4VisAttributes *Scint_visatt = new G4VisAttributes( G4Colour(0.0, 1.0, 0.0) );
+    Scint_visatt->SetVisibility(true);
+    Scint_logic->SetVisAttributes( Scint_visatt );
+    
+    G4VisAttributes *Capsule_visatt = new G4VisAttributes( G4Colour(0.8, 0.8, 0.8, 0.75) );
+    Capsule_visatt->SetVisibility(true);
+    Caps_logic->SetVisAttributes( Capsule_visatt );
+    CapsFront_logic->SetVisAttributes( Capsule_visatt );
+    
+    G4VisAttributes *Back1_visatt = new G4VisAttributes( G4Colour(0.0, 0.0, 1.0, 0.5) );
+    Back1_visatt->SetVisibility(true);
+    Back1_logic->SetVisAttributes( Back1_visatt );
+    
+    G4VisAttributes *Back2_visatt = new G4VisAttributes( G4Colour(0.0, 0.0, 1.0, 0.25) );
+    Back2_visatt->SetVisibility(true);
+    Back2_logic->SetVisAttributes( Back2_visatt );
+    
+    
+    // Placements
+    
     T.setX( 0.0 );
     T.setY( 0.0 );
-
-if(opt=="v0")
+    
+    if(opt=="v0")
 	{
-    T.setZ( Shift + h_front/2. );
-	new G4PVPlacement(0,T,CapsFront_logic,"EdenCapsFront",detlogicWorld,false,-1);
-
-    T.setZ( Shift + h_front + eps + h_scint/2. );
-	new G4PVPlacement(0,T,Scint_logic,"EdenScint",detlogicWorld,false,0);
-
-    T.setZ( Shift + h_front + eps + h_scint + eps + h_back1/2.);
-	new G4PVPlacement(0,T,Back1_logic,"EdenBack1",detlogicWorld,false,-1);
-
-    T.setZ( Shift + h_front + eps + h_scint + eps + h_back1 + eps + h_back2/2.);
-	new G4PVPlacement(0,T,Back2_logic,"EdenBack2",detlogicWorld,false,-1);
-
-    T.setZ( Shift + h_front + eps + h_caps/2.);
-	new G4PVPlacement(0,T,Caps_logic,"EdenCaps",detlogicWorld,false,-1);
+        T.setZ( Shift + h_front/2. );
+        new G4PVPlacement(0,T,CapsFront_logic,"EdenCapsFront",detlogicWorld,false,-1);
+        
+        T.setZ( Shift + h_front + eps + h_scint/2. );
+        new G4PVPlacement(0,T,Scint_logic,"EdenScint",detlogicWorld,false,0);
+        
+        T.setZ( Shift + h_front + eps + h_scint + eps + h_back1/2.);
+        new G4PVPlacement(0,T,Back1_logic,"EdenBack1",detlogicWorld,false,-1);
+        
+        T.setZ( Shift + h_front + eps + h_scint + eps + h_back1 + eps + h_back2/2.);
+        new G4PVPlacement(0,T,Back2_logic,"EdenBack2",detlogicWorld,false,-1);
+        
+        T.setZ( Shift + h_front + eps + h_caps/2.);
+        new G4PVPlacement(0,T,Caps_logic,"EdenCaps",detlogicWorld,false,-1);
 	}
-else if(opt=="bare")
+    else if(opt=="bare")
 	{
-    T.setZ( Shift + h_front + eps + h_scint/2. );
-	new G4PVPlacement(0,T,Scint_logic,"EdenScint",detlogicWorld,false,0);
+        T.setZ( Shift + h_front + eps + h_scint/2. );
+        new G4PVPlacement(0,T,Scint_logic,"EdenScint",detlogicWorld,false,0);
 	}
-
-// Sensitivity	
+    
+    // Sensitivity	
 	
-//	Scint_logic->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );
+    //	Scint_logic->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );
 	Scint_logic->SetSensitiveDetector( SToGS::UserActionInitialization::GetTrackerSD() );
 	
 	return theDetector;

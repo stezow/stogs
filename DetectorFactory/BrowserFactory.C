@@ -47,8 +47,12 @@ TGeoVolume *ShowDetector(const char *basename = "DetectorFactory/Scintillators/C
     fullname += ".gdml";
     cout << fullname << endl;
     
-    TGeoManager::Import(fullname.Data());
-    world = gGeoManager->GetTopVolume();
+    TGeoManager::Import(fullname.Data()); world = gGeoManager->GetTopVolume();
+    //
+    if ( world == 0x0 ) {
+        std::cout << "\n ***** The detector " << basename << " has not been found in the factory ! ***** " << std::endl;
+        return 0x0;
+    }
     
     // collect logical and physical (nodes) volumes
     CollectVolumes(gGeoManager->GetTopNode(),logical_stored,phycical_stored);

@@ -1,30 +1,30 @@
 #
 # First the world / detector envelop. if detector does not exist, box with dim given otherwise dim ignored
-w EXOGAM_bare +10. +10. +10. m
+w EXOGAM +10. +10. +10. m
 #
 #
 @ 0 ->
 #
 #
 [
-*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm		Rz +0    Ry +45   Rt
-*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm		Rz +0    Ry +90   Rt
-*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm		Rz +0    Ry +135  Rt
-*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm		Rz +0    Ry -45   Rt 
-*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm		Rz +0    Ry -90   Rt 
-*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm		Rz +0    Ry -135  Rt
+*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-AC	0.0		0.0		11.35	cm		Rz +0    Ry +45   Rt
+*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-AC	0.0		0.0		11.35	cm		Rz +0    Ry +90   Rt
+*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-AC	0.0		0.0		11.35	cm		Rz +0    Ry +135  Rt
+*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-AC	0.0		0.0		11.35	cm		Rz +0    Ry -45   Rt 
+*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-AC	0.0		0.0		11.35	cm		Rz +0    Ry -90   Rt 
+*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-AC	0.0		0.0		11.35	cm		Rz +0    Ry -135  Rt
 
-*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm	Rx 45	Rz +180  Ry +0    Rt
-*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm	Rx -45	Rz +180  Ry +0    Rt
-*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm	Rx 90	Rz +180  Ry +0    Rt	
-*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm	Rx -90	Rz +180  Ry +0    Rt
-*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm	Rx 135	Rz +180  Ry +0    Rt
-*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm	Rx -135	Rz +180  Ry +0    Rt
+*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-AC	0.0		0.0		11.35	cm	Rx 45	Rz +180  Ry +0    Rt
+*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-AC	0.0		0.0		11.35	cm	Rx -45	Rz +180  Ry +0    Rt
+*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-AC	0.0		0.0		11.35	cm	Rx 90	Rz +180  Ry +0    Rt	
+*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-AC	0.0		0.0		11.35	cm	Rx -90	Rz +180  Ry +0    Rt
+*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-AC	0.0		0.0		11.35	cm	Rx 135	Rz +180  Ry +0    Rt
+*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-AC	0.0		0.0		11.35	cm	Rx -135	Rz +180  Ry +0    Rt
 
-*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm	Rx +45	Rz +0    Ry +90   Rt
-*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm	Rx -45	Rz +0    Ry +90   Rt
-*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm	Rx +45	Rz +0    Ry +270  Rt
-*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-bare	0.0		0.0		11.35	cm	Rx -45	Rz +0    Ry +270  Rt
+*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-AC	0.0		0.0		11.35	cm	Rx +45	Rz +0    Ry +90   Rt
+*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-AC	0.0		0.0		11.35	cm	Rx -45	Rz +0    Ry +90   Rt
+*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-AC	0.0		0.0		11.35	cm	Rx +45	Rz +0    Ry +270  Rt
+*	DetectorFactory/SemiConductors/Ge/EXOCLOVER_A-AC	0.0		0.0		11.35	cm	Rx -45	Rz +0    Ry +270  Rt
 ]
 #
 # end

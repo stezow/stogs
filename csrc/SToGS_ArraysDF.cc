@@ -37,38 +37,49 @@ namespace  {
 
 void SToGS::ArraysDF::MakeStore()
 {
-    //    SToGS::DetectorFactory::SetGCopyNb(0);
-    //    MakeInStore("Chateau2Crystal","bare");
     // SToGS::DetectorFactory::theMainFactory()->Clean();
     SToGS::DetectorFactory::SetGCopyNb(0);
     MakeInStore("Chateau2Crystal","");
+    
     SToGS::DetectorFactory::SetGCopyNb(0);
     MakeInStore("AGATA","180");
+    
     SToGS::DetectorFactory::SetGCopyNb(0);
-    MakeInStore("EXOGAM","bare");
+    MakeInStore("EXOGAM","");
 
+    SToGS::DetectorFactory::SetGCopyNb(0);
+    MakeInStore("FATIMA","");
+    
+    SToGS::DetectorFactory::SetGCopyNb(0);
+    MakeInStore("EUROBALL","III");
 }
 
 G4VPhysicalVolume *SToGS::ArraysDF::Make(G4String name, G4String version_string)
 {
-  G4VPhysicalVolume *theDetector = 0x0; // G4String detname;
-
-  if ( name == "Chateau2Crystal" ) {
-    //detname = GetDetName("Chateau2Crystal",version_string);
-    theDetector = MakeAnArrayFromFactory("DetectorFactory/Arrays/Builders/Chateau2Crystal.dfb");
-  }
-  if ( name == "AGATA" ) {
-    //detname = GetDetName("Chateau2Crystal",version_string);
-    if ( version_string == "180" )
-      theDetector = MakeAnArrayFromFactory("DetectorFactory/Arrays/Builders/AGATA_180.dfb");
-  }
-  if ( name == "EXOGAM" ) {
-    //detname = GetDetName("Chateau2Crystal",version_string);
-    if ( version_string == "bare" )
-      theDetector = MakeAnArrayFromFactory("DetectorFactory/Arrays/Builders/EXOGAM.dfb");
-
-  }
-  return theDetector;
+    G4VPhysicalVolume *theDetector = 0x0; // G4String detname;
+    
+    if ( name == "Chateau2Crystal" ) {
+        theDetector = MakeAnArrayFromFactory("DetectorFactory/Arrays/Builders/Chateau2Crystal.dfb");
+    }
+    if ( name == "AGATA" ) {
+        if ( version_string == "180" )
+            theDetector = MakeAnArrayFromFactory("DetectorFactory/Arrays/Builders/AGATA_180.dfb");
+    }
+    if ( name == "EXOGAM" ) {
+        if ( version_string == "" )
+            theDetector = MakeAnArrayFromFactory("DetectorFactory/Arrays/Builders/EXOGAM.dfb");
+        
+    }
+    if ( name == "FATIMA" ) {
+        if ( version_string == "" )
+            theDetector = MakeAnArrayFromFactory("DetectorFactory/Arrays/Builders/FATIMA.dfb");
+    }
+    if ( name == "EUROBALL" ) {
+        if ( version_string == "III" )
+            theDetector = MakeAnArrayFromFactory("DetectorFactory/Arrays/Builders/EUROBALL_III.dfb");
+    }
+    
+    return theDetector;
 }
 
 

@@ -71,10 +71,17 @@ public:
     G4VPhysicalVolume *MakeAGATACluster(G4String detname, G4String opt,
                                         G4String geo_file = "DetectorFactory/SemiConductors/Ge/Builders/agata_cluster.geo");
 
-    //! make a eurogam p1 Ge detector ... to be finished 
-    //G4VPhysicalVolume *MakeEURO_PI(G4String detname, G4String opt = "");
-    //
-  G4VPhysicalVolume *MakeEXOCLOVER(G4String detname, G4String opt = "");
+    //! A EXOGAM Clover
+    G4VPhysicalVolume *MakeEXOCLOVER(G4String detname, G4String opt = "");
+    
+    // EUROBALL types
+    // Tapered i.e. Phase 1
+    G4VPhysicalVolume *MakeEURO_PI(G4String detname, G4String opt = "");
+    // Clovers i.e. Phase 2    
+    G4VPhysicalVolume *MakeEURO_PII(G4String detname, G4String opt = "");
+    // Clovers i.e. Phase 3
+    G4VPhysicalVolume *MakeEURO_PIII(G4String detname, G4String opt = "");
+    
 public:
     SemiConductorGeDF(G4String path) : DetectorFactory(path)
         {;}

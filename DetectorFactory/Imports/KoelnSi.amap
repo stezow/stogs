@@ -1,0 +1,13 @@
+PassiveAreaLV	C 0.8 0.8 0.8 0.25	S - F -
+SegmentRing00LV	C 1 0 0 1	S /SToGS/SD/CopCluster F -
+SegmentRing01LV	C 0 1 0 1	S /SToGS/SD/CopCluster F -
+SegmentRing02LV	C 0 0 1 1	S /SToGS/SD/CopCluster F -
+SegmentRing03LV	C 1 0 0 1	S /SToGS/SD/CopCluster F -
+SegmentRing04LV	C 0 1 0 1	S /SToGS/SD/CopCluster F -
+SegmentRing05LV	C 0 0 1 1	S /SToGS/SD/CopCluster F -
+SegmentRing06LV	C 1 0 0 1	S /SToGS/SD/CopCluster F -
+SegmentRing07LV	C 0 1 0 1	S /SToGS/SD/CopCluster F -
+SegmentRing08LV	C 0 0 1 1	S /SToGS/SD/CopCluster F -
+SegmentRing09LV	C 1 0 0 1	S /SToGS/SD/CopCluster F -
+SegmentRing10LV	C 0 1 0 1	S /SToGS/SD/CopCluster F -
+SegmentRing11LV	C 0 0 1 1	S /SToGS/SD/CopCluster F -

@@ -1,0 +1,897 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+
+  <define/>
+
+  <materials>
+    <isotope N="28" Z="14" name="Si28">
+      <atom unit="g/mole" value="27.9769"/>
+    </isotope>
+    <isotope N="29" Z="14" name="Si29">
+      <atom unit="g/mole" value="28.9765"/>
+    </isotope>
+    <isotope N="30" Z="14" name="Si30">
+      <atom unit="g/mole" value="29.9738"/>
+    </isotope>
+    <element name="AGATA_Si_el">
+      <fraction n="0.922296077703922" ref="Si28"/>
+      <fraction n="0.0468319531680468" ref="Si29"/>
+      <fraction n="0.0308719691280309" ref="Si30"/>
+    </element>
+    <material name="AGATA_Silicon" state="solid">
+      <MEE unit="eV" value="173"/>
+      <D unit="g/cm3" value="2.329"/>
+      <fraction n="1" ref="AGATA_Si_el"/>
+    </material>
+    <isotope N="14" Z="7" name="N14">
+      <atom unit="g/mole" value="14.0031"/>
+    </isotope>
+    <isotope N="15" Z="7" name="N15">
+      <atom unit="g/mole" value="15.0001"/>
+    </isotope>
+    <element name="AGATA_N">
+      <fraction n="0.99632" ref="N14"/>
+      <fraction n="0.00368" ref="N15"/>
+    </element>
+    <isotope N="16" Z="8" name="O16">
+      <atom unit="g/mole" value="15.9949"/>
+    </isotope>
+    <isotope N="17" Z="8" name="O17">
+      <atom unit="g/mole" value="16.9991"/>
+    </isotope>
+    <isotope N="18" Z="8" name="O18">
+      <atom unit="g/mole" value="17.9992"/>
+    </isotope>
+    <element name="AGATA_O">
+      <fraction n="0.99757" ref="O16"/>
+      <fraction n="0.00038" ref="O17"/>
+      <fraction n="0.00205" ref="O18"/>
+    </element>
+    <material name="AGATA_AIR" state="gas">
+      <MEE unit="eV" value="85.7025495761375"/>
+      <D unit="g/cm3" value="0.00129"/>
+      <fraction n="0.7" ref="AGATA_N"/>
+      <fraction n="0.3" ref="AGATA_O"/>
+    </material>
+  </materials>
+
+  <solids>
+    <tube aunit="deg" deltaphi="360" lunit="mm" name="ShapePassiveArea" rmax="35" rmin="10" startphi="0" z="0.3"/>
+    <tube aunit="deg" deltaphi="22.5" lunit="mm" name="ShapeSegmentRing00" rmax="13" rmin="11" startphi="0" z="0.3"/>
+    <tube aunit="deg" deltaphi="22.5" lunit="mm" name="ShapeSegmentRing01" rmax="15" rmin="13" startphi="0" z="0.3"/>
+    <tube aunit="deg" deltaphi="22.5" lunit="mm" name="ShapeSegmentRing02" rmax="17" rmin="15" startphi="0" z="0.3"/>
+    <tube aunit="deg" deltaphi="22.5" lunit="mm" name="ShapeSegmentRing03" rmax="19" rmin="17" startphi="0" z="0.3"/>
+    <tube aunit="deg" deltaphi="22.5" lunit="mm" name="ShapeSegmentRing04" rmax="21" rmin="19" startphi="0" z="0.3"/>
+    <tube aunit="deg" deltaphi="22.5" lunit="mm" name="ShapeSegmentRing05" rmax="23" rmin="21" startphi="0" z="0.3"/>
+    <tube aunit="deg" deltaphi="22.5" lunit="mm" name="ShapeSegmentRing06" rmax="25" rmin="23" startphi="0" z="0.3"/>
+    <tube aunit="deg" deltaphi="22.5" lunit="mm" name="ShapeSegmentRing07" rmax="27" rmin="25" startphi="0" z="0.3"/>
+    <tube aunit="deg" deltaphi="22.5" lunit="mm" name="ShapeSegmentRing08" rmax="29" rmin="27" startphi="0" z="0.3"/>
+    <tube aunit="deg" deltaphi="22.5" lunit="mm" name="ShapeSegmentRing09" rmax="31" rmin="29" startphi="0" z="0.3"/>
+    <tube aunit="deg" deltaphi="22.5" lunit="mm" name="ShapeSegmentRing10" rmax="33" rmin="31" startphi="0" z="0.3"/>
+    <tube aunit="deg" deltaphi="22.5" lunit="mm" name="ShapeSegmentRing11" rmax="35" rmin="33" startphi="0" z="0.3"/>
+    <box lunit="mm" name="hallBox" x="20000" y="20000" z="100000"/>
+  </solids>
+
+  <structure>
+    <volume name="PassiveAreaLV">
+      <materialref ref="AGATA_Silicon"/>
+      <solidref ref="ShapePassiveArea"/>
+    </volume>
+    <volume name="SegmentRing00LV">
+      <materialref ref="AGATA_Silicon"/>
+      <solidref ref="ShapeSegmentRing00"/>
+    </volume>
+    <volume name="SegmentRing01LV">
+      <materialref ref="AGATA_Silicon"/>
+      <solidref ref="ShapeSegmentRing01"/>
+    </volume>
+    <volume name="SegmentRing02LV">
+      <materialref ref="AGATA_Silicon"/>
+      <solidref ref="ShapeSegmentRing02"/>
+    </volume>
+    <volume name="SegmentRing03LV">
+      <materialref ref="AGATA_Silicon"/>
+      <solidref ref="ShapeSegmentRing03"/>
+    </volume>
+    <volume name="SegmentRing04LV">
+      <materialref ref="AGATA_Silicon"/>
+      <solidref ref="ShapeSegmentRing04"/>
+    </volume>
+    <volume name="SegmentRing05LV">
+      <materialref ref="AGATA_Silicon"/>
+      <solidref ref="ShapeSegmentRing05"/>
+    </volume>
+    <volume name="SegmentRing06LV">
+      <materialref ref="AGATA_Silicon"/>
+      <solidref ref="ShapeSegmentRing06"/>
+    </volume>
+    <volume name="SegmentRing07LV">
+      <materialref ref="AGATA_Silicon"/>
+      <solidref ref="ShapeSegmentRing07"/>
+    </volume>
+    <volume name="SegmentRing08LV">
+      <materialref ref="AGATA_Silicon"/>
+      <solidref ref="ShapeSegmentRing08"/>
+    </volume>
+    <volume name="SegmentRing09LV">
+      <materialref ref="AGATA_Silicon"/>
+      <solidref ref="ShapeSegmentRing09"/>
+    </volume>
+    <volume name="SegmentRing10LV">
+      <materialref ref="AGATA_Silicon"/>
+      <solidref ref="ShapeSegmentRing10"/>
+    </volume>
+    <volume name="SegmentRing11LV">
+      <materialref ref="AGATA_Silicon"/>
+      <solidref ref="ShapeSegmentRing11"/>
+    </volume>
+    <volume name="KoelnSi">
+      <materialref ref="AGATA_AIR"/>
+      <solidref ref="hallBox"/>
+      <physvol name="PassiveArea">
+        <volumeref ref="PassiveAreaLV"/>
+      </physvol>
+      <physvol name="Ring:00:Seg:00:">
+        <volumeref ref="SegmentRing00LV"/>
+      </physvol>
+      <physvol name="Ring:00:Seg:01:">
+        <volumeref ref="SegmentRing00LV"/>
+        <rotation name="Ring:00:Seg:01:_rot" unit="deg" x="0" y="0" z="-22.5"/>
+      </physvol>
+      <physvol name="Ring:00:Seg:02:">
+        <volumeref ref="SegmentRing00LV"/>
+        <rotation name="Ring:00:Seg:02:_rot" unit="deg" x="0" y="0" z="-45"/>
+      </physvol>
+      <physvol name="Ring:00:Seg:03:">
+        <volumeref ref="SegmentRing00LV"/>
+        <rotation name="Ring:00:Seg:03:_rot" unit="deg" x="0" y="0" z="-67.5"/>
+      </physvol>
+      <physvol name="Ring:00:Seg:04:">
+        <volumeref ref="SegmentRing00LV"/>
+        <rotation name="Ring:00:Seg:04:_rot" unit="deg" x="0" y="0" z="-90"/>
+      </physvol>
+      <physvol name="Ring:00:Seg:05:">
+        <volumeref ref="SegmentRing00LV"/>
+        <rotation name="Ring:00:Seg:05:_rot" unit="deg" x="0" y="0" z="-112.5"/>
+      </physvol>
+      <physvol name="Ring:00:Seg:06:">
+        <volumeref ref="SegmentRing00LV"/>
+        <rotation name="Ring:00:Seg:06:_rot" unit="deg" x="0" y="0" z="-135"/>
+      </physvol>
+      <physvol name="Ring:00:Seg:07:">
+        <volumeref ref="SegmentRing00LV"/>
+        <rotation name="Ring:00:Seg:07:_rot" unit="deg" x="0" y="0" z="-157.5"/>
+      </physvol>
+      <physvol name="Ring:00:Seg:08:">
+        <volumeref ref="SegmentRing00LV"/>
+        <rotation name="Ring:00:Seg:08:_rot" unit="deg" x="0" y="0" z="-180"/>
+      </physvol>
+      <physvol name="Ring:00:Seg:09:">
+        <volumeref ref="SegmentRing00LV"/>
+        <rotation name="Ring:00:Seg:09:_rot" unit="deg" x="0" y="0" z="157.5"/>
+      </physvol>
+      <physvol name="Ring:00:Seg:10:">
+        <volumeref ref="SegmentRing00LV"/>
+        <rotation name="Ring:00:Seg:10:_rot" unit="deg" x="0" y="0" z="135"/>
+      </physvol>
+      <physvol name="Ring:00:Seg:11:">
+        <volumeref ref="SegmentRing00LV"/>
+        <rotation name="Ring:00:Seg:11:_rot" unit="deg" x="0" y="0" z="112.5"/>
+      </physvol>
+      <physvol name="Ring:00:Seg:12:">
+        <volumeref ref="SegmentRing00LV"/>
+        <rotation name="Ring:00:Seg:12:_rot" unit="deg" x="0" y="0" z="90"/>
+      </physvol>
+      <physvol name="Ring:00:Seg:13:">
+        <volumeref ref="SegmentRing00LV"/>
+        <rotation name="Ring:00:Seg:13:_rot" unit="deg" x="0" y="0" z="67.5"/>
+      </physvol>
+      <physvol name="Ring:00:Seg:14:">
+        <volumeref ref="SegmentRing00LV"/>
+        <rotation name="Ring:00:Seg:14:_rot" unit="deg" x="0" y="0" z="45"/>
+      </physvol>
+      <physvol name="Ring:00:Seg:15:">
+        <volumeref ref="SegmentRing00LV"/>
+        <rotation name="Ring:00:Seg:15:_rot" unit="deg" x="0" y="0" z="22.5"/>
+      </physvol>
+      <physvol name="Ring:01:Seg:00:">
+        <volumeref ref="SegmentRing01LV"/>
+      </physvol>
+      <physvol name="Ring:01:Seg:01:">
+        <volumeref ref="SegmentRing01LV"/>
+        <rotation name="Ring:01:Seg:01:_rot" unit="deg" x="0" y="0" z="-22.5"/>
+      </physvol>
+      <physvol name="Ring:01:Seg:02:">
+        <volumeref ref="SegmentRing01LV"/>
+        <rotation name="Ring:01:Seg:02:_rot" unit="deg" x="0" y="0" z="-45"/>
+      </physvol>
+      <physvol name="Ring:01:Seg:03:">
+        <volumeref ref="SegmentRing01LV"/>
+        <rotation name="Ring:01:Seg:03:_rot" unit="deg" x="0" y="0" z="-67.5"/>
+      </physvol>
+      <physvol name="Ring:01:Seg:04:">
+        <volumeref ref="SegmentRing01LV"/>
+        <rotation name="Ring:01:Seg:04:_rot" unit="deg" x="0" y="0" z="-90"/>
+      </physvol>
+      <physvol name="Ring:01:Seg:05:">
+        <volumeref ref="SegmentRing01LV"/>
+        <rotation name="Ring:01:Seg:05:_rot" unit="deg" x="0" y="0" z="-112.5"/>
+      </physvol>
+      <physvol name="Ring:01:Seg:06:">
+        <volumeref ref="SegmentRing01LV"/>
+        <rotation name="Ring:01:Seg:06:_rot" unit="deg" x="0" y="0" z="-135"/>
+      </physvol>
+      <physvol name="Ring:01:Seg:07:">
+        <volumeref ref="SegmentRing01LV"/>
+        <rotation name="Ring:01:Seg:07:_rot" unit="deg" x="0" y="0" z="-157.5"/>
+      </physvol>
+      <physvol name="Ring:01:Seg:08:">
+        <volumeref ref="SegmentRing01LV"/>
+        <rotation name="Ring:01:Seg:08:_rot" unit="deg" x="0" y="0" z="-180"/>
+      </physvol>
+      <physvol name="Ring:01:Seg:09:">
+        <volumeref ref="SegmentRing01LV"/>
+        <rotation name="Ring:01:Seg:09:_rot" unit="deg" x="0" y="0" z="157.5"/>
+      </physvol>
+      <physvol name="Ring:01:Seg:10:">
+        <volumeref ref="SegmentRing01LV"/>
+        <rotation name="Ring:01:Seg:10:_rot" unit="deg" x="0" y="0" z="135"/>
+      </physvol>
+      <physvol name="Ring:01:Seg:11:">
+        <volumeref ref="SegmentRing01LV"/>
+        <rotation name="Ring:01:Seg:11:_rot" unit="deg" x="0" y="0" z="112.5"/>
+      </physvol>
+      <physvol name="Ring:01:Seg:12:">
+        <volumeref ref="SegmentRing01LV"/>
+        <rotation name="Ring:01:Seg:12:_rot" unit="deg" x="0" y="0" z="90"/>
+      </physvol>
+      <physvol name="Ring:01:Seg:13:">
+        <volumeref ref="SegmentRing01LV"/>
+        <rotation name="Ring:01:Seg:13:_rot" unit="deg" x="0" y="0" z="67.5"/>
+      </physvol>
+      <physvol name="Ring:01:Seg:14:">
+        <volumeref ref="SegmentRing01LV"/>
+        <rotation name="Ring:01:Seg:14:_rot" unit="deg" x="0" y="0" z="45"/>
+      </physvol>
+      <physvol name="Ring:01:Seg:15:">
+        <volumeref ref="SegmentRing01LV"/>
+        <rotation name="Ring:01:Seg:15:_rot" unit="deg" x="0" y="0" z="22.5"/>
+      </physvol>
+      <physvol name="Ring:02:Seg:00:">
+        <volumeref ref="SegmentRing02LV"/>
+      </physvol>
+      <physvol name="Ring:02:Seg:01:">
+        <volumeref ref="SegmentRing02LV"/>
+        <rotation name="Ring:02:Seg:01:_rot" unit="deg" x="0" y="0" z="-22.5"/>
+      </physvol>
+      <physvol name="Ring:02:Seg:02:">
+        <volumeref ref="SegmentRing02LV"/>
+        <rotation name="Ring:02:Seg:02:_rot" unit="deg" x="0" y="0" z="-45"/>
+      </physvol>
+      <physvol name="Ring:02:Seg:03:">
+        <volumeref ref="SegmentRing02LV"/>
+        <rotation name="Ring:02:Seg:03:_rot" unit="deg" x="0" y="0" z="-67.5"/>
+      </physvol>
+      <physvol name="Ring:02:Seg:04:">
+        <volumeref ref="SegmentRing02LV"/>
+        <rotation name="Ring:02:Seg:04:_rot" unit="deg" x="0" y="0" z="-90"/>
+      </physvol>
+      <physvol name="Ring:02:Seg:05:">
+        <volumeref ref="SegmentRing02LV"/>
+        <rotation name="Ring:02:Seg:05:_rot" unit="deg" x="0" y="0" z="-112.5"/>
+      </physvol>
+      <physvol name="Ring:02:Seg:06:">
+        <volumeref ref="SegmentRing02LV"/>
+        <rotation name="Ring:02:Seg:06:_rot" unit="deg" x="0" y="0" z="-135"/>
+      </physvol>
+      <physvol name="Ring:02:Seg:07:">
+        <volumeref ref="SegmentRing02LV"/>
+        <rotation name="Ring:02:Seg:07:_rot" unit="deg" x="0" y="0" z="-157.5"/>
+      </physvol>
+      <physvol name="Ring:02:Seg:08:">
+        <volumeref ref="SegmentRing02LV"/>
+        <rotation name="Ring:02:Seg:08:_rot" unit="deg" x="0" y="0" z="-180"/>
+      </physvol>
+      <physvol name="Ring:02:Seg:09:">
+        <volumeref ref="SegmentRing02LV"/>
+        <rotation name="Ring:02:Seg:09:_rot" unit="deg" x="0" y="0" z="157.5"/>
+      </physvol>
+      <physvol name="Ring:02:Seg:10:">
+        <volumeref ref="SegmentRing02LV"/>
+        <rotation name="Ring:02:Seg:10:_rot" unit="deg" x="0" y="0" z="135"/>
+      </physvol>
+      <physvol name="Ring:02:Seg:11:">
+        <volumeref ref="SegmentRing02LV"/>
+        <rotation name="Ring:02:Seg:11:_rot" unit="deg" x="0" y="0" z="112.5"/>
+      </physvol>
+      <physvol name="Ring:02:Seg:12:">
+        <volumeref ref="SegmentRing02LV"/>
+        <rotation name="Ring:02:Seg:12:_rot" unit="deg" x="0" y="0" z="90"/>
+      </physvol>
+      <physvol name="Ring:02:Seg:13:">
+        <volumeref ref="SegmentRing02LV"/>
+        <rotation name="Ring:02:Seg:13:_rot" unit="deg" x="0" y="0" z="67.5"/>
+      </physvol>
+      <physvol name="Ring:02:Seg:14:">
+        <volumeref ref="SegmentRing02LV"/>
+        <rotation name="Ring:02:Seg:14:_rot" unit="deg" x="0" y="0" z="45"/>
+      </physvol>
+      <physvol name="Ring:02:Seg:15:">
+        <volumeref ref="SegmentRing02LV"/>
+        <rotation name="Ring:02:Seg:15:_rot" unit="deg" x="0" y="0" z="22.5"/>
+      </physvol>
+      <physvol name="Ring:03:Seg:00:">
+        <volumeref ref="SegmentRing03LV"/>
+      </physvol>
+      <physvol name="Ring:03:Seg:01:">
+        <volumeref ref="SegmentRing03LV"/>
+        <rotation name="Ring:03:Seg:01:_rot" unit="deg" x="0" y="0" z="-22.5"/>
+      </physvol>
+      <physvol name="Ring:03:Seg:02:">
+        <volumeref ref="SegmentRing03LV"/>
+        <rotation name="Ring:03:Seg:02:_rot" unit="deg" x="0" y="0" z="-45"/>
+      </physvol>
+      <physvol name="Ring:03:Seg:03:">
+        <volumeref ref="SegmentRing03LV"/>
+        <rotation name="Ring:03:Seg:03:_rot" unit="deg" x="0" y="0" z="-67.5"/>
+      </physvol>
+      <physvol name="Ring:03:Seg:04:">
+        <volumeref ref="SegmentRing03LV"/>
+        <rotation name="Ring:03:Seg:04:_rot" unit="deg" x="0" y="0" z="-90"/>
+      </physvol>
+      <physvol name="Ring:03:Seg:05:">
+        <volumeref ref="SegmentRing03LV"/>
+        <rotation name="Ring:03:Seg:05:_rot" unit="deg" x="0" y="0" z="-112.5"/>
+      </physvol>
+      <physvol name="Ring:03:Seg:06:">
+        <volumeref ref="SegmentRing03LV"/>
+        <rotation name="Ring:03:Seg:06:_rot" unit="deg" x="0" y="0" z="-135"/>
+      </physvol>
+      <physvol name="Ring:03:Seg:07:">
+        <volumeref ref="SegmentRing03LV"/>
+        <rotation name="Ring:03:Seg:07:_rot" unit="deg" x="0" y="0" z="-157.5"/>
+      </physvol>
+      <physvol name="Ring:03:Seg:08:">
+        <volumeref ref="SegmentRing03LV"/>
+        <rotation name="Ring:03:Seg:08:_rot" unit="deg" x="0" y="0" z="-180"/>
+      </physvol>
+      <physvol name="Ring:03:Seg:09:">
+        <volumeref ref="SegmentRing03LV"/>
+        <rotation name="Ring:03:Seg:09:_rot" unit="deg" x="0" y="0" z="157.5"/>
+      </physvol>
+      <physvol name="Ring:03:Seg:10:">
+        <volumeref ref="SegmentRing03LV"/>
+        <rotation name="Ring:03:Seg:10:_rot" unit="deg" x="0" y="0" z="135"/>
+      </physvol>
+      <physvol name="Ring:03:Seg:11:">
+        <volumeref ref="SegmentRing03LV"/>
+        <rotation name="Ring:03:Seg:11:_rot" unit="deg" x="0" y="0" z="112.5"/>
+      </physvol>
+      <physvol name="Ring:03:Seg:12:">
+        <volumeref ref="SegmentRing03LV"/>
+        <rotation name="Ring:03:Seg:12:_rot" unit="deg" x="0" y="0" z="90"/>
+      </physvol>
+      <physvol name="Ring:03:Seg:13:">
+        <volumeref ref="SegmentRing03LV"/>
+        <rotation name="Ring:03:Seg:13:_rot" unit="deg" x="0" y="0" z="67.5"/>
+      </physvol>
+      <physvol name="Ring:03:Seg:14:">
+        <volumeref ref="SegmentRing03LV"/>
+        <rotation name="Ring:03:Seg:14:_rot" unit="deg" x="0" y="0" z="45"/>
+      </physvol>
+      <physvol name="Ring:03:Seg:15:">
+        <volumeref ref="SegmentRing03LV"/>
+        <rotation name="Ring:03:Seg:15:_rot" unit="deg" x="0" y="0" z="22.5"/>
+      </physvol>
+      <physvol name="Ring:04:Seg:00:">
+        <volumeref ref="SegmentRing04LV"/>
+      </physvol>
+      <physvol name="Ring:04:Seg:01:">
+        <volumeref ref="SegmentRing04LV"/>
+        <rotation name="Ring:04:Seg:01:_rot" unit="deg" x="0" y="0" z="-22.5"/>
+      </physvol>
+      <physvol name="Ring:04:Seg:02:">
+        <volumeref ref="SegmentRing04LV"/>
+        <rotation name="Ring:04:Seg:02:_rot" unit="deg" x="0" y="0" z="-45"/>
+      </physvol>
+      <physvol name="Ring:04:Seg:03:">
+        <volumeref ref="SegmentRing04LV"/>
+        <rotation name="Ring:04:Seg:03:_rot" unit="deg" x="0" y="0" z="-67.5"/>
+      </physvol>
+      <physvol name="Ring:04:Seg:04:">
+        <volumeref ref="SegmentRing04LV"/>
+        <rotation name="Ring:04:Seg:04:_rot" unit="deg" x="0" y="0" z="-90"/>
+      </physvol>
+      <physvol name="Ring:04:Seg:05:">
+        <volumeref ref="SegmentRing04LV"/>
+        <rotation name="Ring:04:Seg:05:_rot" unit="deg" x="0" y="0" z="-112.5"/>
+      </physvol>
+      <physvol name="Ring:04:Seg:06:">
+        <volumeref ref="SegmentRing04LV"/>
+        <rotation name="Ring:04:Seg:06:_rot" unit="deg" x="0" y="0" z="-135"/>
+      </physvol>
+      <physvol name="Ring:04:Seg:07:">
+        <volumeref ref="SegmentRing04LV"/>
+        <rotation name="Ring:04:Seg:07:_rot" unit="deg" x="0" y="0" z="-157.5"/>
+      </physvol>
+      <physvol name="Ring:04:Seg:08:">
+        <volumeref ref="SegmentRing04LV"/>
+        <rotation name="Ring:04:Seg:08:_rot" unit="deg" x="0" y="0" z="-180"/>
+      </physvol>
+      <physvol name="Ring:04:Seg:09:">
+        <volumeref ref="SegmentRing04LV"/>
+        <rotation name="Ring:04:Seg:09:_rot" unit="deg" x="0" y="0" z="157.5"/>
+      </physvol>
+      <physvol name="Ring:04:Seg:10:">
+        <volumeref ref="SegmentRing04LV"/>
+        <rotation name="Ring:04:Seg:10:_rot" unit="deg" x="0" y="0" z="135"/>
+      </physvol>
+      <physvol name="Ring:04:Seg:11:">
+        <volumeref ref="SegmentRing04LV"/>
+        <rotation name="Ring:04:Seg:11:_rot" unit="deg" x="0" y="0" z="112.5"/>
+      </physvol>
+      <physvol name="Ring:04:Seg:12:">
+        <volumeref ref="SegmentRing04LV"/>
+        <rotation name="Ring:04:Seg:12:_rot" unit="deg" x="0" y="0" z="90"/>
+      </physvol>
+      <physvol name="Ring:04:Seg:13:">
+        <volumeref ref="SegmentRing04LV"/>
+        <rotation name="Ring:04:Seg:13:_rot" unit="deg" x="0" y="0" z="67.5"/>
+      </physvol>
+      <physvol name="Ring:04:Seg:14:">
+        <volumeref ref="SegmentRing04LV"/>
+        <rotation name="Ring:04:Seg:14:_rot" unit="deg" x="0" y="0" z="45"/>
+      </physvol>
+      <physvol name="Ring:04:Seg:15:">
+        <volumeref ref="SegmentRing04LV"/>
+        <rotation name="Ring:04:Seg:15:_rot" unit="deg" x="0" y="0" z="22.5"/>
+      </physvol>
+      <physvol name="Ring:05:Seg:00:">
+        <volumeref ref="SegmentRing05LV"/>
+      </physvol>
+      <physvol name="Ring:05:Seg:01:">
+        <volumeref ref="SegmentRing05LV"/>
+        <rotation name="Ring:05:Seg:01:_rot" unit="deg" x="0" y="0" z="-22.5"/>
+      </physvol>
+      <physvol name="Ring:05:Seg:02:">
+        <volumeref ref="SegmentRing05LV"/>
+        <rotation name="Ring:05:Seg:02:_rot" unit="deg" x="0" y="0" z="-45"/>
+      </physvol>
+      <physvol name="Ring:05:Seg:03:">
+        <volumeref ref="SegmentRing05LV"/>
+        <rotation name="Ring:05:Seg:03:_rot" unit="deg" x="0" y="0" z="-67.5"/>
+      </physvol>
+      <physvol name="Ring:05:Seg:04:">
+        <volumeref ref="SegmentRing05LV"/>
+        <rotation name="Ring:05:Seg:04:_rot" unit="deg" x="0" y="0" z="-90"/>
+      </physvol>
+      <physvol name="Ring:05:Seg:05:">
+        <volumeref ref="SegmentRing05LV"/>
+        <rotation name="Ring:05:Seg:05:_rot" unit="deg" x="0" y="0" z="-112.5"/>
+      </physvol>
+      <physvol name="Ring:05:Seg:06:">
+        <volumeref ref="SegmentRing05LV"/>
+        <rotation name="Ring:05:Seg:06:_rot" unit="deg" x="0" y="0" z="-135"/>
+      </physvol>
+      <physvol name="Ring:05:Seg:07:">
+        <volumeref ref="SegmentRing05LV"/>
+        <rotation name="Ring:05:Seg:07:_rot" unit="deg" x="0" y="0" z="-157.5"/>
+      </physvol>
+      <physvol name="Ring:05:Seg:08:">
+        <volumeref ref="SegmentRing05LV"/>
+        <rotation name="Ring:05:Seg:08:_rot" unit="deg" x="0" y="0" z="-180"/>
+      </physvol>
+      <physvol name="Ring:05:Seg:09:">
+        <volumeref ref="SegmentRing05LV"/>
+        <rotation name="Ring:05:Seg:09:_rot" unit="deg" x="0" y="0" z="157.5"/>
+      </physvol>
+      <physvol name="Ring:05:Seg:10:">
+        <volumeref ref="SegmentRing05LV"/>
+        <rotation name="Ring:05:Seg:10:_rot" unit="deg" x="0" y="0" z="135"/>
+      </physvol>
+      <physvol name="Ring:05:Seg:11:">
+        <volumeref ref="SegmentRing05LV"/>
+        <rotation name="Ring:05:Seg:11:_rot" unit="deg" x="0" y="0" z="112.5"/>
+      </physvol>
+      <physvol name="Ring:05:Seg:12:">
+        <volumeref ref="SegmentRing05LV"/>
+        <rotation name="Ring:05:Seg:12:_rot" unit="deg" x="0" y="0" z="90"/>
+      </physvol>
+      <physvol name="Ring:05:Seg:13:">
+        <volumeref ref="SegmentRing05LV"/>
+        <rotation name="Ring:05:Seg:13:_rot" unit="deg" x="0" y="0" z="67.5"/>
+      </physvol>
+      <physvol name="Ring:05:Seg:14:">
+        <volumeref ref="SegmentRing05LV"/>
+        <rotation name="Ring:05:Seg:14:_rot" unit="deg" x="0" y="0" z="45"/>
+      </physvol>
+      <physvol name="Ring:05:Seg:15:">
+        <volumeref ref="SegmentRing05LV"/>
+        <rotation name="Ring:05:Seg:15:_rot" unit="deg" x="0" y="0" z="22.5"/>
+      </physvol>
+      <physvol name="Ring:06:Seg:00:">
+        <volumeref ref="SegmentRing06LV"/>
+      </physvol>
+      <physvol name="Ring:06:Seg:01:">
+        <volumeref ref="SegmentRing06LV"/>
+        <rotation name="Ring:06:Seg:01:_rot" unit="deg" x="0" y="0" z="-22.5"/>
+      </physvol>
+      <physvol name="Ring:06:Seg:02:">
+        <volumeref ref="SegmentRing06LV"/>
+        <rotation name="Ring:06:Seg:02:_rot" unit="deg" x="0" y="0" z="-45"/>
+      </physvol>
+      <physvol name="Ring:06:Seg:03:">
+        <volumeref ref="SegmentRing06LV"/>
+        <rotation name="Ring:06:Seg:03:_rot" unit="deg" x="0" y="0" z="-67.5"/>
+      </physvol>
+      <physvol name="Ring:06:Seg:04:">
+        <volumeref ref="SegmentRing06LV"/>
+        <rotation name="Ring:06:Seg:04:_rot" unit="deg" x="0" y="0" z="-90"/>
+      </physvol>
+      <physvol name="Ring:06:Seg:05:">
+        <volumeref ref="SegmentRing06LV"/>
+        <rotation name="Ring:06:Seg:05:_rot" unit="deg" x="0" y="0" z="-112.5"/>
+      </physvol>
+      <physvol name="Ring:06:Seg:06:">
+        <volumeref ref="SegmentRing06LV"/>
+        <rotation name="Ring:06:Seg:06:_rot" unit="deg" x="0" y="0" z="-135"/>
+      </physvol>
+      <physvol name="Ring:06:Seg:07:">
+        <volumeref ref="SegmentRing06LV"/>
+        <rotation name="Ring:06:Seg:07:_rot" unit="deg" x="0" y="0" z="-157.5"/>
+      </physvol>
+      <physvol name="Ring:06:Seg:08:">
+        <volumeref ref="SegmentRing06LV"/>
+        <rotation name="Ring:06:Seg:08:_rot" unit="deg" x="0" y="0" z="-180"/>
+      </physvol>
+      <physvol name="Ring:06:Seg:09:">
+        <volumeref ref="SegmentRing06LV"/>
+        <rotation name="Ring:06:Seg:09:_rot" unit="deg" x="0" y="0" z="157.5"/>
+      </physvol>
+      <physvol name="Ring:06:Seg:10:">
+        <volumeref ref="SegmentRing06LV"/>
+        <rotation name="Ring:06:Seg:10:_rot" unit="deg" x="0" y="0" z="135"/>
+      </physvol>
+      <physvol name="Ring:06:Seg:11:">
+        <volumeref ref="SegmentRing06LV"/>
+        <rotation name="Ring:06:Seg:11:_rot" unit="deg" x="0" y="0" z="112.5"/>
+      </physvol>
+      <physvol name="Ring:06:Seg:12:">
+        <volumeref ref="SegmentRing06LV"/>
+        <rotation name="Ring:06:Seg:12:_rot" unit="deg" x="0" y="0" z="90"/>
+      </physvol>
+      <physvol name="Ring:06:Seg:13:">
+        <volumeref ref="SegmentRing06LV"/>
+        <rotation name="Ring:06:Seg:13:_rot" unit="deg" x="0" y="0" z="67.5"/>
+      </physvol>
+      <physvol name="Ring:06:Seg:14:">
+        <volumeref ref="SegmentRing06LV"/>
+        <rotation name="Ring:06:Seg:14:_rot" unit="deg" x="0" y="0" z="45"/>
+      </physvol>
+      <physvol name="Ring:06:Seg:15:">
+        <volumeref ref="SegmentRing06LV"/>
+        <rotation name="Ring:06:Seg:15:_rot" unit="deg" x="0" y="0" z="22.5"/>
+      </physvol>
+      <physvol name="Ring:07:Seg:00:">
+        <volumeref ref="SegmentRing07LV"/>
+      </physvol>
+      <physvol name="Ring:07:Seg:01:">
+        <volumeref ref="SegmentRing07LV"/>
+        <rotation name="Ring:07:Seg:01:_rot" unit="deg" x="0" y="0" z="-22.5"/>
+      </physvol>
+      <physvol name="Ring:07:Seg:02:">
+        <volumeref ref="SegmentRing07LV"/>
+        <rotation name="Ring:07:Seg:02:_rot" unit="deg" x="0" y="0" z="-45"/>
+      </physvol>
+      <physvol name="Ring:07:Seg:03:">
+        <volumeref ref="SegmentRing07LV"/>
+        <rotation name="Ring:07:Seg:03:_rot" unit="deg" x="0" y="0" z="-67.5"/>
+      </physvol>
+      <physvol name="Ring:07:Seg:04:">
+        <volumeref ref="SegmentRing07LV"/>
+        <rotation name="Ring:07:Seg:04:_rot" unit="deg" x="0" y="0" z="-90"/>
+      </physvol>
+      <physvol name="Ring:07:Seg:05:">
+        <volumeref ref="SegmentRing07LV"/>
+        <rotation name="Ring:07:Seg:05:_rot" unit="deg" x="0" y="0" z="-112.5"/>
+      </physvol>
+      <physvol name="Ring:07:Seg:06:">
+        <volumeref ref="SegmentRing07LV"/>
+        <rotation name="Ring:07:Seg:06:_rot" unit="deg" x="0" y="0" z="-135"/>
+      </physvol>
+      <physvol name="Ring:07:Seg:07:">
+        <volumeref ref="SegmentRing07LV"/>
+        <rotation name="Ring:07:Seg:07:_rot" unit="deg" x="0" y="0" z="-157.5"/>
+      </physvol>
+      <physvol name="Ring:07:Seg:08:">
+        <volumeref ref="SegmentRing07LV"/>
+        <rotation name="Ring:07:Seg:08:_rot" unit="deg" x="0" y="0" z="-180"/>
+      </physvol>
+      <physvol name="Ring:07:Seg:09:">
+        <volumeref ref="SegmentRing07LV"/>
+        <rotation name="Ring:07:Seg:09:_rot" unit="deg" x="0" y="0" z="157.5"/>
+      </physvol>
+      <physvol name="Ring:07:Seg:10:">
+        <volumeref ref="SegmentRing07LV"/>
+        <rotation name="Ring:07:Seg:10:_rot" unit="deg" x="0" y="0" z="135"/>
+      </physvol>
+      <physvol name="Ring:07:Seg:11:">
+        <volumeref ref="SegmentRing07LV"/>
+        <rotation name="Ring:07:Seg:11:_rot" unit="deg" x="0" y="0" z="112.5"/>
+      </physvol>
+      <physvol name="Ring:07:Seg:12:">
+        <volumeref ref="SegmentRing07LV"/>
+        <rotation name="Ring:07:Seg:12:_rot" unit="deg" x="0" y="0" z="90"/>
+      </physvol>
+      <physvol name="Ring:07:Seg:13:">
+        <volumeref ref="SegmentRing07LV"/>
+        <rotation name="Ring:07:Seg:13:_rot" unit="deg" x="0" y="0" z="67.5"/>
+      </physvol>
+      <physvol name="Ring:07:Seg:14:">
+        <volumeref ref="SegmentRing07LV"/>
+        <rotation name="Ring:07:Seg:14:_rot" unit="deg" x="0" y="0" z="45"/>
+      </physvol>
+      <physvol name="Ring:07:Seg:15:">
+        <volumeref ref="SegmentRing07LV"/>
+        <rotation name="Ring:07:Seg:15:_rot" unit="deg" x="0" y="0" z="22.5"/>
+      </physvol>
+      <physvol name="Ring:08:Seg:00:">
+        <volumeref ref="SegmentRing08LV"/>
+      </physvol>
+      <physvol name="Ring:08:Seg:01:">
+        <volumeref ref="SegmentRing08LV"/>
+        <rotation name="Ring:08:Seg:01:_rot" unit="deg" x="0" y="0" z="-22.5"/>
+      </physvol>
+      <physvol name="Ring:08:Seg:02:">
+        <volumeref ref="SegmentRing08LV"/>
+        <rotation name="Ring:08:Seg:02:_rot" unit="deg" x="0" y="0" z="-45"/>
+      </physvol>
+      <physvol name="Ring:08:Seg:03:">
+        <volumeref ref="SegmentRing08LV"/>
+        <rotation name="Ring:08:Seg:03:_rot" unit="deg" x="0" y="0" z="-67.5"/>
+      </physvol>
+      <physvol name="Ring:08:Seg:04:">
+        <volumeref ref="SegmentRing08LV"/>
+        <rotation name="Ring:08:Seg:04:_rot" unit="deg" x="0" y="0" z="-90"/>
+      </physvol>
+      <physvol name="Ring:08:Seg:05:">
+        <volumeref ref="SegmentRing08LV"/>
+        <rotation name="Ring:08:Seg:05:_rot" unit="deg" x="0" y="0" z="-112.5"/>
+      </physvol>
+      <physvol name="Ring:08:Seg:06:">
+        <volumeref ref="SegmentRing08LV"/>
+        <rotation name="Ring:08:Seg:06:_rot" unit="deg" x="0" y="0" z="-135"/>
+      </physvol>
+      <physvol name="Ring:08:Seg:07:">
+        <volumeref ref="SegmentRing08LV"/>
+        <rotation name="Ring:08:Seg:07:_rot" unit="deg" x="0" y="0" z="-157.5"/>
+      </physvol>
+      <physvol name="Ring:08:Seg:08:">
+        <volumeref ref="SegmentRing08LV"/>
+        <rotation name="Ring:08:Seg:08:_rot" unit="deg" x="0" y="0" z="-180"/>
+      </physvol>
+      <physvol name="Ring:08:Seg:09:">
+        <volumeref ref="SegmentRing08LV"/>
+        <rotation name="Ring:08:Seg:09:_rot" unit="deg" x="0" y="0" z="157.5"/>
+      </physvol>
+      <physvol name="Ring:08:Seg:10:">
+        <volumeref ref="SegmentRing08LV"/>
+        <rotation name="Ring:08:Seg:10:_rot" unit="deg" x="0" y="0" z="135"/>
+      </physvol>
+      <physvol name="Ring:08:Seg:11:">
+        <volumeref ref="SegmentRing08LV"/>
+        <rotation name="Ring:08:Seg:11:_rot" unit="deg" x="0" y="0" z="112.5"/>
+      </physvol>
+      <physvol name="Ring:08:Seg:12:">
+        <volumeref ref="SegmentRing08LV"/>
+        <rotation name="Ring:08:Seg:12:_rot" unit="deg" x="0" y="0" z="90"/>
+      </physvol>
+      <physvol name="Ring:08:Seg:13:">
+        <volumeref ref="SegmentRing08LV"/>
+        <rotation name="Ring:08:Seg:13:_rot" unit="deg" x="0" y="0" z="67.5"/>
+      </physvol>
+      <physvol name="Ring:08:Seg:14:">
+        <volumeref ref="SegmentRing08LV"/>
+        <rotation name="Ring:08:Seg:14:_rot" unit="deg" x="0" y="0" z="45"/>
+      </physvol>
+      <physvol name="Ring:08:Seg:15:">
+        <volumeref ref="SegmentRing08LV"/>
+        <rotation name="Ring:08:Seg:15:_rot" unit="deg" x="0" y="0" z="22.5"/>
+      </physvol>
+      <physvol name="Ring:09:Seg:00:">
+        <volumeref ref="SegmentRing09LV"/>
+      </physvol>
+      <physvol name="Ring:09:Seg:01:">
+        <volumeref ref="SegmentRing09LV"/>
+        <rotation name="Ring:09:Seg:01:_rot" unit="deg" x="0" y="0" z="-22.5"/>
+      </physvol>
+      <physvol name="Ring:09:Seg:02:">
+        <volumeref ref="SegmentRing09LV"/>
+        <rotation name="Ring:09:Seg:02:_rot" unit="deg" x="0" y="0" z="-45"/>
+      </physvol>
+      <physvol name="Ring:09:Seg:03:">
+        <volumeref ref="SegmentRing09LV"/>
+        <rotation name="Ring:09:Seg:03:_rot" unit="deg" x="0" y="0" z="-67.5"/>
+      </physvol>
+      <physvol name="Ring:09:Seg:04:">
+        <volumeref ref="SegmentRing09LV"/>
+        <rotation name="Ring:09:Seg:04:_rot" unit="deg" x="0" y="0" z="-90"/>
+      </physvol>
+      <physvol name="Ring:09:Seg:05:">
+        <volumeref ref="SegmentRing09LV"/>
+        <rotation name="Ring:09:Seg:05:_rot" unit="deg" x="0" y="0" z="-112.5"/>
+      </physvol>
+      <physvol name="Ring:09:Seg:06:">
+        <volumeref ref="SegmentRing09LV"/>
+        <rotation name="Ring:09:Seg:06:_rot" unit="deg" x="0" y="0" z="-135"/>
+      </physvol>
+      <physvol name="Ring:09:Seg:07:">
+        <volumeref ref="SegmentRing09LV"/>
+        <rotation name="Ring:09:Seg:07:_rot" unit="deg" x="0" y="0" z="-157.5"/>
+      </physvol>
+      <physvol name="Ring:09:Seg:08:">
+        <volumeref ref="SegmentRing09LV"/>
+        <rotation name="Ring:09:Seg:08:_rot" unit="deg" x="0" y="0" z="-180"/>
+      </physvol>
+      <physvol name="Ring:09:Seg:09:">
+        <volumeref ref="SegmentRing09LV"/>
+        <rotation name="Ring:09:Seg:09:_rot" unit="deg" x="0" y="0" z="157.5"/>
+      </physvol>
+      <physvol name="Ring:09:Seg:10:">
+        <volumeref ref="SegmentRing09LV"/>
+        <rotation name="Ring:09:Seg:10:_rot" unit="deg" x="0" y="0" z="135"/>
+      </physvol>
+      <physvol name="Ring:09:Seg:11:">
+        <volumeref ref="SegmentRing09LV"/>
+        <rotation name="Ring:09:Seg:11:_rot" unit="deg" x="0" y="0" z="112.5"/>
+      </physvol>
+      <physvol name="Ring:09:Seg:12:">
+        <volumeref ref="SegmentRing09LV"/>
+        <rotation name="Ring:09:Seg:12:_rot" unit="deg" x="0" y="0" z="90"/>
+      </physvol>
+      <physvol name="Ring:09:Seg:13:">
+        <volumeref ref="SegmentRing09LV"/>
+        <rotation name="Ring:09:Seg:13:_rot" unit="deg" x="0" y="0" z="67.5"/>
+      </physvol>
+      <physvol name="Ring:09:Seg:14:">
+        <volumeref ref="SegmentRing09LV"/>
+        <rotation name="Ring:09:Seg:14:_rot" unit="deg" x="0" y="0" z="45"/>
+      </physvol>
+      <physvol name="Ring:09:Seg:15:">
+        <volumeref ref="SegmentRing09LV"/>
+        <rotation name="Ring:09:Seg:15:_rot" unit="deg" x="0" y="0" z="22.5"/>
+      </physvol>
+      <physvol name="Ring:10:Seg:00:">
+        <volumeref ref="SegmentRing10LV"/>
+      </physvol>
+      <physvol name="Ring:10:Seg:01:">
+        <volumeref ref="SegmentRing10LV"/>
+        <rotation name="Ring:10:Seg:01:_rot" unit="deg" x="0" y="0" z="-22.5"/>
+      </physvol>
+      <physvol name="Ring:10:Seg:02:">
+        <volumeref ref="SegmentRing10LV"/>
+        <rotation name="Ring:10:Seg:02:_rot" unit="deg" x="0" y="0" z="-45"/>
+      </physvol>
+      <physvol name="Ring:10:Seg:03:">
+        <volumeref ref="SegmentRing10LV"/>
+        <rotation name="Ring:10:Seg:03:_rot" unit="deg" x="0" y="0" z="-67.5"/>
+      </physvol>
+      <physvol name="Ring:10:Seg:04:">
+        <volumeref ref="SegmentRing10LV"/>
+        <rotation name="Ring:10:Seg:04:_rot" unit="deg" x="0" y="0" z="-90"/>
+      </physvol>
+      <physvol name="Ring:10:Seg:05:">
+        <volumeref ref="SegmentRing10LV"/>
+        <rotation name="Ring:10:Seg:05:_rot" unit="deg" x="0" y="0" z="-112.5"/>
+      </physvol>
+      <physvol name="Ring:10:Seg:06:">
+        <volumeref ref="SegmentRing10LV"/>
+        <rotation name="Ring:10:Seg:06:_rot" unit="deg" x="0" y="0" z="-135"/>
+      </physvol>
+      <physvol name="Ring:10:Seg:07:">
+        <volumeref ref="SegmentRing10LV"/>
+        <rotation name="Ring:10:Seg:07:_rot" unit="deg" x="0" y="0" z="-157.5"/>
+      </physvol>
+      <physvol name="Ring:10:Seg:08:">
+        <volumeref ref="SegmentRing10LV"/>
+        <rotation name="Ring:10:Seg:08:_rot" unit="deg" x="0" y="0" z="-180"/>
+      </physvol>
+      <physvol name="Ring:10:Seg:09:">
+        <volumeref ref="SegmentRing10LV"/>
+        <rotation name="Ring:10:Seg:09:_rot" unit="deg" x="0" y="0" z="157.5"/>
+      </physvol>
+      <physvol name="Ring:10:Seg:10:">
+        <volumeref ref="SegmentRing10LV"/>
+        <rotation name="Ring:10:Seg:10:_rot" unit="deg" x="0" y="0" z="135"/>
+      </physvol>
+      <physvol name="Ring:10:Seg:11:">
+        <volumeref ref="SegmentRing10LV"/>
+        <rotation name="Ring:10:Seg:11:_rot" unit="deg" x="0" y="0" z="112.5"/>
+      </physvol>
+      <physvol name="Ring:10:Seg:12:">
+        <volumeref ref="SegmentRing10LV"/>
+        <rotation name="Ring:10:Seg:12:_rot" unit="deg" x="0" y="0" z="90"/>
+      </physvol>
+      <physvol name="Ring:10:Seg:13:">
+        <volumeref ref="SegmentRing10LV"/>
+        <rotation name="Ring:10:Seg:13:_rot" unit="deg" x="0" y="0" z="67.5"/>
+      </physvol>
+      <physvol name="Ring:10:Seg:14:">
+        <volumeref ref="SegmentRing10LV"/>
+        <rotation name="Ring:10:Seg:14:_rot" unit="deg" x="0" y="0" z="45"/>
+      </physvol>
+      <physvol name="Ring:10:Seg:15:">
+        <volumeref ref="SegmentRing10LV"/>
+        <rotation name="Ring:10:Seg:15:_rot" unit="deg" x="0" y="0" z="22.5"/>
+      </physvol>
+      <physvol name="Ring:11:Seg:00:">
+        <volumeref ref="SegmentRing11LV"/>
+      </physvol>
+      <physvol name="Ring:11:Seg:01:">
+        <volumeref ref="SegmentRing11LV"/>
+        <rotation name="Ring:11:Seg:01:_rot" unit="deg" x="0" y="0" z="-22.5"/>
+      </physvol>
+      <physvol name="Ring:11:Seg:02:">
+        <volumeref ref="SegmentRing11LV"/>
+        <rotation name="Ring:11:Seg:02:_rot" unit="deg" x="0" y="0" z="-45"/>
+      </physvol>
+      <physvol name="Ring:11:Seg:03:">
+        <volumeref ref="SegmentRing11LV"/>
+        <rotation name="Ring:11:Seg:03:_rot" unit="deg" x="0" y="0" z="-67.5"/>
+      </physvol>
+      <physvol name="Ring:11:Seg:04:">
+        <volumeref ref="SegmentRing11LV"/>
+        <rotation name="Ring:11:Seg:04:_rot" unit="deg" x="0" y="0" z="-90"/>
+      </physvol>
+      <physvol name="Ring:11:Seg:05:">
+        <volumeref ref="SegmentRing11LV"/>
+        <rotation name="Ring:11:Seg:05:_rot" unit="deg" x="0" y="0" z="-112.5"/>
+      </physvol>
+      <physvol name="Ring:11:Seg:06:">
+        <volumeref ref="SegmentRing11LV"/>
+        <rotation name="Ring:11:Seg:06:_rot" unit="deg" x="0" y="0" z="-135"/>
+      </physvol>
+      <physvol name="Ring:11:Seg:07:">
+        <volumeref ref="SegmentRing11LV"/>
+        <rotation name="Ring:11:Seg:07:_rot" unit="deg" x="0" y="0" z="-157.5"/>
+      </physvol>
+      <physvol name="Ring:11:Seg:08:">
+        <volumeref ref="SegmentRing11LV"/>
+        <rotation name="Ring:11:Seg:08:_rot" unit="deg" x="0" y="0" z="-180"/>
+      </physvol>
+      <physvol name="Ring:11:Seg:09:">
+        <volumeref ref="SegmentRing11LV"/>
+        <rotation name="Ring:11:Seg:09:_rot" unit="deg" x="0" y="0" z="157.5"/>
+      </physvol>
+      <physvol name="Ring:11:Seg:10:">
+        <volumeref ref="SegmentRing11LV"/>
+        <rotation name="Ring:11:Seg:10:_rot" unit="deg" x="0" y="0" z="135"/>
+      </physvol>
+      <physvol name="Ring:11:Seg:11:">
+        <volumeref ref="SegmentRing11LV"/>
+        <rotation name="Ring:11:Seg:11:_rot" unit="deg" x="0" y="0" z="112.5"/>
+      </physvol>
+      <physvol name="Ring:11:Seg:12:">
+        <volumeref ref="SegmentRing11LV"/>
+        <rotation name="Ring:11:Seg:12:_rot" unit="deg" x="0" y="0" z="90"/>
+      </physvol>
+      <physvol name="Ring:11:Seg:13:">
+        <volumeref ref="SegmentRing11LV"/>
+        <rotation name="Ring:11:Seg:13:_rot" unit="deg" x="0" y="0" z="67.5"/>
+      </physvol>
+      <physvol name="Ring:11:Seg:14:">
+        <volumeref ref="SegmentRing11LV"/>
+        <rotation name="Ring:11:Seg:14:_rot" unit="deg" x="0" y="0" z="45"/>
+      </physvol>
+      <physvol name="Ring:11:Seg:15:">
+        <volumeref ref="SegmentRing11LV"/>
+        <rotation name="Ring:11:Seg:15:_rot" unit="deg" x="0" y="0" z="22.5"/>
+      </physvol>
+    </volume>
+  </structure>
+
+  <setup name="Default" version="1.0">
+    <world ref="KoelnSi"/>
+  </setup>
+
+</gdml>

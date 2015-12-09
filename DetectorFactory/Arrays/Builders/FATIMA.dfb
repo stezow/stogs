@@ -1,0 +1,17 @@
+#
+# First the world / detector envelop. if detector does not exist, box with dim given otherwise dim ignored
+w FATIMA +10. +10. +10. m
+#
+#
+@ 0 ->
+#
+#
+[
+*	DetectorFactory/Scintillators/FATIMAQ	0.0		0.0		15.6	cm		Ry +90 Rz +45 Rz +0.00   Rt
+*	DetectorFactory/Scintillators/FATIMAQ	0.0		0.0		15.6	cm		Ry +90 Rz +45 Rz +90.0   Rt
+*	DetectorFactory/Scintillators/FATIMAQ	0.0		0.0		15.6	cm		Ry +90 Rz +45 Rz +180.   Rt
+*	DetectorFactory/Scintillators/FATIMAQ	0.0		0.0		15.6	cm		Ry +90 Rz +45 Rz +270.   Rt 
+]
+#
+# end
+

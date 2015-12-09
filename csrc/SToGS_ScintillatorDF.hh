@@ -49,9 +49,13 @@ namespace SToGS {
         
         // make CHATEAU DE CRYTSAL module
         G4VPhysicalVolume *MakeCdC(G4String detname, G4String opt = "bare");
-	
-	// make EDEN
-	G4VPhysicalVolume *MakeEDEN(G4String detname, G4double caps_width = 0.0, G4double extra_back = 0.0, G4String opt = "v0");
+        
+        // make a Fatima module
+        G4VPhysicalVolume *MakeFATIMAM(G4String detname, G4String opt = "bare");
+        G4VPhysicalVolume *MakeFATIMAQ(G4String detname, G4String opt = "bare");
+
+        // make EDEN
+        G4VPhysicalVolume *MakeEDEN(G4String detname, G4double caps_width = 0.0, G4double extra_back = 0.0, G4String opt = "v0");
         
     public:
         //! Should be implemented in any sub factory. It built (C++) a detector and return it

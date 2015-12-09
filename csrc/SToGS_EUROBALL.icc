@@ -1,0 +1,1919 @@
+
+//  This file contains functions that defines Tapered, Colvers and Cluster of EUROBALL III
+// cotes have been extracted from plans. Work done by Q.T. Doan
+
+
+#include "G4Material.hh"
+#include "G4Polycone.hh"
+#include "G4Polyhedra.hh"
+#include "G4LogicalVolume.hh"
+#include "G4ThreeVector.hh"
+#include "G4Transform3D.hh"
+#include "G4RotationMatrix.hh"
+#include "G4PVPlacement.hh"
+#include "G4VisAttributes.hh"
+#include "G4Colour.hh"
+#include "G4RunManager.hh"
+#include "G4ios.hh"
+#include "G4SubtractionSolid.hh"
+#include "G4IntersectionSolid.hh"
+#include "G4UnionSolid.hh"
+
+
+#include "G4Box.hh"
+#include "G4Tubs.hh"
+
+namespace {
+/* FROM DOAN
+// ---------------------------------CLOVER PHASE II-------------------------------------------------------
+// new	
+// Detector definition for the clover (PhaseII)
+	// Ge
+	const G4double ClovCrystalLength	= 70.0*CLHEP::mm; // cystal length
+	const G4double ClovCrystalRadiusOut	= 25.0*CLHEP::mm; // radius of the crystal at the back face	
+	const G4double ClovCrystalAdjacent	= 0.2*CLHEP::mm;  // distance between adjacent crystal	
+	const G4double ClovCrystalHoleDepth	= 15.0*CLHEP::mm; // depth at which starts the hole
+	const G4double ClovCrystalHoleRadius	=  5.0*CLHEP::mm; // radius of the hole
+	const G4double ClovCrystalCutOffset	=  4.6*CLHEP::mm; // depth of the first cut for the crystal 
+	const G4double ClovCrystalFace		= 41.0*CLHEP::mm; //crystal (82.0*CLHEP::mm/2)
+	const G4double ClovtanAngleOffsetCrystal = 0.125;  //tan of the CrystalAngleEdge	
+	
+	// BGO 
+	const G4double ClovBGOFace2Position	= 118.0*CLHEP::mm;
+	const G4double ClovBGOFace3Position	= 314.0*CLHEP::mm;
+
+	const G4double ClovBGOFace1		=   44.5*CLHEP::mm; //91.0*CLHEP::mm/2;
+	const G4double ClovBGOWidth1		=    2.6*CLHEP::mm;
+	const G4double ClovBGOFace2		=   73.0*CLHEP::mm;//148.0*CLHEP::mm/2;
+	const G4double ClovBGOWidth2		=   16.0*CLHEP::mm;
+	const G4double ClovBGOFace3		=   95.5*CLHEP::mm;//191.0*CLHEP::mm/2;
+	const G4double ClovBGOWidth3		=   18.0*CLHEP::mm;
+
+	const G4double ClovBgoToBgoCan		=  0.5*CLHEP::mm;
+	
+	// Collimator
+	const G4double ClovColimatorFace1		=35.75*CLHEP::mm;	//71.5*CLHEP::mm/2;
+	const G4double ClovColimatorFace1Width	  =  9.0*CLHEP::mm;
+	const G4double ClovColimatorFace2Position = 35.0*CLHEP::mm;
+	const G4double ClovColimatorFace2	  = 45.75*CLHEP::mm;	//91.5*CLHEP::mm/2;
+	const G4double ClovColimatorFace2Width	  = 13.0*CLHEP::mm;
+
+	// position of the crystal 
+	
+	const G4double DeltaR  = 27.0*CLHEP::mm; // additional distance from the target (=CrystalPosition) for ring 1 (~102 CLHEP::deg)
+	const G4double DeltaR1 = 0.0*CLHEP::mm;  // additional distance from the target (=CrystalPosition) for ring 2 (~77 CLHEP::deg)
+	
+	// definition of the crystal
+	
+	const G4double CrystalLength		= 70.0*CLHEP::mm; // depth of the crystal PhaseII
+	const G4double CrystalOutRad		= 25.0*CLHEP::mm; // radius of the crystal PhaseII
+	const G4double CrystalAdjacent		= 0.2*CLHEP::mm;  // distance between adjacent crystal
+	
+	const G4double CrystalCutOffset1	= 4.6*CLHEP::mm;    // depth of the first cut for the crystal Phase II
+	const G4double CrystalCutOffset2	= 4.5*CLHEP::mm;    // depth of the second cut for the crystal Phase II
+	const G4double CrystalAngleEdge         = 7.12*CLHEP::deg;  //angle of the cutOffset of the crystal PhaseII// 7.125*CLHEP::deg; //arctan(4.5/36)
+	
+  	const G4double CrystalPosition		= 265.0*CLHEP::mm;  //distance between the cristal and target
+	const G4double CrystalFace1		= 41.0*CLHEP::mm;   //crystal 	//82.0*CLHEP::mm/2;
+	const G4double CrystalFace2		= 45.5*CLHEP::mm;	//91.0*CLHEP::mm/2;
+	const G4double CrystalToFace1		= 18.5*CLHEP::mm;   //distance between the first face of clover and the first face of crystal
+	const G4double CrystalToFace2		= 21.0*CLHEP::mm;   //distance between the second face of clover and the second face of crystal
+	
+	const G4double CrystalCutEdgeLength	= 36.0*CLHEP::mm;   //length of the crystal cut offset
+	const G4double CrystalAdjact		= 0.2*CLHEP::mm;    //distance between two cristal in the same clover
+	const G4double tanAngleOffsetCrystal	= 0.125;     //tan of the CrystalAngleEdge
+	
+// 	---------------------------------------------CapsuleCrystalClover
+// 	const G4double CrystalToCapsuleFace1	=20.0*CLHEP::mm;
+// 	const G4double CrystalToCapsuleFace2	=21.0*CLHEP::mm;
+	const G4double CapsuleWidth		=1.*CLHEP::mm;        //the capsule's width
+	const G4double CapsulePosition		=244.0*CLHEP::mm;     //the capsule's position from the target
+	const G4double CapsuleFace2Position	=56.0*CLHEP::mm;      //
+	const G4double CapsuleFace3Position	=111.0*CLHEP::mm;
+ 	const G4double CapsuleFace1		=42.5*CLHEP::mm;	//86.5*CLHEP::mm/2;
+	const G4double CapsuleFace2		=49.0*CLHEP::mm;	//101.0*CLHEP::mm/2;
+
+	
+	
+	const G4double BGOCanWidth		=1.5*CLHEP::mm;
+	const G4double BGOCanFace1		=41.0*CLHEP::mm;	//82.0*CLHEP::mm/2;
+	const G4double BGOCanFace2		=61.75*CLHEP::mm;	//123.5*CLHEP::mm;
+	const G4double CapsuleToBGOCan		=0.2*CLHEP::mm;
+	const G4double CapsuleToBGOCanFace1	=32.0*CLHEP::mm;
+	const G4double BGOCanPosition		=213.0*CLHEP::mm;
+	const G4double CapsuleToBGOCanFace2	=25.0*CLHEP::mm;
+	const G4double Face2Position		=167.5*CLHEP::mm;
+	const G4double Face2ToFace3		=94.0*CLHEP::mm;
+	const G4double Face3Position		=261.0*CLHEP::mm;
+	const G4double BgoToBgoCan		=0.5*CLHEP::mm;
+	const G4double BgoToBGOCanOut		=0.2*CLHEP::mm;
+	
+	const G4double BGOFace1			=44.5*CLHEP::mm;	//91.0*CLHEP::mm/2;
+	const G4double BGOWidth1		=2.6*CLHEP::mm;
+	const G4double BGOFace2			=73.0*CLHEP::mm;		//148.0*CLHEP::mm/2;
+	const G4double BGOWidth2		=16.0*CLHEP::mm;
+	const G4double BGOFace2Position		=118.0*CLHEP::mm;
+	const G4double BGOFace3Position		=314.0*CLHEP::mm;
+	const G4double BGOFace3			=95.5*CLHEP::mm;	//191.0*CLHEP::mm/2;
+	const G4double BGOWidth3		=18.0*CLHEP::mm;
+	const G4double BGOPosition		= 215.5*CLHEP::mm;
+	
+	
+	const G4double BGOCanOutWidth		=1.*CLHEP::mm;
+	const G4double BGOCanOutFace1		=47.*CLHEP::mm;	//91.5*CLHEP::mm/2;
+	const G4double BGOCanOutFace2		=97.5*CLHEP::mm;	//195.0*CLHEP::mm/2;
+	const G4double BGOCanOutFace2Position	=219.0*CLHEP::mm;
+	const G4double BGOCanOutFace3Position	=371.0*CLHEP::mm;
+	const G4double BGOCanOutPosition	=213.5*CLHEP::mm;
+	
+	const G4double ColimatorFace1		=35.75*CLHEP::mm;	//71.5*CLHEP::mm/2;
+	const G4double ColimatorFace1Width	=13.0*CLHEP::mm;
+	const G4double ColimatorFace2Position	=35.0*CLHEP::mm;
+	const G4double ColimatorFace2		=45.75*CLHEP::mm;	//91.5*CLHEP::mm/2;
+	const G4double ColimatorFace2Width	=17.0*CLHEP::mm;
+	const G4double ColimatorPosition	=173.5*CLHEP::mm;
+	
+	const G4double CsIFace1			=47.25*CLHEP::mm;	//94.5*CLHEP::mm/2;
+	const G4double CsIFace2			=47.25*CLHEP::mm;	//94.5*CLHEP::mm/2;
+	const G4double CsIFace2Position		=110.0*CLHEP::mm;
+	const G4double CsIPosition		=357.5*CLHEP::mm;
+	
+//  	----------------------------------------CLUSTER PHASE III -----------------------------------------------
+// new	
+	const G4double ClusCrystalLength	= 78.0*CLHEP::mm; // cystal length
+	const G4double ClusCrystalRadiusOut	= 35.0*CLHEP::mm; // radius of the crystal at the back face	
+	const G4double ClusCrystalAdjacent	=  3.0*CLHEP::mm; // distance between adjacent crystal	
+	const G4double ClusCrystalHoleDepth	= 15.0*CLHEP::mm; // depth at which starts the hole
+	const G4double ClusCrystalHoleRadius	=  5.0*CLHEP::mm; // radius of the hole
+
+// inclinaison between two cystals. NOT KNOWN FROM THE CONSTRUCTOR
+// ==> calculated with the back of the crystal (radius 35.0 CLHEP::mm at 44.5cm from the target)
+// ==>  7.657 CLHEP::deg
+// an additionnal DeltaTheta is added to have about 3CLHEP::mm between two crystal
+	const G4double AngleClus2Clus		= (7.657 + 0.386)*CLHEP::deg; // 
+// radius of the hexagone formed at the entry face. NOT KNOWN FROM THE CONSTRUCTOR 
+// calculated from the inclinaison angle between two crystal, the length of the crystal 
+// and the radius at the back (ClusCrystalRadiusOut)
+	const G4double ClusCrystalRadiuFace1	= 29.78*CLHEP::mm;  // radius entrance face
+	const G4double ClusCrystalRadiuFace2	= 35.0*CLHEP::mm;   // radius back face	
+	const G4double ClusBGOLength	= 125.0*CLHEP::mm; 
+	const G4double ClusColiLength	=  30.0*CLHEP::mm; 		
+		
+// old
+ 	const G4double ClusCapsulePosition	=448.96*CLHEP::mm; //par calculs
+	const G4double ClusCapsuleMoinsPosition	=47.12*CLHEP::mm;
+	const G4double ClusCapsuleDeltaPosition	=0.24*CLHEP::mm;
+	const G4double ClusCapsuleRPosition	=4.82*CLHEP::mm;
+	
+	const G4double ClusCapsuleFace1		=25.04*CLHEP::mm;	//50.08*CLHEP::mm/2;
+	const G4double ClusCapsuleFace2		=29.38*CLHEP::mm;		//58.76*CLHEP::mm/2;
+	const G4double ClusCapsuleLength 	=78.0*CLHEP::mm;
+	const G4double ClusCapsuleWidth		=1.0*CLHEP::mm;
+	const G4double ClusCapsuleCutLength	=70.0*CLHEP::mm;
+	
+	// angle between two crystals of a same cluster
+//	const G4double AngleClus2Clus		= 5.877*CLHEP::deg; //6.60927*CLHEP::deg;
+	
+ 	const G4double ClusToCapsule		=0.2*CLHEP::mm;
+ 	const G4double ClusFace1		=23.84*CLHEP::mm;	//47.68*CLHEP::mm/2;
+ 	const G4double ClusFace2		=28.18*CLHEP::mm;	//56.36*CLHEP::mm/2;
+	const G4double ClusPosition		=450.16*CLHEP::mm;
+	
+
+		
+//	const G4double thetaClus1		= 156.76*CLHEP::deg;
+//	const G4double thetaClus2		= 129.44*CLHEP::deg;
+//	const G4double thetaClus3		= 137.4*CLHEP::deg;
+	
+//	const G4double phiClus1			= 72.0*CLHEP::deg;
+	
+// 	------------------------------------------------------
+	const	G4double deltaRClus		=10.0*CLHEP::mm;
+	
+
+	const G4double ClusCapotPosition	=344.0*CLHEP::mm;
+	const G4double ClusCapotFace1		=79.95*CLHEP::mm;	//0.975*164.0*CLHEP::mm/2;
+	const G4double ClusCapotFace2		=125.01*CLHEP::mm;//136.01*CLHEP::mm;		//0.975*279.0*CLHEP::mm/2;
+
+	const G4double AngleClusCapotCutEdge		=2.93*CLHEP::deg;
+	const G4double ClusCapotMoinsPosition		=62.33*CLHEP::mm;
+	const G4double ClusCapotDeltaPosition		=0.327*CLHEP::mm;
+	const G4double ClusCapotRPosition		=6.37*CLHEP::mm;
+	const G4double CutClusCapotFace1		=17.73*CLHEP::mm;	//35.46*CLHEP::mm/2;
+	const G4double CutClusCapotFace2		=34.00*CLHEP::mm;	//68.01*CLHEP::mm/2;
+	const G4double AngleClusCutCapotToCutCapot	=5.86*CLHEP::deg;
+	const G4double CutClusCapotPosition		=283.62*CLHEP::mm;
+	const G4double CutClusCapotLength		=318.0*CLHEP::mm;
+// 	------------------------------------------------------
+	const G4double ClusColimatorPosition		=280.0*CLHEP::mm;
+	const G4double ClusColimatorFace1		=64.83*CLHEP::mm;	 //0.975*133.0*CLHEP::mm/2;
+	const G4double ClusColimatorFace2		=79.95*CLHEP::mm;	//0.975*164.0*CLHEP::mm/2;
+	const G4double ClusColimatorLength		=62.2*CLHEP::mm;
+	
+	const G4double CutClusColimatorPosition		=262.75*CLHEP::mm;
+ 	const G4double CutClusColimatorLength		=100.5*CLHEP::mm;
+	const G4double CutClusColimatorMoinsPosition	=16.67*CLHEP::mm;
+	const G4double CutClusColimatorRPosition	=1.65*CLHEP::mm;
+	const G4double CutClusColimatorDeltaPosition	=0.08*CLHEP::mm;
+	const G4double Angle2ClusCutColimator		=5.68*CLHEP::deg;
+	const G4double CutClusColimatorFace1		=13.89*CLHEP::mm;	//27.79*CLHEP::mm/2;
+	const G4double CutClusColimatorFace2		=18.87*CLHEP::mm;	//37.74*CLHEP::mm/2;
+// 	------------------------------------------------------
+	const G4double ClusBackFace1		=131.75*CLHEP::mm;//135.75*CLHEP::mm;		//0.975*278.0*CLHEP::mm/2;
+	const G4double ClusBackFace2		=135.42*CLHEP::mm;//139.42*CLHEP::mm;		//0.975*286.0*CLHEP::mm/2;
+	const G4double ClusBackFace3		=135.42*CLHEP::mm;//139.42*CLHEP::mm;		//0.975*286.0*CLHEP::mm/2;
+	const G4double ClusBackFace4		=144.3*CLHEP::mm;		//0.975*296.0*CLHEP::mm/2;
+	const G4double ClusBackFace5		=144.3*CLHEP::mm;		//0.975*296.0*CLHEP::mm/2;
+	const G4double ClusBackInnRad		=100.0*CLHEP::mm;
+	
+	const G4double ClusBackFace1Position	=584.0*CLHEP::mm;
+	const G4double ClusBackFace2Position	=605.0*CLHEP::mm;
+	const G4double ClusBackFace3Position	=627.0*CLHEP::mm;
+	const G4double ClusBackFace4Position	=627.1*CLHEP::mm;
+	const G4double ClusBackFace5Position	=704.4*CLHEP::mm;
+// 	-------------------------------------------------------
+	const G4double ClusCsIBackOutRad	=99.8*CLHEP::mm;
+	const G4double ClusCsIBackFace1Position	=584.0*CLHEP::mm;
+	const G4double ClusCsIBackFace2Position	=704.4*CLHEP::mm;
+// 	---------------------------------------------------
+	const G4double ClusBaseFace1		=160.87*CLHEP::mm;
+	const G4double ClusBaseFace1Position 	=704.6*CLHEP::mm;
+	const G4double ClusBaseLength		=120.0*CLHEP::mm;
+	const G4double ClusBaseFace2		=189.12*CLHEP::mm;
+	const G4double ClusBaseFace2Position	=824.0*CLHEP::mm;
+	const G4double ClusBaseInnRad1		=131.0*CLHEP::mm;
+	const G4double ClusBaseInnRad2		=172.0*CLHEP::mm;
+	
+// -- -TRONCONIQUE PHASEI, NEW ---------------------
+// Detector definition for the tronconique (PhaseI)
+	const G4double TronCrystalLength	= 70.0*CLHEP::mm; // cystal length
+	
+	const G4double TronCrystalEdgeDepth	= 40.0*CLHEP::mm; // depth at which starts TronCrystalRadiusMax	
+	const G4double TronCrystalRadiusMin	=  32.0*CLHEP::mm; // radius of the crystal at the entrance face	
+	const G4double TronCrystalRadiusMax	=  35.0*CLHEP::mm; // radius of the crystal at the back face	
+	
+	const G4double TronCrystalHoleDepth	= 15.0*CLHEP::mm; // depth at which starts the hole
+	const G4double TronCrystalHoleRadius	=  5.0*CLHEP::mm; // radius of the hole
+	
+	const G4double TronBGOLength		= 190.0*CLHEP::mm; // length of the BGO sheild
+	const G4double TronBGOFace2		=  73.0*CLHEP::mm;
+	const G4double TronBGOFace1		=  54.0*CLHEP::mm;
+	const G4double TronBGOFace2InnRad	=  52.0*CLHEP::mm;
+	const G4double TronBGOFace1InnRad	=  33.0*CLHEP::mm;
+	const G4double TronBGOCut1X		=  16.01*CLHEP::mm;
+	const G4double TronBGOCut1Angle		=  15.04*CLHEP::deg;	//18.64*CLHEP::deg;
+	const G4double TronBGOCut1AngleZ	=  30.86*CLHEP::deg;
+	const G4double TronBGOCut1Y		=  73.0*CLHEP::mm;
+	const G4double TronBGOCut1Z		=  190.0*CLHEP::mm;
+	const G4double TronBGOCut1AnglePosition	=  30.86*CLHEP::deg;
+	
+	const G4double TronBGOCut2X		=  16.67*CLHEP::mm;
+	const G4double TronBGOCut2Angle		=  15.4*CLHEP::deg;	//18.0*CLHEP::deg;
+	const G4double TronBGOCut2AngleZ	=  90.0*CLHEP::deg;
+	const G4double TronBGOCut2Y		=  73.0*CLHEP::mm;
+	const G4double TronBGOCut2Z		=  190.0*CLHEP::mm;
+	const G4double TronBGOCut2AnglePosition	=  90.0*CLHEP::deg;
+	
+	const G4double TronBGOCut3X		=  16.01*CLHEP::mm;
+	const G4double TronBGOCut3Angle		=  23.05*CLHEP::deg;//25.65*CLHEP::deg;
+	const G4double TronBGOCut3AngleZ	=  56.11*CLHEP::deg;
+	const G4double TronBGOCut3Y		=  73.0*CLHEP::mm;
+	const G4double TronBGOCut3Z		=  190.0*CLHEP::mm;
+	const G4double TronBGOCut3AnglePosition	=  123.89*CLHEP::deg;
+	
+	const G4double TronBGOCut4X		=  15.89*CLHEP::mm;
+	const G4double TronBGOCut4Angle		=  13.88*CLHEP::deg;//16.48*CLHEP::deg;
+	const G4double TronBGOCut4AngleZ	=  0.0*CLHEP::deg;
+	const G4double TronBGOCut4Y		=  73.0*CLHEP::mm;
+	const G4double TronBGOCut4Z		=  190.0*CLHEP::mm;
+	const G4double TronBGOCut4AnglePosition	=  180.0*CLHEP::deg;
+			
+//	const 	G4double	TronColiPosition		=299.6*CLHEP::mm;
+//	const 	G4double	TronColiFace2Position		=334.8*CLHEP::mm;
+	const 	G4double TronColiFace1		= 70.0*CLHEP::mm;
+	const 	G4double TronColiFace1InnRad	= 27.0*CLHEP::mm;
+	const 	G4double TronColiFace2InnRad	= 34.0*CLHEP::mm;
+	const 	G4double TronColiLength		= 35.0*CLHEP::mm;
+	
+	// to shpae correctly the collimator
+	const G4double TronColiCut1X			=44.22*CLHEP::mm;
+	const G4double TronColiCut1Angle		=16.04*CLHEP::deg;//18.64*CLHEP::deg;
+	const G4double TronColiCut1AngleZ		=30.86*CLHEP::deg;
+	const G4double TronColiCut1Y			=84.0*CLHEP::mm;
+	const G4double TronColiCut1Z			=252.0*CLHEP::mm;
+	const G4double TronColiCut1AnglePosition	=30.86*CLHEP::deg;
+	
+	const G4double TronColiCut2X			=44.3*CLHEP::mm;
+	const G4double TronColiCut2Angle		=15.4*CLHEP::deg;//18.5*CLHEP::deg;
+	const G4double TronColiCut2AngleZ		=90.0*CLHEP::deg;
+	const G4double TronColiCut2Y			=84.0*CLHEP::mm;
+	const G4double TronColiCut2Z			=252.0*CLHEP::mm;
+	const G4double TronColiCut2AnglePosition	=90.0*CLHEP::deg;
+	
+	const G4double TronColiCut3X			=44.2*CLHEP::mm;
+	const G4double TronColiCut3Angle		=23.05*CLHEP::deg;//25.65*CLHEP::deg;
+	const G4double TronColiCut3AngleZ		=56.11*CLHEP::deg;
+	const G4double TronColiCut3Y			=84.0*CLHEP::mm;
+	const G4double TronColiCut3Z			=252.0*CLHEP::mm;
+	const G4double TronColiCut3AnglePosition	=123.89*CLHEP::deg;
+	
+	const G4double TronColiCut4X			=43.87*CLHEP::mm;
+	const G4double TronColiCut4Angle		=13.88*CLHEP::deg;//16.48*CLHEP::deg;
+	const G4double TronColiCut4AngleZ		=0.0*CLHEP::deg;
+	const G4double TronColiCut4Y			=84.0*CLHEP::mm;
+	const G4double TronColiCut4Z			=252.0*CLHEP::mm;
+	const G4double TronColiCut4AnglePosition	=180.0*CLHEP::deg;
+			
+// ---------------------OLD--------------------------
+	
+
+	
+// 	---------TronCrys, CapsuleOut et Capsule
+	const 	G4double TronCapsuleOutFace1		=33.5*CLHEP::mm;
+	const   G4double TronCapsuleOutFace2		=46.0*CLHEP::mm;
+	const 	G4double TronCapsuleOutWidth		=1.0*CLHEP::mm;
+	const   G4double TronCapsuleOutPosition		=337.0*CLHEP::mm;
+	const 	G4double TronCapsuleOutFace2Position	=457.0*CLHEP::mm;
+	const 	G4double TronCapsuleOutFace3Position	=587.0*CLHEP::mm;
+	
+	const 	G4double TronCapsuleFace1		=34.0*CLHEP::mm;
+	const   G4double TronCapsuleFace2		=44.0*CLHEP::mm;
+	const 	G4double TronCapsuleWidth		=1.0*CLHEP::mm;
+	const   G4double TronCapsulePosition		=358.0*CLHEP::mm;
+	const 	G4double TronCapsuleFace2Position	=457.0*CLHEP::mm;
+	const 	G4double TronCapsuleFace3Position	=647.0*CLHEP::mm;
+	
+	const 	G4double TronCrystalFace1		=32.0*CLHEP::mm;
+	const   G4double TronCrystalFace2		=35.0*CLHEP::mm;
+	const   G4double TronCrystalPosition		=374.0*CLHEP::mm;
+	const 	G4double TronCrystalFace2Position	=414.0*CLHEP::mm;
+	const 	G4double TronCrystalFace3Position	=444.0*CLHEP::mm;
+	
+// 	-----------------OuterCapsule
+	const G4double TronOuterCapsuleCut1X			=44.22*CLHEP::mm;
+	const G4double TronOuterCapsuleCut1Angle		=16.04*CLHEP::deg;//18.64*CLHEP::deg;
+	const G4double TronOuterCapsuleCut1AngleZ		=30.86*CLHEP::deg;
+	const G4double TronOuterCapsuleCut1Y			=84.0*CLHEP::mm;
+	const G4double TronOuterCapsuleCut1Z			=252.0*CLHEP::mm;
+	const G4double TronOuterCapsuleCut1AnglePosition	=30.86*CLHEP::deg;
+	
+	const G4double TronOuterCapsuleCut2X			=44.3*CLHEP::mm;
+	const G4double TronOuterCapsuleCut2Angle		=15.4*CLHEP::deg;//18.5*CLHEP::deg;
+	const G4double TronOuterCapsuleCut2AngleZ		=90.0*CLHEP::deg;
+	const G4double TronOuterCapsuleCut2Y			=84.0*CLHEP::mm;
+	const G4double TronOuterCapsuleCut2Z			=252.0*CLHEP::mm;
+	const G4double TronOuterCapsuleCut2AnglePosition	=90.0*CLHEP::deg;
+	
+	const G4double TronOuterCapsuleCut3X			=44.2*CLHEP::mm;
+	const G4double TronOuterCapsuleCut3Angle		=23.05*CLHEP::deg;//25.65*CLHEP::deg;
+	const G4double TronOuterCapsuleCut3AngleZ		=56.11*CLHEP::deg;
+	const G4double TronOuterCapsuleCut3Y			=84.0*CLHEP::mm;
+	const G4double TronOuterCapsuleCut3Z			=252.0*CLHEP::mm;
+	const G4double TronOuterCapsuleCut3AnglePosition	=123.89*CLHEP::deg;
+	
+	const G4double TronOuterCapsuleCut4X			=43.87*CLHEP::mm;
+	const G4double TronOuterCapsuleCut4Angle		=13.88*CLHEP::deg;//16.48*CLHEP::deg;
+	const G4double TronOuterCapsuleCut4AngleZ		=0.0*CLHEP::deg;
+	const G4double TronOuterCapsuleCut4Y			=84.0*CLHEP::mm;
+	const G4double TronOuterCapsuleCut4Z			=252.0*CLHEP::mm;
+	const G4double TronOuterCapsuleCut4AnglePosition	=180.0*CLHEP::deg;
+
+
+	const 	G4double TronOuterCapsuleLength			=250.0*CLHEP::mm;
+	const 	G4double TronOuterCapsuleWidth			=1.5*CLHEP::mm;
+	const 	G4double TronOuterCapsulePosition		=335.0*CLHEP::mm;//335.0*CLHEP::mm;
+	const 	G4double TronOuterCapsuleOutRad			=83.75*CLHEP::mm;
+	const   G4double AdjactTronBGO2Capsule			=0.2*CLHEP::mm;
+// 	---------------------------------Arriere
+	const 	G4double	TronArreFace1			=82.05*CLHEP::mm;
+	const	G4double	TronArreFace1InnRad		=46.2*CLHEP::mm;
+	const	G4double	TronArreFace2			=82.05*CLHEP::mm;
+	const	G4double	TronArreFace2InnRad		=46.2*CLHEP::mm;
+	const	G4double	TronArreFace3			=86.05*CLHEP::mm;
+	const	G4double	TronArreFace3InnRad		=46.2*CLHEP::mm;
+	const	G4double 	TronArreFace4			=86.05*CLHEP::mm;
+	const	G4double	TronArreFace4InnRad		=44.2*CLHEP::mm;
+	const	G4double	TronArreFace5			=82.05*CLHEP::mm;
+	const	G4double	TronArreFace5InnRad		=44.2*CLHEP::mm;
+	const	G4double	TronArreFace6			=82.05*CLHEP::mm;
+	const	G4double	TronArreFace6InnRad		=44.2*CLHEP::mm; 	
+	const	G4double	TronArreFace1Position		=574.0*CLHEP::mm;
+	const	G4double	TronArreFace2Position		=586.9*CLHEP::mm;
+	const	G4double	TronArreFace3Position		=587.0*CLHEP::mm;
+	const	G4double	TronArreFace4Position		=592.0*CLHEP::mm;
+	const	G4double	TronArreFace5Position		=592.1*CLHEP::mm;
+	const	G4double	TronArreFace6Position		=607.1*CLHEP::mm;
+// 	-------------------------------------------TRONCOLIMATOR
+*/
+
+// -- -TAPERED PHASEI ---------------------
+    // this is the Ge crystal definition
+	const G4double TronCrystalLength        = 70.0*CLHEP::mm;   // cystal length
+	//
+	const G4double TronCrystalEdgeDepth     = 40.0*CLHEP::mm;   // depth at which starts TronCrystalRadiusMax
+	const G4double TronCrystalRadiusMin     =  32.0*CLHEP::mm;  // radius of the crystal at the entrance face
+	const G4double TronCrystalRadiusMax     =  35.0*CLHEP::mm;  // radius of the crystal at the back face
+	//
+	const G4double TronCrystalHoleDepth     = 15.0*CLHEP::mm;       // depth at which starts the hole
+	const G4double TronCrystalHoleRadius	=  5.0*CLHEP::mm;   // radius of the hole
+	//
+    // this is the BGO crystal definition
+	const G4double TronBGOLength        = 190.0*CLHEP::mm;      // length of the BGO sheild
+	const G4double TronBGOFace2         =  73.0*CLHEP::mm;
+	const G4double TronBGOFace1         =  54.0*CLHEP::mm;
+	const G4double TronBGOFace2InnRad	=  52.0*CLHEP::mm;
+	const G4double TronBGOFace1InnRad	=  33.0*CLHEP::mm;
+	const G4double TronBGOCut1X         =  16.01*CLHEP::mm;
+	const G4double TronBGOCut1Angle		=  15.04*CLHEP::deg;	//18.64*CLHEP::deg;
+	const G4double TronBGOCut1AngleZ	=  30.86*CLHEP::deg;
+	const G4double TronBGOCut1Y         =  73.0*CLHEP::mm;
+	const G4double TronBGOCut1Z         =  190.0*CLHEP::mm;
+	const G4double TronBGOCut1AnglePosition	=  30.86*CLHEP::deg;
+	//
+	const G4double TronBGOCut2X         =  16.67*CLHEP::mm;
+	const G4double TronBGOCut2Angle		=  15.4*CLHEP::deg;     //18.0*CLHEP::deg;
+	const G4double TronBGOCut2AngleZ	=  90.0*CLHEP::deg;
+	const G4double TronBGOCut2Y         =  73.0*CLHEP::mm;
+	const G4double TronBGOCut2Z         =  190.0*CLHEP::mm;
+	const G4double TronBGOCut2AnglePosition	=  90.0*CLHEP::deg;
+	//
+	const G4double TronBGOCut3X         =  16.01*CLHEP::mm;
+	const G4double TronBGOCut3Angle		=  23.05*CLHEP::deg;    //25.65*CLHEP::deg;
+	const G4double TronBGOCut3AngleZ	=  56.11*CLHEP::deg;
+	const G4double TronBGOCut3Y         =  73.0*CLHEP::mm;
+	const G4double TronBGOCut3Z         =  190.0*CLHEP::mm;
+	const G4double TronBGOCut3AnglePosition	=  123.89*CLHEP::deg;
+	//
+	const G4double TronBGOCut4X         =  15.89*CLHEP::mm;
+	const G4double TronBGOCut4Angle		=  13.88*CLHEP::deg;    //16.48*CLHEP::deg;
+	const G4double TronBGOCut4AngleZ	=  0.0*CLHEP::deg;
+	const G4double TronBGOCut4Y         =  73.0*CLHEP::mm;
+	const G4double TronBGOCut4Z         =  190.0*CLHEP::mm;
+	const G4double TronBGOCut4AnglePosition	=  180.0*CLHEP::deg;
+    //
+    // this is the collimator definition
+    //	const 	G4double	TronColiPosition		=299.6*CLHEP::mm;
+    //	const 	G4double	TronColiFace2Position		=334.8*CLHEP::mm;
+	const 	G4double TronColiFace1          = 70.0*CLHEP::mm;
+	const 	G4double TronColiFace1InnRad	= 27.0*CLHEP::mm;
+	const 	G4double TronColiFace2InnRad	= 34.0*CLHEP::mm;
+	const 	G4double TronColiLength         = 35.0*CLHEP::mm;
+	//
+	// to shpae correctly the collimator
+	const G4double TronColiCut1X			= 44.22*CLHEP::mm;
+	const G4double TronColiCut1Angle		= 16.04*CLHEP::deg;//18.64*CLHEP::deg;
+	const G4double TronColiCut1AngleZ		= 30.86*CLHEP::deg;
+	const G4double TronColiCut1Y			= 84.0*CLHEP::mm;
+	const G4double TronColiCut1Z			= 252.0*CLHEP::mm;
+	const G4double TronColiCut1AnglePosition	= 30.86*CLHEP::deg;
+	//
+	const G4double TronColiCut2X			= 44.3*CLHEP::mm;
+	const G4double TronColiCut2Angle		= 15.4*CLHEP::deg;//18.5*CLHEP::deg;
+	const G4double TronColiCut2AngleZ		= 90.0*CLHEP::deg;
+	const G4double TronColiCut2Y			= 84.0*CLHEP::mm;
+	const G4double TronColiCut2Z			= 252.0*CLHEP::mm;
+	const G4double TronColiCut2AnglePosition	= 90.0*CLHEP::deg;
+	//
+	const G4double TronColiCut3X			= 44.2*CLHEP::mm;
+	const G4double TronColiCut3Angle		= 23.05*CLHEP::deg;//25.65*CLHEP::deg;
+	const G4double TronColiCut3AngleZ		= 56.11*CLHEP::deg;
+	const G4double TronColiCut3Y			= 84.0*CLHEP::mm;
+	const G4double TronColiCut3Z			= 252.0*CLHEP::mm;
+	const G4double TronColiCut3AnglePosition	= 123.89*CLHEP::deg;
+	//
+	const G4double TronColiCut4X			= 43.87*CLHEP::mm;
+	const G4double TronColiCut4Angle		= 13.88*CLHEP::deg;//16.48*CLHEP::deg;
+	const G4double TronColiCut4AngleZ		= 0.0*CLHEP::deg;
+	const G4double TronColiCut4Y			= 84.0*CLHEP::mm;
+	const G4double TronColiCut4Z			= 252.0*CLHEP::mm;
+	const G4double TronColiCut4AnglePosition	= 180.0*CLHEP::deg;
+    //
+    // this is for the different capsules oround the crystals i.e. aroud Ge and BGO shield
+    const 	G4double TronCrystalFace1           = 32.0*CLHEP::mm;
+	const   G4double TronCrystalFace2           = 35.0*CLHEP::mm;
+	const   G4double TronCrystalPosition		= 374.0*CLHEP::mm;
+	const 	G4double TronCrystalFace2Position	= 414.0*CLHEP::mm;
+	const 	G4double TronCrystalFace3Position	= 444.0*CLHEP::mm;
+	//
+    // 	---------TronCrys, CapsuleOut et Capsule
+	const 	G4double TronCapsuleOutFace1		= 33.5*CLHEP::mm;
+	const   G4double TronCapsuleOutFace2		= 46.0*CLHEP::mm;
+	const 	G4double TronCapsuleOutWidth		= 1.0*CLHEP::mm;
+	const   G4double TronCapsuleOutPosition		= 337.0*CLHEP::mm;
+	const 	G4double TronCapsuleOutFace2Position	= 457.0*CLHEP::mm;
+	const 	G4double TronCapsuleOutFace3Position	= 587.0*CLHEP::mm;
+    // this is the first Al layer around the Germanium crystal
+	const 	G4double TronCapsuleFace1		= 34.0*CLHEP::mm;
+	const   G4double TronCapsuleFace2		= 44.0*CLHEP::mm;
+	const 	G4double TronCapsuleWidth		= 1.0*CLHEP::mm;
+	const   G4double TronCapsulePosition		= 358.0*CLHEP::mm;
+	const 	G4double TronCapsuleFace2Position	= 457.0*CLHEP::mm;
+	const 	G4double TronCapsuleFace3Position	= 647.0*CLHEP::mm;
+    // 	-----------------OuterCapsule
+	const G4double TronOuterCapsuleCut1X			= 44.22*CLHEP::mm;
+	const G4double TronOuterCapsuleCut1Angle		= 16.04*CLHEP::deg;//18.64*CLHEP::deg;
+	const G4double TronOuterCapsuleCut1AngleZ		= 30.86*CLHEP::deg;
+	const G4double TronOuterCapsuleCut1Y			= 84.0*CLHEP::mm;
+	const G4double TronOuterCapsuleCut1Z			= 252.0*CLHEP::mm;
+	const G4double TronOuterCapsuleCut1AnglePosition	= 30.86*CLHEP::deg;
+	//
+	const G4double TronOuterCapsuleCut2X			= 44.3*CLHEP::mm;
+	const G4double TronOuterCapsuleCut2Angle		= 15.4*CLHEP::deg;//18.5*CLHEP::deg;
+	const G4double TronOuterCapsuleCut2AngleZ		= 90.0*CLHEP::deg;
+	const G4double TronOuterCapsuleCut2Y			= 84.0*CLHEP::mm;
+	const G4double TronOuterCapsuleCut2Z			= 252.0*CLHEP::mm;
+	const G4double TronOuterCapsuleCut2AnglePosition	= 90.0*CLHEP::deg;
+	//
+	const G4double TronOuterCapsuleCut3X			= 44.2*CLHEP::mm;
+	const G4double TronOuterCapsuleCut3Angle		= 23.05*CLHEP::deg;//25.65*CLHEP::deg;
+	const G4double TronOuterCapsuleCut3AngleZ		= 56.11*CLHEP::deg;
+	const G4double TronOuterCapsuleCut3Y			= 84.0*CLHEP::mm;
+	const G4double TronOuterCapsuleCut3Z			= 252.0*CLHEP::mm;
+	const G4double TronOuterCapsuleCut3AnglePosition	= 123.89*CLHEP::deg;
+	//
+	const G4double TronOuterCapsuleCut4X			= 43.87*CLHEP::mm;
+	const G4double TronOuterCapsuleCut4Angle		= 13.88*CLHEP::deg;//16.48*CLHEP::deg;
+	const G4double TronOuterCapsuleCut4AngleZ		= 0.0*CLHEP::deg;
+	const G4double TronOuterCapsuleCut4Y			= 84.0*CLHEP::mm;
+	const G4double TronOuterCapsuleCut4Z			= 252.0*CLHEP::mm;
+	const G4double TronOuterCapsuleCut4AnglePosition	= 180.0*CLHEP::deg;
+    //
+	const 	G4double TronOuterCapsuleLength			= 250.0*CLHEP::mm;
+	const 	G4double TronOuterCapsuleWidth			= 1.5*CLHEP::mm;
+	const 	G4double TronOuterCapsulePosition		= 335.0*CLHEP::mm;//335.0*CLHEP::mm;
+	const 	G4double TronOuterCapsuleOutRad			= 83.75*CLHEP::mm;
+	const   G4double AdjactTronBGO2Capsule			= 0.2*CLHEP::mm;
+    // 	---------------------------------Arriere
+	const 	G4double	TronArreFace1			= 82.05*CLHEP::mm;
+	const	G4double	TronArreFace1InnRad		= 46.2*CLHEP::mm;
+	const	G4double	TronArreFace2			= 82.05*CLHEP::mm;
+	const	G4double	TronArreFace2InnRad		= 46.2*CLHEP::mm;
+	const	G4double	TronArreFace3			= 86.05*CLHEP::mm;
+	const	G4double	TronArreFace3InnRad		= 46.2*CLHEP::mm;
+	const	G4double 	TronArreFace4			= 86.05*CLHEP::mm;
+	const	G4double	TronArreFace4InnRad		= 44.2*CLHEP::mm;
+	const	G4double	TronArreFace5			= 82.05*CLHEP::mm;
+	const	G4double	TronArreFace5InnRad		= 44.2*CLHEP::mm;
+	const	G4double	TronArreFace6			= 82.05*CLHEP::mm;
+	const	G4double	TronArreFace6InnRad		= 44.2*CLHEP::mm;
+	const	G4double	TronArreFace1Position		= 574.0*CLHEP::mm;
+	const	G4double	TronArreFace2Position		= 586.9*CLHEP::mm;
+	const	G4double	TronArreFace3Position		= 587.0*CLHEP::mm;
+	const	G4double	TronArreFace4Position		= 592.0*CLHEP::mm;
+	const	G4double	TronArreFace5Position		= 592.1*CLHEP::mm;
+	const	G4double	TronArreFace6Position		= 607.1*CLHEP::mm;
+    // 	-------------------------------------------TRONCOLIMATOR
+    
+    // ---------------------------------CLOVER PHASE II-------------------------------------------------------
+    // new
+    // Detector definition for the clover (PhaseII)
+	// Ge
+	const G4double ClovCrystalLength	= 70.0*CLHEP::mm; // cystal length
+	const G4double ClovCrystalRadiusOut	= 25.0*CLHEP::mm; // radius of the crystal at the back face
+	const G4double ClovCrystalAdjacent	= 0.2*CLHEP::mm;  // distance between adjacent crystal
+	const G4double ClovCrystalHoleDepth	= 15.0*CLHEP::mm; // depth at which starts the hole
+	const G4double ClovCrystalHoleRadius	=  5.0*CLHEP::mm; // radius of the hole
+	const G4double ClovCrystalCutOffset	=  4.6*CLHEP::mm; // depth of the first cut for the crystal
+	const G4double ClovCrystalFace		= 41.0*CLHEP::mm; //crystal (82.0*CLHEP::mm/2)
+	const G4double ClovtanAngleOffsetCrystal = 0.125;  //tan of the CrystalAngleEdge
+	
+	// BGO
+	const G4double ClovBGOFace2Position	= 118.0*CLHEP::mm;
+	const G4double ClovBGOFace3Position	= 314.0*CLHEP::mm;
+    
+	const G4double ClovBGOFace1		=   44.5*CLHEP::mm; //91.0*CLHEP::mm/2;
+	const G4double ClovBGOWidth1		=    2.6*CLHEP::mm;
+	const G4double ClovBGOFace2		=   73.0*CLHEP::mm;//148.0*CLHEP::mm/2;
+	const G4double ClovBGOWidth2		=   16.0*CLHEP::mm;
+	const G4double ClovBGOFace3		=   95.5*CLHEP::mm;//191.0*CLHEP::mm/2;
+	const G4double ClovBGOWidth3		=   18.0*CLHEP::mm;
+    
+	const G4double ClovBgoToBgoCan		=  0.5*CLHEP::mm;
+	
+	// Collimator
+	const G4double ClovColimatorFace1		=35.75*CLHEP::mm;	//71.5*CLHEP::mm/2;
+	const G4double ClovColimatorFace1Width	  =  9.0*CLHEP::mm;
+	const G4double ClovColimatorFace2Position = 35.0*CLHEP::mm;
+	const G4double ClovColimatorFace2	  = 45.75*CLHEP::mm;	//91.5*CLHEP::mm/2;
+	const G4double ClovColimatorFace2Width	  = 13.0*CLHEP::mm;
+    
+	// position of the crystal
+	
+	const G4double DeltaR  = 27.0*CLHEP::mm; // additional distance from the target (=CrystalPosition) for ring 1 (~102 CLHEP::deg)
+	const G4double DeltaR1 = 0.0*CLHEP::mm;  // additional distance from the target (=CrystalPosition) for ring 2 (~77 CLHEP::deg)
+	
+	// definition of the crystal
+	
+	const G4double CrystalLength		= 70.0*CLHEP::mm; // depth of the crystal PhaseII
+	const G4double CrystalOutRad		= 25.0*CLHEP::mm; // radius of the crystal PhaseII
+	const G4double CrystalAdjacent		= 0.2*CLHEP::mm;  // distance between adjacent crystal
+	
+	const G4double CrystalCutOffset1	= 4.6*CLHEP::mm;    // depth of the first cut for the crystal Phase II
+	const G4double CrystalCutOffset2	= 4.5*CLHEP::mm;    // depth of the second cut for the crystal Phase II
+	const G4double CrystalAngleEdge         = 7.12*CLHEP::deg;  //angle of the cutOffset of the crystal PhaseII// 7.125*CLHEP::deg; //arctan(4.5/36)
+	
+  	const G4double CrystalPosition		= 265.0*CLHEP::mm;  //distance between the cristal and target
+	const G4double CrystalFace1		= 41.0*CLHEP::mm;   //crystal 	//82.0*CLHEP::mm/2;
+	const G4double CrystalFace2		= 45.5*CLHEP::mm;	//91.0*CLHEP::mm/2;
+	const G4double CrystalToFace1		= 18.5*CLHEP::mm;   //distance between the first face of clover and the first face of crystal
+	const G4double CrystalToFace2		= 21.0*CLHEP::mm;   //distance between the second face of clover and the second face of crystal
+	
+	const G4double CrystalCutEdgeLength	= 36.0*CLHEP::mm;   //length of the crystal cut offset
+	const G4double CrystalAdjact		= 0.2*CLHEP::mm;    //distance between two cristal in the same clover
+	const G4double tanAngleOffsetCrystal	= 0.125;     //tan of the CrystalAngleEdge
+	
+    // 	---------------------------------------------CapsuleCrystalClover
+    // 	const G4double CrystalToCapsuleFace1	=20.0*CLHEP::mm;
+    // 	const G4double CrystalToCapsuleFace2	=21.0*CLHEP::mm;
+	const G4double CapsuleWidth		=1.*CLHEP::mm;        //the capsule's width
+	const G4double CapsulePosition		=244.0*CLHEP::mm;     //the capsule's position from the target
+	const G4double CapsuleFace2Position	=56.0*CLHEP::mm;      //
+	const G4double CapsuleFace3Position	=111.0*CLHEP::mm;
+ 	const G4double CapsuleFace1		=42.5*CLHEP::mm;	//86.5*CLHEP::mm/2;
+	const G4double CapsuleFace2		=49.0*CLHEP::mm;	//101.0*CLHEP::mm/2;
+	
+	const G4double BGOCanWidth		=1.5*CLHEP::mm;
+	const G4double BGOCanFace1		=41.0*CLHEP::mm;	//82.0*CLHEP::mm/2;
+	const G4double BGOCanFace2		=61.75*CLHEP::mm;	//123.5*CLHEP::mm;
+	const G4double CapsuleToBGOCan		=0.2*CLHEP::mm;
+	const G4double CapsuleToBGOCanFace1	=32.0*CLHEP::mm;
+	const G4double BGOCanPosition		=213.0*CLHEP::mm;
+	const G4double CapsuleToBGOCanFace2	=25.0*CLHEP::mm;
+	const G4double Face2Position		=167.5*CLHEP::mm;
+	const G4double Face2ToFace3		=94.0*CLHEP::mm;
+	const G4double Face3Position		=261.0*CLHEP::mm;
+	const G4double BgoToBgoCan		=0.5*CLHEP::mm;
+	const G4double BgoToBGOCanOut		=0.2*CLHEP::mm;
+	
+	const G4double BGOFace1			=44.5*CLHEP::mm;	//91.0*CLHEP::mm/2;
+	const G4double BGOWidth1		=2.6*CLHEP::mm;
+	const G4double BGOFace2			=73.0*CLHEP::mm;		//148.0*CLHEP::mm/2;
+	const G4double BGOWidth2		=16.0*CLHEP::mm;
+	const G4double BGOFace2Position		=118.0*CLHEP::mm;
+	const G4double BGOFace3Position		=314.0*CLHEP::mm;
+	const G4double BGOFace3			=95.5*CLHEP::mm;	//191.0*CLHEP::mm/2;
+	const G4double BGOWidth3		=18.0*CLHEP::mm;
+	const G4double BGOPosition		= 215.5*CLHEP::mm;
+	
+	const G4double BGOCanOutWidth		=1.*CLHEP::mm;
+	const G4double BGOCanOutFace1		=47.*CLHEP::mm;	//91.5*CLHEP::mm/2;
+	const G4double BGOCanOutFace2		=97.5*CLHEP::mm;	//195.0*CLHEP::mm/2;
+	const G4double BGOCanOutFace2Position	=219.0*CLHEP::mm;
+	const G4double BGOCanOutFace3Position	=371.0*CLHEP::mm;
+	const G4double BGOCanOutPosition	=213.5*CLHEP::mm;
+	
+	const G4double ColimatorFace1		=35.75*CLHEP::mm;	//71.5*CLHEP::mm/2;
+	const G4double ColimatorFace1Width	=13.0*CLHEP::mm;
+	const G4double ColimatorFace2Position	=35.0*CLHEP::mm;
+	const G4double ColimatorFace2		=45.75*CLHEP::mm;	//91.5*CLHEP::mm/2;
+	const G4double ColimatorFace2Width	=17.0*CLHEP::mm;
+	const G4double ColimatorPosition	=173.5*CLHEP::mm;
+	
+	const G4double CsIFace1			=47.25*CLHEP::mm;	//94.5*CLHEP::mm/2;
+	const G4double CsIFace2			=47.25*CLHEP::mm;	//94.5*CLHEP::mm/2;
+	const G4double CsIFace2Position		=110.0*CLHEP::mm;
+	const G4double CsIPosition		=357.5*CLHEP::mm;
+    
+//  	----------------------------------------CLUSTER PHASE III -----------------------------------------------
+    // new
+	const G4double ClusCrystalLength	= 78.0*CLHEP::mm; // cystal length
+	const G4double ClusCrystalRadiusOut	= 35.0*CLHEP::mm; // radius of the crystal at the back face
+	const G4double ClusCrystalAdjacent	=  3.0*CLHEP::mm; // distance between adjacent crystal
+	const G4double ClusCrystalHoleDepth	= 15.0*CLHEP::mm; // depth at which starts the hole
+	const G4double ClusCrystalHoleRadius	=  5.0*CLHEP::mm; // radius of the hole
+    
+    // inclinaison between two cystals. NOT KNOWN FROM THE CONSTRUCTOR
+    // ==> calculated with the back of the crystal (radius 35.0 CLHEP::mm at 44.5cm from the target)
+    // ==>  7.657 CLHEP::deg
+    // an additionnal DeltaTheta is added to have about 3CLHEP::mm between two crystal
+	const G4double AngleClus2Clus		= (7.657 + 0.386)*CLHEP::deg; //
+    // radius of the hexagone formed at the entry face. NOT KNOWN FROM THE CONSTRUCTOR
+    // calculated from the inclinaison angle between two crystal, the length of the crystal
+    // and the radius at the back (ClusCrystalRadiusOut)
+	const G4double ClusCrystalRadiuFace1	= 29.78*CLHEP::mm;  // radius entrance face
+	const G4double ClusCrystalRadiuFace2	= 35.0*CLHEP::mm;   // radius back face
+	const G4double ClusBGOLength	= 125.0*CLHEP::mm;
+	const G4double ClusColiLength	=  30.0*CLHEP::mm;
+    
+    // old
+ 	const G4double ClusCapsulePosition	=448.96*CLHEP::mm; //par calculs
+	const G4double ClusCapsuleMoinsPosition	=47.12*CLHEP::mm;
+	const G4double ClusCapsuleDeltaPosition	=0.24*CLHEP::mm;
+	const G4double ClusCapsuleRPosition	=4.82*CLHEP::mm;
+	
+	const G4double ClusCapsuleFace1		=25.04*CLHEP::mm;	//50.08*CLHEP::mm/2;
+	const G4double ClusCapsuleFace2		=29.38*CLHEP::mm;		//58.76*CLHEP::mm/2;
+	const G4double ClusCapsuleLength 	=78.0*CLHEP::mm;
+	const G4double ClusCapsuleWidth		=1.0*CLHEP::mm;
+	const G4double ClusCapsuleCutLength	=70.0*CLHEP::mm;
+	
+	// angle between two crystals of a same cluster
+    //	const G4double AngleClus2Clus		= 5.877*CLHEP::deg; //6.60927*CLHEP::deg;
+	
+ 	const G4double ClusToCapsule		=0.2*CLHEP::mm;
+ 	const G4double ClusFace1		=23.84*CLHEP::mm;	//47.68*CLHEP::mm/2;
+ 	const G4double ClusFace2		=28.18*CLHEP::mm;	//56.36*CLHEP::mm/2;
+	const G4double ClusPosition		=450.16*CLHEP::mm;
+	
+    //	const G4double thetaClus1		= 156.76*CLHEP::deg;
+    //	const G4double thetaClus2		= 129.44*CLHEP::deg;
+    //	const G4double thetaClus3		= 137.4*CLHEP::deg;
+	
+    //	const G4double phiClus1			= 72.0*CLHEP::deg;
+	
+    // 	------------------------------------------------------
+	const	G4double deltaRClus		=10.0*CLHEP::mm;
+	
+    
+	const G4double ClusCapotPosition	=344.0*CLHEP::mm;
+	const G4double ClusCapotFace1		=79.95*CLHEP::mm;	//0.975*164.0*CLHEP::mm/2;
+	const G4double ClusCapotFace2		=125.01*CLHEP::mm;//136.01*CLHEP::mm;		//0.975*279.0*CLHEP::mm/2;
+    
+	const G4double AngleClusCapotCutEdge		=2.93*CLHEP::deg;
+	const G4double ClusCapotMoinsPosition		=62.33*CLHEP::mm;
+	const G4double ClusCapotDeltaPosition		=0.327*CLHEP::mm;
+	const G4double ClusCapotRPosition		=6.37*CLHEP::mm;
+	const G4double CutClusCapotFace1		=17.73*CLHEP::mm;	//35.46*CLHEP::mm/2;
+	const G4double CutClusCapotFace2		=34.00*CLHEP::mm;	//68.01*CLHEP::mm/2;
+	const G4double AngleClusCutCapotToCutCapot	=5.86*CLHEP::deg;
+	const G4double CutClusCapotPosition		=283.62*CLHEP::mm;
+	const G4double CutClusCapotLength		=318.0*CLHEP::mm;
+    // 	------------------------------------------------------
+	const G4double ClusColimatorPosition		=280.0*CLHEP::mm;
+	const G4double ClusColimatorFace1		=64.83*CLHEP::mm;	 //0.975*133.0*CLHEP::mm/2;
+	const G4double ClusColimatorFace2		=79.95*CLHEP::mm;	//0.975*164.0*CLHEP::mm/2;
+	const G4double ClusColimatorLength		=62.2*CLHEP::mm;
+	
+	const G4double CutClusColimatorPosition		=262.75*CLHEP::mm;
+ 	const G4double CutClusColimatorLength		=100.5*CLHEP::mm;
+	const G4double CutClusColimatorMoinsPosition	=16.67*CLHEP::mm;
+	const G4double CutClusColimatorRPosition	=1.65*CLHEP::mm;
+	const G4double CutClusColimatorDeltaPosition	=0.08*CLHEP::mm;
+	const G4double Angle2ClusCutColimator		=5.68*CLHEP::deg;
+	const G4double CutClusColimatorFace1		=13.89*CLHEP::mm;	//27.79*CLHEP::mm/2;
+	const G4double CutClusColimatorFace2		=18.87*CLHEP::mm;	//37.74*CLHEP::mm/2;
+    // 	------------------------------------------------------
+	const G4double ClusBackFace1		=131.75*CLHEP::mm;//135.75*CLHEP::mm;		//0.975*278.0*CLHEP::mm/2;
+	const G4double ClusBackFace2		=135.42*CLHEP::mm;//139.42*CLHEP::mm;		//0.975*286.0*CLHEP::mm/2;
+	const G4double ClusBackFace3		=135.42*CLHEP::mm;//139.42*CLHEP::mm;		//0.975*286.0*CLHEP::mm/2;
+	const G4double ClusBackFace4		=144.3*CLHEP::mm;		//0.975*296.0*CLHEP::mm/2;
+	const G4double ClusBackFace5		=144.3*CLHEP::mm;		//0.975*296.0*CLHEP::mm/2;
+	const G4double ClusBackInnRad		=100.0*CLHEP::mm;
+	
+	const G4double ClusBackFace1Position	=584.0*CLHEP::mm;
+	const G4double ClusBackFace2Position	=605.0*CLHEP::mm;
+	const G4double ClusBackFace3Position	=627.0*CLHEP::mm;
+	const G4double ClusBackFace4Position	=627.1*CLHEP::mm;
+	const G4double ClusBackFace5Position	=704.4*CLHEP::mm;
+    // 	-------------------------------------------------------
+	const G4double ClusCsIBackOutRad	=99.8*CLHEP::mm;
+	const G4double ClusCsIBackFace1Position	=584.0*CLHEP::mm;
+	const G4double ClusCsIBackFace2Position	=704.4*CLHEP::mm;
+    // 	---------------------------------------------------
+	const G4double ClusBaseFace1		=160.87*CLHEP::mm;
+	const G4double ClusBaseFace1Position 	=704.6*CLHEP::mm;
+	const G4double ClusBaseLength		=120.0*CLHEP::mm;
+	const G4double ClusBaseFace2		=189.12*CLHEP::mm;
+	const G4double ClusBaseFace2Position	=824.0*CLHEP::mm;
+	const G4double ClusBaseInnRad1		=131.0*CLHEP::mm;
+	const G4double ClusBaseInnRad2		=172.0*CLHEP::mm;
+	
+}
+
+// logical volume of the Phase1 Ge crystal
+G4LogicalVolume *GetEUROBALL_TCrystal_LV()
+{
+    static G4LogicalVolume *pTronCrystal = 0x0; char sName[40];
+    
+    if ( pTronCrystal ) {
+        return pTronCrystal;
+    }
+	
+	G4int nbSlice = 5;
+    // to take into account internal hole and external shape
+	G4double zSlice[5] = { 0.0*CLHEP::mm,
+        TronCrystalHoleDepth,
+        TronCrystalHoleDepth + 1.0*CLHEP::mm,
+        TronCrystalEdgeDepth,
+        TronCrystalLength };
+    
+	G4double InnRad[5] = { 0.0*CLHEP::mm,
+        0.0*CLHEP::mm,
+        TronCrystalHoleRadius,
+        TronCrystalHoleRadius,
+        TronCrystalHoleRadius };
+    
+	G4double OutRad[5] = { TronCrystalRadiusMin,
+        TronCrystalRadiusMin+
+	   	(TronCrystalRadiusMax-TronCrystalRadiusMin)*TronCrystalHoleDepth/TronCrystalEdgeDepth,
+        TronCrystalRadiusMin+
+	   	(TronCrystalRadiusMax-TronCrystalRadiusMin)*(TronCrystalHoleDepth+1.0*CLHEP::mm)/TronCrystalEdgeDepth,
+        TronCrystalRadiusMax, TronCrystalRadiusMax };
+    
+    sprintf(sName,"ShapeEUROT");
+    G4Polycone *Tron =
+        new G4Polycone(G4String(sName),0.0*CLHEP::deg,360.0*CLHEP::deg,nbSlice,zSlice,InnRad,OutRad);
+    sprintf(sName, "EUROTLV");
+    pTronCrystal  = new G4LogicalVolume(Tron,
+                                        SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Ge"), G4String(sName),
+                                        0, 0, 0 );
+    
+	return pTronCrystal;
+}
+
+
+G4LogicalVolume *GetEUROBALL_TBGO_LV()
+{
+    static G4LogicalVolume *pTronBGO = 0x0; char sName[40];
+    
+    if ( pTronBGO ) {
+        return pTronBGO;
+    }
+    
+	G4int nbSlice=2;
+	G4double  zSlice[2]={0.0, TronBGOLength};
+ 	G4double  InnRad[2]={TronBGOFace1InnRad, TronBGOFace2InnRad};
+	G4double  OutRad[2]={TronBGOFace1, TronBGOFace2};
+    
+	G4int nbSliceTube=3;
+	G4double  zSliceTube[3]={-0.1*CLHEP::mm, TronBGOLength-68.0*CLHEP::mm,TronBGOLength};
+ 	G4double  InnRadTube[3]={0.0,0.0,0.0};
+	G4double  OutRadTube[3]={34.8*CLHEP::mm, 47.0*CLHEP::mm,47.0*CLHEP::mm};
+    sprintf(sName, "ShapeTronBGObox1");
+    G4Box *box1=new G4Box(G4String(sName),TronBGOCut1X,TronBGOCut1Y,TronBGOCut1Z);
+    sprintf(sName, "ShapeTronBGObox2");
+    G4Box *box2=new G4Box(G4String(sName),TronBGOCut2X,TronBGOCut2Y,TronBGOCut2Z);
+    sprintf(sName, "ShapeTronBGObox3");
+    G4Box *box3=new G4Box(G4String(sName),TronBGOCut3X,TronBGOCut3Y,TronBGOCut3Z);
+    sprintf(sName, "ShapeTronBGObox4");
+    G4Box *box4=new G4Box(G4String(sName),TronBGOCut4X,TronBGOCut4Y,TronBGOCut4Z);
+    sprintf(sName, "ShapeTronBGOTube");
+    G4Polycone *Tube=new G4Polycone(G4String(sName),0.0*CLHEP::deg, 360.0*CLHEP::deg, nbSliceTube, zSliceTube, InnRadTube, OutRadTube);
+    
+    sprintf(sName, "ShapeTronBGO0");
+    G4Polyhedra *Tron =new G4Polyhedra(G4String(sName), 0.*CLHEP::deg, 360.0*CLHEP::deg, 10, nbSlice, zSlice, InnRad, OutRad);
+    
+    sprintf(sName, "ShapeTronBGO1");
+    G4RotationMatrix rm;
+    rm.rotateY(-TronBGOCut1Angle);
+    rm.rotateZ(-TronBGOCut1AngleZ);
+    G4SubtractionSolid *Tron1=new G4SubtractionSolid(G4String(sName),Tron,box1,&rm,
+                                                     G4ThreeVector(TronBGOFace1*cos(TronBGOCut1AnglePosition),TronBGOFace1*sin(TronBGOCut1AnglePosition),0.0));
+    sprintf(sName, "ShapeTronBGO2");
+    G4RotationMatrix rm1;
+    rm1.rotateY(-TronBGOCut1Angle);
+    rm1.rotateZ(TronBGOCut1AngleZ);
+    G4SubtractionSolid *Tron2=new G4SubtractionSolid(G4String(sName),Tron1,box1,&rm1,
+                                                     G4ThreeVector(TronBGOFace1*cos(TronBGOCut1AnglePosition),-TronBGOFace1*sin(TronBGOCut1AnglePosition),0.0));
+    sprintf(sName, "ShapeTronBGO3");
+    G4RotationMatrix rm2;
+    rm2.rotateZ(TronBGOCut2AngleZ);
+    rm2.rotateY(TronBGOCut2Angle);
+    G4SubtractionSolid *Tron3=new G4SubtractionSolid(G4String(sName),Tron2,box2,&rm2,
+                                                     G4ThreeVector(TronBGOFace1*cos(TronBGOCut2AnglePosition),TronBGOFace1*sin(TronBGOCut2AnglePosition),0.0));
+    sprintf(sName, "ShapeTronBGO4");
+    G4RotationMatrix rm4;
+    rm4.rotateZ(TronBGOCut2AngleZ);
+    rm4.rotateY(-TronBGOCut2Angle);
+    G4SubtractionSolid *Tron4=new G4SubtractionSolid(G4String(sName),Tron3,box2,&rm4,
+                                                     G4ThreeVector(TronBGOFace1*cos(TronBGOCut2AnglePosition),-TronBGOFace1*sin(TronBGOCut2AnglePosition),0.0));
+    sprintf(sName, "ShapeTronBGO5");
+    G4RotationMatrix rm5;
+    rm5.rotateY(TronBGOCut3Angle);
+    rm5.rotateZ(-TronBGOCut3AngleZ);
+    G4SubtractionSolid *Tron5=new G4SubtractionSolid(G4String(sName),Tron4,box3,&rm5,
+                                                     G4ThreeVector(TronBGOFace1*cos(TronBGOCut3AnglePosition),-TronBGOFace1*sin(TronBGOCut3AnglePosition),0.0));
+    sprintf(sName, "ShapeTronBGO6");
+    G4RotationMatrix rm6;
+    rm6.rotateY(TronBGOCut3Angle);
+    rm6.rotateZ(TronBGOCut3AngleZ);
+    G4SubtractionSolid *Tron6=new G4SubtractionSolid(G4String(sName),Tron5,box3,&rm6,
+                                                     G4ThreeVector(TronBGOFace1*cos(TronBGOCut3AnglePosition),TronBGOFace1*sin(TronBGOCut3AnglePosition),0.0));
+    sprintf(sName, "ShapeTronBGO7");
+    G4RotationMatrix rm7;
+    rm7.rotateY(TronBGOCut4Angle);
+    rm7.rotateZ(TronBGOCut4AngleZ);
+    G4SubtractionSolid *Tron7=new G4SubtractionSolid(G4String(sName),Tron6,box4,&rm7,
+                                                     G4ThreeVector(TronBGOFace1*cos(TronBGOCut4AnglePosition),TronBGOFace1*sin(TronBGOCut4AnglePosition),0.0));
+    sprintf(sName, "ShapeTronBGO");
+    G4RotationMatrix rm8;
+    G4SubtractionSolid *Tron8=new G4SubtractionSolid(G4String("ShapeTronBGO"),Tron7,Tube,&rm8,G4ThreeVector(0.0,0.0,0.0));
+    
+    sprintf(sName, "EUROTBGOLV");
+    pTronBGO  = new G4LogicalVolume( Tron8, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("BGO"), G4String(sName), 0, 0, 0 );
+    
+	return 	pTronBGO;
+}
+
+G4LogicalVolume *GetEUROBALL_TCOLLIMATOR_LV()
+{
+    static G4LogicalVolume *pTronColli = 0x0; char sName[40];
+    
+    if ( pTronColli ) {
+        return pTronColli;
+    }
+    
+	G4int nbSliceTube2=2;
+	G4double  zSliceTube2[2]={0.0, TronColiLength};
+ 	G4double  InnRadTube2[2]={TronColiFace1InnRad, TronColiFace2InnRad};
+	G4double  OutRadTube2[2]={TronColiFace1,TronColiFace1};
+    
+    sprintf(sName, "ShapeTCollimatorBox1");
+    G4Box *box1OutCapsule=
+    new G4Box(G4String(sName),
+              TronColiCut1X-AdjactTronBGO2Capsule-TronOuterCapsuleWidth,TronColiCut1Y,TronColiCut1Z);
+    sprintf(sName, "ShapeTCollimatorBox2");
+    G4Box *box2OutCapsule=
+    new G4Box(G4String(sName),
+              TronColiCut2X-AdjactTronBGO2Capsule-TronOuterCapsuleWidth,TronColiCut2Y,TronColiCut2Z);
+    sprintf(sName, "ShapeTCollimatorBox3");
+    G4Box *box3OutCapsule=
+    new G4Box(G4String(sName),
+              TronColiCut3X-AdjactTronBGO2Capsule-TronOuterCapsuleWidth,TronColiCut3Y,TronColiCut3Z);
+    sprintf(sName, "ShapeTCollimatorBox4");
+    G4Box *box4OutCapsule=
+    new G4Box(G4String(sName),
+              TronColiCut4X-AdjactTronBGO2Capsule-TronOuterCapsuleWidth,TronColiCut4Y,TronColiCut4Z);
+    
+    // main part
+    sprintf(sName, "ShapeTCollimatorShaper0");
+    G4Polycone *Tube2OutCapsule=
+    new G4Polycone(G4String(sName),0.0*CLHEP::deg, 360.0*CLHEP::deg, nbSliceTube2, zSliceTube2, InnRadTube2, OutRadTube2);
+    
+    sprintf(sName, "ShapeTCollimatorShaper1");
+    G4RotationMatrix rm;
+    rm.rotateY(-TronColiCut1Angle);
+    rm.rotateZ(-TronColiCut1AngleZ);
+    G4SubtractionSolid *Tron1Coli=new G4SubtractionSolid(G4String(sName),Tube2OutCapsule,box1OutCapsule,&rm,
+                                                         G4ThreeVector(TronOuterCapsuleOutRad*cos(TronColiCut1AnglePosition),
+                                                                       TronOuterCapsuleOutRad*sin(TronColiCut1AnglePosition),TronColiLength));
+    sprintf(sName, "ShapeTCollimatorShaper2");
+    G4RotationMatrix rm1;
+    rm1.rotateY(-TronColiCut1Angle);
+    rm1.rotateZ(TronColiCut1AngleZ);
+    G4SubtractionSolid *Tron2Coli=new G4SubtractionSolid(G4String(sName),Tron1Coli,box1OutCapsule,&rm1,
+                                                         G4ThreeVector(TronOuterCapsuleOutRad*cos(TronColiCut1AnglePosition),
+                                                                       -TronOuterCapsuleOutRad*sin(TronColiCut1AnglePosition),TronColiLength));
+    sprintf(sName, "ShapeTCollimatorShaper3");
+    G4RotationMatrix rm2;
+    rm2.rotateZ(TronColiCut2AngleZ);
+    rm2.rotateY(TronColiCut2Angle);
+    G4SubtractionSolid *Tron3Coli=new G4SubtractionSolid(G4String(sName),Tron2Coli,box2OutCapsule,&rm2,
+                                                         G4ThreeVector(TronOuterCapsuleOutRad*cos(TronColiCut2AnglePosition),
+                                                                       TronOuterCapsuleOutRad*sin(TronColiCut2AnglePosition),TronColiLength));
+    sprintf(sName, "ShapeTCollimatorShaper4");
+    G4RotationMatrix rm4;
+    rm4.rotateZ(TronColiCut2AngleZ);
+    rm4.rotateY(-TronColiCut2Angle);
+    G4SubtractionSolid *Tron4Coli=new G4SubtractionSolid(G4String(sName),Tron3Coli,box2OutCapsule,&rm4,
+                                                         G4ThreeVector(TronOuterCapsuleOutRad*cos(TronColiCut2AnglePosition),
+                                                                       -TronOuterCapsuleOutRad*sin(TronColiCut2AnglePosition),TronColiLength));
+    sprintf(sName, "ShapeTCollimatorShaper5");
+    G4RotationMatrix rm5;
+    rm5.rotateY(TronColiCut4Angle);
+    rm5.rotateZ(TronColiCut4AngleZ);
+    G4SubtractionSolid *Tron5Coli=new G4SubtractionSolid(G4String(sName),Tron4Coli, box4OutCapsule, &rm5,G4ThreeVector(-TronOuterCapsuleOutRad,0.0,TronColiLength));
+    
+    sprintf(sName, "ShapeTCollimatorShaper6");
+    G4RotationMatrix rm6;
+    rm6.rotateY(TronColiCut3Angle);
+    rm6.rotateZ(-TronColiCut3AngleZ);
+    G4SubtractionSolid *Tron6Coli=new G4SubtractionSolid(G4String(sName),Tron5Coli,box3OutCapsule,&rm6,
+                                                         G4ThreeVector(TronOuterCapsuleOutRad*cos(TronColiCut3AnglePosition),
+                                                                       -TronOuterCapsuleOutRad*sin(TronColiCut3AnglePosition),TronColiLength));
+    sprintf(sName, "ShapeTCollimatorShaper7");
+    G4RotationMatrix rm7;
+    rm7.rotateY(TronColiCut3Angle);
+    rm7.rotateZ(TronColiCut3AngleZ);
+    G4SubtractionSolid *Tron7Coli=new G4SubtractionSolid(G4String(sName),Tron6Coli,box3OutCapsule,&rm7,
+                                                         G4ThreeVector(TronOuterCapsuleOutRad*cos(TronColiCut3AnglePosition),
+                                                                       TronOuterCapsuleOutRad*sin(TronColiCut3AnglePosition),TronColiLength));
+    sprintf(sName, "EUROTCollimatorLV");
+    pTronColli  = new G4LogicalVolume( Tron7Coli,  SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("W"), G4String(sName), 0, 0, 0 );
+
+	return 	pTronColli;
+}
+
+G4LogicalVolume *GetEUROBALL_TCAPSULECRYS_LV()
+{
+    static G4LogicalVolume *pTronCapsule = 0x0; char sName[40];
+    
+    if ( pTronCapsule ) {
+        return pTronCapsule;
+    }
+    
+	G4int nbSlice=7;
+	G4double zSlice[7]={
+        TronCapsulePosition,
+        TronCapsulePosition+TronCapsuleOutWidth,
+        TronCapsulePosition+TronCapsuleOutWidth+0.1*CLHEP::mm,
+        TronCapsuleFace2Position,
+        TronCapsuleFace3Position-TronCapsuleWidth-0.1*CLHEP::mm,
+        TronCapsuleFace3Position-TronCapsuleWidth,
+        TronCapsuleFace3Position};
+	G4double InnRad[7]={
+        0.0,
+        0.0,
+        TronCapsuleFace1-TronCapsuleOutWidth,
+        TronCapsuleFace2-TronCapsuleOutWidth,
+        TronCapsuleFace2-TronCapsuleOutWidth,
+        0.0,
+        0.0};
+	G4double OutRad[7]={
+        TronCapsuleFace1,
+        TronCapsuleFace1,
+        TronCapsuleFace1,
+        TronCapsuleFace2,
+        TronCapsuleFace2,
+        TronCapsuleFace2,
+        TronCapsuleFace2};
+    
+    // to take into account the shapes are defined at almost the right position in the EUROBALLIII frame
+    // remove RTron which is the position of the crystal face in the EUROBALL array
+    G4double RTron = 375.0 * CLHEP::mm;
+    for (G4int i = 0; i < nbSlice; i++) {
+        zSlice[i] -= RTron;
+    }
+    
+    sprintf(sName,"ShapeTCAPSCRYSTAL");
+    G4Polycone *Tron=new G4Polycone(G4String(sName),0.0*CLHEP::deg,360.0*CLHEP::deg, nbSlice,zSlice,InnRad,OutRad);
+    sprintf(sName, "TCAPSCRYSTALLV");
+    pTronCapsule  = new G4LogicalVolume( Tron, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"), G4String(sName), 0, 0, 0 );
+    
+	return pTronCapsule;
+}
+
+G4LogicalVolume *GetEUROBALL_TCAPSULEINNERBGO_LV()
+{
+    static G4LogicalVolume *pTronCapsuleOut = 0x0; char sName[40];
+    
+    if ( pTronCapsuleOut ) {
+        return pTronCapsuleOut;
+    }
+    
+    G4int nbSlice=5;
+	G4double zSlice[5]={	TronCapsuleOutPosition,
+        TronCapsuleOutPosition+TronCapsuleOutWidth,
+        TronCapsuleOutPosition+TronCapsuleOutWidth+0.1*CLHEP::mm,
+        TronCapsuleOutFace2Position,
+        TronCapsuleOutFace3Position};
+	G4double InnRad[5]={	0.0,
+        0.0,
+        TronCapsuleOutFace1-TronCapsuleOutWidth,
+        TronCapsuleOutFace2-TronCapsuleOutWidth,
+        TronCapsuleOutFace2-TronCapsuleOutWidth};
+	G4double OutRad[5]={	TronCapsuleOutFace1,
+        TronCapsuleOutFace1,
+        TronCapsuleOutFace1,
+        TronCapsuleOutFace2,
+        TronCapsuleOutFace2};
+    
+    // to take into account the shapes are defined at almost the right position in the EUROBALLIII frame
+    // remove RTron which is the position of the crystal face in the EUROBALL array
+    G4double RTron = 375.0 * CLHEP::mm;
+    for (G4int i = 0; i < nbSlice; i++) {
+        zSlice[i] -= RTron;
+    }
+    
+    sprintf(sName,"ShapeTCAPSINNERBGO");
+    G4Polycone *Tron=new G4Polycone(G4String(sName),0.0*CLHEP::deg,360.0*CLHEP::deg, nbSlice,zSlice,InnRad,OutRad);
+    sprintf(sName, "TCAPSINNERBGOLV");
+    pTronCapsuleOut  = new G4LogicalVolume( Tron, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"), G4String(sName), 0, 0, 0 );
+    
+	return pTronCapsuleOut;
+}
+
+
+G4LogicalVolume *GetEUROBALL_TCAPSULEOUTERBGO_LV()
+{
+    static G4LogicalVolume *pTronOuterCapsule = 0x0; char sName[40];
+    
+    if ( pTronOuterCapsule ) {
+        return pTronOuterCapsule;
+    }
+    
+	G4int nbSliceTube1=2;
+	G4double  zSliceTube1[2]={0.0, TronOuterCapsuleLength};
+ 	G4double  InnRadTube1[2]={0.0,0.0};
+	G4double  OutRadTube1[2]={TronOuterCapsuleOutRad, TronOuterCapsuleOutRad};
+    
+	G4int nbSliceTube2=2;
+	G4double  zSliceTube2[2]={TronOuterCapsuleWidth, TronOuterCapsuleLength+10.0*CLHEP::mm};
+ 	G4double  InnRadTube2[2]={0.0,0.0};
+	G4double  OutRadTube2[2]={TronOuterCapsuleOutRad-TronOuterCapsuleWidth, TronOuterCapsuleOutRad-TronOuterCapsuleWidth};
+    
+    sprintf(sName, "Shapebox1OutCapsule");
+    G4Box *box1OutCapsule=
+    new G4Box(G4String(sName),TronOuterCapsuleCut1X-AdjactTronBGO2Capsule,TronOuterCapsuleCut1Y,TronOuterCapsuleCut1Z);
+    sprintf(sName, "Shapebox2OutCapsule");
+    G4Box *box2OutCapsule=
+    new G4Box(G4String(sName),TronOuterCapsuleCut2X-AdjactTronBGO2Capsule,TronOuterCapsuleCut2Y,TronOuterCapsuleCut2Z);
+    sprintf(sName, "Shapebox3OutCapsule");
+    G4Box *box3OutCapsule=
+    new G4Box(G4String(sName),TronOuterCapsuleCut3X-AdjactTronBGO2Capsule,TronOuterCapsuleCut3Y,TronOuterCapsuleCut3Z);
+    sprintf(sName, "Shapebox4OutCapsule");
+    G4Box *box4OutCapsule=
+    new G4Box(G4String(sName),TronOuterCapsuleCut4X-AdjactTronBGO2Capsule,TronOuterCapsuleCut4Y,TronOuterCapsuleCut4Z);
+    
+    // 		----------------------------------
+    sprintf(sName, "Shapebox1OutCapsule");
+    G4Box *box1OutCapsule1=new G4Box(G4String(sName),TronOuterCapsuleCut1X-AdjactTronBGO2Capsule-TronOuterCapsuleWidth,
+                                     TronOuterCapsuleCut1Y,TronOuterCapsuleCut1Z);
+    sprintf(sName, "Shapebox2OutCapsule");
+    G4Box *box2OutCapsule1=new G4Box(G4String(sName),TronOuterCapsuleCut2X-AdjactTronBGO2Capsule-TronOuterCapsuleWidth,
+                                     TronOuterCapsuleCut2Y,TronOuterCapsuleCut2Z);
+    sprintf(sName, "Shapebox3OutCapsule");
+    G4Box *box3OutCapsule1=new G4Box(G4String(sName),TronOuterCapsuleCut3X-AdjactTronBGO2Capsule-TronOuterCapsuleWidth,
+                                     TronOuterCapsuleCut3Y,TronOuterCapsuleCut3Z);
+    sprintf(sName, "Shapebox4OutCapsule");
+    G4Box *box4OutCapsule1=new G4Box(G4String(sName),TronOuterCapsuleCut4X-AdjactTronBGO2Capsule-TronOuterCapsuleWidth,
+                                     TronOuterCapsuleCut4Y,TronOuterCapsuleCut4Z);
+    // 		----------------------------------
+    sprintf(sName, "ShapeTube1OutCapsule");
+    G4Polycone *Tube1OutCapsule=new G4Polycone(G4String(sName),0.0*CLHEP::deg, 360.0*CLHEP::deg, nbSliceTube1, zSliceTube1, InnRadTube1,
+                                               OutRadTube1);
+    sprintf(sName, "Tube2OutCapsule");
+    G4Polycone *Tube2OutCapsule=new G4Polycone(G4String(sName),0.0*CLHEP::deg, 360.0*CLHEP::deg, nbSliceTube2, zSliceTube2, InnRadTube2,
+                                               OutRadTube2);
+    
+    sprintf(sName, "ShapeTron1OutCapsule");
+    G4RotationMatrix rm;
+    rm.rotateY(-TronOuterCapsuleCut1Angle);
+    rm.rotateZ(-TronOuterCapsuleCut1AngleZ);
+    G4SubtractionSolid *Tron1OutCapsule=new G4SubtractionSolid(G4String(sName),Tube2OutCapsule,box1OutCapsule,&rm,
+                                                               G4ThreeVector(TronOuterCapsuleOutRad*cos(TronOuterCapsuleCut1AnglePosition),
+                                                                             TronOuterCapsuleOutRad*sin(TronOuterCapsuleCut1AnglePosition),0.0));
+    sprintf(sName, "ShapeTron2OutCapsule");
+    G4RotationMatrix rm1;
+    rm1.rotateY(-TronOuterCapsuleCut1Angle);
+    rm1.rotateZ(TronOuterCapsuleCut1AngleZ);
+    G4SubtractionSolid *Tron2OutCapsule=new G4SubtractionSolid(G4String(sName),Tron1OutCapsule,box1OutCapsule,&rm1,
+                                                               G4ThreeVector(TronOuterCapsuleOutRad*cos(TronOuterCapsuleCut1AnglePosition),
+                                                                             -TronOuterCapsuleOutRad*sin(TronOuterCapsuleCut1AnglePosition),0.0));
+    sprintf(sName, "ShapeTron3OutCapsule");
+    G4RotationMatrix rm2;
+    rm2.rotateZ(TronOuterCapsuleCut2AngleZ);
+    rm2.rotateY(TronOuterCapsuleCut2Angle);
+    G4SubtractionSolid *Tron3OutCapsule=new G4SubtractionSolid(G4String(sName),Tron2OutCapsule,box2OutCapsule,&rm2,
+                                                               G4ThreeVector(TronOuterCapsuleOutRad*cos(TronOuterCapsuleCut2AnglePosition),
+                                                                             TronOuterCapsuleOutRad*sin(TronOuterCapsuleCut2AnglePosition),0.0));
+    sprintf(sName, "ShapeTron4OutCapsule");
+    G4RotationMatrix rm4;
+    rm4.rotateZ(TronOuterCapsuleCut2AngleZ);
+    rm4.rotateY(-TronOuterCapsuleCut2Angle);
+    G4SubtractionSolid *Tron4OutCapsule=new G4SubtractionSolid(G4String(sName),Tron3OutCapsule,box2OutCapsule,&rm4,
+                                                               G4ThreeVector(TronOuterCapsuleOutRad*cos(TronOuterCapsuleCut2AnglePosition),
+                                                                             -TronOuterCapsuleOutRad*sin(TronOuterCapsuleCut2AnglePosition),0.0));
+    sprintf(sName, "ShapeTron5OutCapsule");
+    G4RotationMatrix rm5;
+    rm5.rotateY(TronOuterCapsuleCut4Angle);
+    rm5.rotateZ(TronOuterCapsuleCut4AngleZ);
+    G4SubtractionSolid *Tron5OutCapsule=new G4SubtractionSolid(G4String(sName),Tron4OutCapsule, box4OutCapsule, &rm5,G4ThreeVector(-TronOuterCapsuleOutRad,0.0,0.0));
+    
+    sprintf(sName, "ShapeTron6OutCapsule");
+    G4RotationMatrix rm6;
+    rm6.rotateY(TronOuterCapsuleCut3Angle);
+    rm6.rotateZ(-TronOuterCapsuleCut3AngleZ);
+    G4SubtractionSolid *Tron6OutCapsule=new G4SubtractionSolid(G4String(sName),Tron5OutCapsule,box3OutCapsule,&rm6,
+                                                               G4ThreeVector(TronOuterCapsuleOutRad*cos(TronOuterCapsuleCut3AnglePosition),
+                                                                             -TronOuterCapsuleOutRad*sin(TronOuterCapsuleCut3AnglePosition),0.0));
+    sprintf(sName, "ShapeTron7OutCapsule");
+    G4RotationMatrix rm7;
+    rm7.rotateY(TronOuterCapsuleCut3Angle);
+    rm7.rotateZ(TronOuterCapsuleCut3AngleZ);
+    G4SubtractionSolid *Tron7OutCapsule=new G4SubtractionSolid(G4String(sName),Tron6OutCapsule,box3OutCapsule,&rm7,
+                                                               G4ThreeVector(TronOuterCapsuleOutRad*cos(TronOuterCapsuleCut3AnglePosition),
+                                                                             TronOuterCapsuleOutRad*sin(TronOuterCapsuleCut3AnglePosition),0.0));
+    
+    // 		-------------------------------------------------
+    sprintf(sName, "ShapeTron1OutCapsule1");
+    G4RotationMatrix rmm;
+    rmm.rotateY(-TronOuterCapsuleCut1Angle);
+    rmm.rotateZ(-TronOuterCapsuleCut1AngleZ);
+    G4SubtractionSolid *Tron1OutCapsule1=new G4SubtractionSolid(G4String(sName),Tube1OutCapsule,box1OutCapsule1,&rmm,
+                                                                G4ThreeVector(TronOuterCapsuleOutRad*cos(TronOuterCapsuleCut1AnglePosition),
+                                                                              TronOuterCapsuleOutRad*sin(TronOuterCapsuleCut1AnglePosition),0.0));
+    sprintf(sName, "ShapeTron2OutCapsule1");
+    G4RotationMatrix rmm1;
+    rmm1.rotateY(-TronOuterCapsuleCut1Angle);
+    rmm1.rotateZ(TronOuterCapsuleCut1AngleZ);
+    G4SubtractionSolid *Tron2OutCapsule1=new G4SubtractionSolid(G4String(sName),Tron1OutCapsule1,box1OutCapsule1,&rmm1,
+                                                                G4ThreeVector(TronOuterCapsuleOutRad*cos(TronOuterCapsuleCut1AnglePosition),
+                                                                              -TronOuterCapsuleOutRad*sin(TronOuterCapsuleCut1AnglePosition),0.0));
+    sprintf(sName, "ShapeTron3OutCapsule1");
+    G4RotationMatrix rmm2;
+    rmm2.rotateZ(TronOuterCapsuleCut2AngleZ);
+    rmm2.rotateY(TronOuterCapsuleCut2Angle);
+    G4SubtractionSolid *Tron3OutCapsule1=new G4SubtractionSolid(G4String(sName),Tron2OutCapsule1,box2OutCapsule1,&rmm2,
+                                                                G4ThreeVector(TronOuterCapsuleOutRad*cos(TronOuterCapsuleCut2AnglePosition),
+                                                                              TronOuterCapsuleOutRad*sin(TronOuterCapsuleCut2AnglePosition),0.0));
+    sprintf(sName, "ShapeTron4OutCapsule1");
+    G4RotationMatrix rmm4;
+    rmm4.rotateZ(TronOuterCapsuleCut2AngleZ);
+    rmm4.rotateY(-TronOuterCapsuleCut2Angle);
+    G4SubtractionSolid *Tron4OutCapsule1=new G4SubtractionSolid(G4String(sName),Tron3OutCapsule1,box2OutCapsule1,&rmm4,
+                                                                G4ThreeVector(TronOuterCapsuleOutRad*cos(TronOuterCapsuleCut2AnglePosition),
+                                                                              -TronOuterCapsuleOutRad*sin(TronOuterCapsuleCut2AnglePosition),0.0));
+    sprintf(sName, "ShapeTron5OutCapsule1");
+    G4RotationMatrix rmm5;
+    rmm5.rotateY(TronOuterCapsuleCut4Angle);
+    rmm5.rotateZ(TronOuterCapsuleCut4AngleZ);
+    G4SubtractionSolid *Tron5OutCapsule1=new G4SubtractionSolid(G4String(sName),Tron4OutCapsule1, box4OutCapsule1, &rmm5,G4ThreeVector(-TronOuterCapsuleOutRad,0.0,0.0));
+    
+    sprintf(sName, "ShapeTron6OutCapsule1");
+    G4RotationMatrix rmm6;
+    rmm6.rotateY(TronOuterCapsuleCut3Angle);
+    rmm6.rotateZ(-TronOuterCapsuleCut3AngleZ);
+    G4SubtractionSolid *Tron6OutCapsule1=new G4SubtractionSolid(G4String(sName),Tron5OutCapsule1,box3OutCapsule1,&rmm6,
+                                                                G4ThreeVector(TronOuterCapsuleOutRad*cos(TronOuterCapsuleCut3AnglePosition),
+                                                                              -TronOuterCapsuleOutRad*sin(TronOuterCapsuleCut3AnglePosition),0.0));
+    sprintf(sName, "ShapeTron7OutCapsule1");
+    G4RotationMatrix rmm7;
+    rmm7.rotateY(TronOuterCapsuleCut3Angle);
+    rmm7.rotateZ(TronOuterCapsuleCut3AngleZ);
+    G4SubtractionSolid *Tron7OutCapsule1=new G4SubtractionSolid(G4String(sName),Tron6OutCapsule1,box3OutCapsule1,&rmm7,
+                                                                G4ThreeVector(TronOuterCapsuleOutRad*cos(TronOuterCapsuleCut3AnglePosition),
+                                                                              TronOuterCapsuleOutRad*sin(TronOuterCapsuleCut3AnglePosition),0.0));
+    
+    sprintf(sName, "ShapeTron8OutCapsule");
+    G4RotationMatrix rmm8;
+    G4SubtractionSolid *Tron8OutCapsule=new G4SubtractionSolid(G4String(sName),Tron7OutCapsule1,Tron7OutCapsule,&rmm8,
+                                                               G4ThreeVector(0.0,0.0,0.0));
+    
+    sprintf(sName, "TronOuterCapsuleLV");
+    pTronOuterCapsule  = new G4LogicalVolume( Tron8OutCapsule,  SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"), G4String(sName), 0, 0, 0 );
+    
+	return 	pTronOuterCapsule;
+}
+
+G4LogicalVolume *GetEUROBALL_TCAPSULEBACK_LV()
+{
+    static G4LogicalVolume *pTronArre = 0x0; char sName[40];
+    
+    if ( pTronArre ) {
+        return pTronArre;
+    }
+    
+    G4int nbSlice=6;
+	G4double  zSlice[6]=
+        {TronArreFace1Position,TronArreFace2Position,TronArreFace3Position,
+        TronArreFace4Position,TronArreFace5Position,TronArreFace6Position};
+ 	G4double  InnRad[6]=
+        {TronArreFace1InnRad,TronArreFace2InnRad,TronArreFace3InnRad,
+        TronArreFace4InnRad,TronArreFace5InnRad,TronArreFace6InnRad};
+	G4double  OutRad[6]=
+        {TronArreFace1,TronArreFace2,TronArreFace3,
+        TronArreFace4,TronArreFace5,TronArreFace6};
+    
+    // to take into account the shapes are defined at almost the right position in the EUROBALLIII frame
+    // remove RTron which is the position of the crystal face in the EUROBALL array
+    G4double RTron = 375.0 * CLHEP::mm;
+    for (G4int i = 0; i < nbSlice; i++) {
+        zSlice[i] -= RTron;
+    }
+    
+    sprintf(sName,"ShapeTBack");
+    G4Polycone *Tron=new G4Polycone(G4String(sName),0.0*CLHEP::deg,360.0*CLHEP::deg, nbSlice,zSlice,InnRad,OutRad);
+    sprintf(sName, "TBackLV");
+    pTronArre  = new G4LogicalVolume( Tron, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"), G4String(sName), 0, 0, 0 );
+    
+	return pTronArre;
+}
+
+G4LogicalVolume *GetEUROBALL_QCrystal_LV()
+{
+    static G4LogicalVolume *pClovCrystal = 0x0;
+    
+    if ( pClovCrystal ) {
+        return pClovCrystal;
+    }
+    
+    // crystal definition without any shaping
+	G4int nbSliceCrys = 4;
+    
+	G4double  zSliceCrys[4] =
+    {0.0*CLHEP::mm, ClovCrystalHoleDepth,ClovCrystalHoleDepth+1*CLHEP::mm, ClovCrystalLength};
+	G4double  InnerRadCrys[4] =
+        {0.0*CLHEP::mm, 0.0*CLHEP::mm, ClovCrystalHoleRadius, ClovCrystalHoleRadius};
+	G4double  OuterRadCrys[4]=
+    {ClovCrystalRadiusOut, ClovCrystalRadiusOut, ClovCrystalRadiusOut, ClovCrystalRadiusOut};
+    
+    // Polyhedra used to shape the crystal
+	G4int nbSliceCutCrys = 2;
+	
+	const G4double width = 20.0*CLHEP::mm; // whould be large enough to remove the needed with
+	
+	// remove matter along the crystal
+	G4double  zSliceCut1Crys[2] =
+    {-1.0*CLHEP::mm, ClovCrystalLength+1.0*CLHEP::mm};
+	G4double InnCut1RadCrys[2]=
+    {2*ClovCrystalRadiusOut-ClovCrystalCutOffset,
+        2*ClovCrystalRadiusOut-ClovCrystalCutOffset};
+	G4double OutCut1RadCrys[2]=
+    {2*ClovCrystalRadiusOut-ClovCrystalCutOffset+width,
+        2*ClovCrystalRadiusOut-ClovCrystalCutOffset+width};
+    
+	// to remove the bevel part
+	G4double zSliceCut2Crys[2]=
+        {-0.1*CLHEP::mm, ClovCrystalLength+0.1*CLHEP::mm};
+	G4double InnCut2RadCrys[2]=
+        {ClovCrystalFace,ClovCrystalFace+ClovCrystalLength*ClovtanAngleOffsetCrystal};
+	G4double OutCut2RadCrys[2]=
+        {ClovCrystalFace+width,ClovCrystalFace+ClovCrystalLength*ClovtanAngleOffsetCrystal+width};
+    
+    G4Polycone *TubeCrys =
+    new G4Polycone(G4String("ShapeBaseQ"),0.0*CLHEP::deg, 360.0*CLHEP::deg,nbSliceCrys, zSliceCrys,
+                   InnerRadCrys,OuterRadCrys);
+    
+    G4Polyhedra *cutEdge1Crys  =
+    new G4Polyhedra(G4String("ShapecutEdge1Crys"),0.0*CLHEP::deg, 360.0*CLHEP::deg,4, nbSliceCutCrys,
+                    zSliceCut1Crys,InnCut1RadCrys,OutCut1RadCrys);
+    
+    G4Polyhedra *cutEdge2Crys  =
+    new G4Polyhedra(G4String("ShapecutEgde2Crys"),0.0*CLHEP::deg, 360.0*CLHEP::deg,4, nbSliceCutCrys,
+                    zSliceCut2Crys,InnCut2RadCrys,OutCut2RadCrys);
+    
+    G4RotationMatrix rm,rm1;
+    rm.rotateZ(45.0*CLHEP::deg);
+    G4SubtractionSolid *Tube1Crys = new G4SubtractionSolid(G4String("ShapeTube1Crys"),
+                                                           TubeCrys, cutEdge1Crys, &rm, G4ThreeVector(CrystalOutRad,CrystalOutRad,0.0));
+    rm1.rotateZ(45.0*CLHEP::deg);
+    G4SubtractionSolid *Tube2Crys = new G4SubtractionSolid(G4String("ShapeTube2Crys_n"),
+                                                           Tube1Crys, cutEdge2Crys, &rm1,
+                                                           G4ThreeVector(CrystalCutOffset1-CrystalOutRad-CrystalAdjact/2.0,CrystalCutOffset1-CrystalOutRad-CrystalAdjact/2.0,0.0));
+    
+    // the logical crystal
+    pClovCrystal  = new G4LogicalVolume( Tube2Crys, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Ge"), G4String("QCrystalLV"), 0, 0, 0 );
+	return 	pClovCrystal;
+}
+
+G4LogicalVolume *GetEUROBALL_QCOLLIMATOR_LV()
+{
+    static G4LogicalVolume *pClovColimator = 0x0;
+    
+    if ( pClovColimator ) {
+        return pClovColimator;
+    }
+    
+	G4int nbslice=2;
+	G4double zSlice[2]={0.0*CLHEP::mm,ClovColimatorFace2Position};
+	G4double InnRad[2]=
+        {ClovColimatorFace1-ClovColimatorFace1Width,ClovColimatorFace2-ClovColimatorFace2Width};
+	G4double OutRad[2]={ClovColimatorFace1,ClovColimatorFace2};
+    
+    G4Polyhedra *Coli =
+        new G4Polyhedra(G4String("ShapeQCollimator"),0.0*CLHEP::deg, 360.0*CLHEP::deg, 4, nbslice, zSlice, InnRad, OutRad);
+    pClovColimator= new G4LogicalVolume(Coli,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("W"),G4String("QCollimatorLV"),0,0,0);
+    
+	return pClovColimator;
+}
+
+G4LogicalVolume *GetEUROBALL_QBGO_LV()
+{
+    static G4LogicalVolume *pClovBGORear = 0x0;
+    
+    if ( pClovBGORear ) {
+        return pClovBGORear;
+    }
+    
+	G4int nbslice = 3;
+	G4double zSlice[3] =
+        { 0.0*CLHEP::mm, ClovBGOFace2Position, ClovBGOFace3Position};
+	G4double InnRad[3] =
+        { ClovBGOFace1-ClovBGOWidth1+ClovBgoToBgoCan,ClovBGOFace2-ClovBGOWidth2+ClovBgoToBgoCan,ClovBGOFace3-ClovBGOWidth3+ClovBgoToBgoCan};
+	G4double OutRad[3] = {ClovBGOFace1, ClovBGOFace2,ClovBGOFace3};
+	
+    G4Polyhedra *cloBGO =
+        new G4Polyhedra(G4String("ShapeQBGORear"), 0.0*CLHEP::deg, 360.0*CLHEP::deg,4, nbslice, zSlice, InnRad, OutRad);
+    pClovBGORear  = new G4LogicalVolume( cloBGO, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("BGO"), G4String("QBGORearLV"), 0, 0, 0 );
+	return pClovBGORear;
+}
+
+G4LogicalVolume *GetEUROBALL_QGECAN_LV()
+{
+    static G4LogicalVolume *pClovCapsule = 0x0;
+    
+    if ( pClovCapsule ) {
+        return pClovCapsule;
+    }
+    /*
+	G4int nbslice = 7;
+	G4double zSlice[7] = {  CapsulePosition, CapsulePosition+CapsuleWidth, CapsulePosition+CapsuleWidth+0.01*CLHEP::mm,
+        CapsulePosition+CapsuleFace2Position,CapsulePosition+CapsuleFace3Position-CapsuleWidth-0.001*CLHEP::mm,
+        CapsulePosition+CapsuleFace3Position-CapsuleWidth,CapsulePosition+CapsuleFace3Position}; */
+	G4int nbslice = 7;
+	G4double zSlice[7] = {  0.0, CapsuleWidth, CapsuleWidth,
+        CapsuleFace2Position,CapsuleFace3Position-CapsuleWidth/*-0.001*CLHEP::mm*/,
+        CapsuleFace3Position-CapsuleWidth,CapsuleFace3Position};
+    
+	G4double InnRad[7] = {  0.0*CLHEP::mm, 0.0*CLHEP::mm, CapsuleFace1-CapsuleWidth,CapsuleFace2-CapsuleWidth,CapsuleFace2-CapsuleWidth,0.0,0.0};
+	G4double OutRad[7] = {CapsuleFace1,CapsuleFace1,CapsuleFace1, CapsuleFace2, CapsuleFace2,CapsuleFace2,CapsuleFace2};
+	
+    G4Polyhedra *caps = new G4Polyhedra(G4String("ShapeQGECAN"), 0.*CLHEP::deg, 360.*CLHEP::deg, 4, nbslice, zSlice, InnRad, OutRad);
+    pClovCapsule  = new G4LogicalVolume( caps, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"), G4String("QGECANLV"), 0, 0, 0 );
+    
+	return pClovCapsule;
+}
+
+G4LogicalVolume *GetEUROBALL_QBGOCAN_LV()
+{
+    static G4LogicalVolume *pClovBGOCan = 0x0;
+    
+    if ( pClovBGOCan ) {
+        return pClovBGOCan;
+    }
+    
+	G4int nbslice = 5;
+//	G4double zSlice[5] = { BGOCanPosition,Face2Position+BGOCanPosition, BGOCanPosition+Face3Position-BGOCanWidth-0.01*CLHEP::mm,
+//        Face3Position-BGOCanWidth+BGOCanPosition,Face3Position+BGOCanPosition};
+    G4double zSlice[5] = { 0.0,Face2Position, Face3Position-BGOCanWidth-0.01*CLHEP::mm, Face3Position-BGOCanWidth,Face3Position};
+	G4double InnRad[5] = {BGOCanFace1-BGOCanWidth+CapsuleToBGOCan, BGOCanFace2-BGOCanWidth+CapsuleToBGOCan,
+        BGOCanFace2-BGOCanWidth+CapsuleToBGOCan,0.0,0.0};
+	G4double OutRad[5] = {BGOCanFace1, BGOCanFace2,	BGOCanFace2,BGOCanFace2,BGOCanFace2};
+	
+    G4Polyhedra *bgoCan = new G4Polyhedra(G4String("ShapeQBGOCan"), 0.*CLHEP::deg, 360.*CLHEP::deg,4, nbslice, zSlice, InnRad,OutRad);
+    pClovBGOCan  = new G4LogicalVolume( bgoCan, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"), G4String("QBGOCanLV"), 0, 0, 0 );
+    
+	return pClovBGOCan;
+}
+
+G4LogicalVolume *GetEUROBALL_QBGOCANOUT_LV()
+{
+    static G4LogicalVolume *pClovBGOCanOut = 0x0;
+    
+    if ( pClovBGOCanOut ) {
+        return pClovBGOCanOut;
+    }
+    
+	G4int nbsliceCanOut = 5;
+    /*
+     G4double zSliceCanOut[5] = {  BGOCanOutPosition,BGOCanOutPosition+BGOCanOutFace2Position,
+     BGOCanOutFace3Position-BGOCanOutWidth+BGOCanOutPosition-0.01*CLHEP::mm, BGOCanOutFace3Position-BGOCanOutWidth+BGOCanOutPosition,
+     BGOCanOutPosition+BGOCanOutFace3Position };*/
+ 	G4double zSliceCanOut[5] = {  0.0,BGOCanOutFace2Position,
+        BGOCanOutFace3Position-BGOCanOutWidth-0.01*CLHEP::mm, BGOCanOutFace3Position-BGOCanOutWidth,
+        BGOCanOutFace3Position };
+	G4double InnRadCanOut[5] = {BGOCanOutFace1-BGOCanWidth+BgoToBGOCanOut,BGOCanOutFace2-BGOCanWidth+BgoToBGOCanOut,BGOCanOutFace2-BGOCanWidth+BgoToBGOCanOut,0.0,0.0};
+	G4double OutRadCanOut[5] = {(BGOCanOutFace1), BGOCanOutFace2,BGOCanOutFace2,BGOCanOutFace2,BGOCanOutFace2};
+	
+    G4Polyhedra *bgoCanOut =
+    new G4Polyhedra(G4String("ShapeQBGOCanOut"), 0.0*CLHEP::deg, 360.0*CLHEP::deg,4, nbsliceCanOut, zSliceCanOut, InnRadCanOut,OutRadCanOut);
+    pClovBGOCanOut  = new G4LogicalVolume( bgoCanOut, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"), G4String("QBGOCanOutLV"), 0, 0, 0 );
+    
+    
+	return pClovBGOCanOut;
+}
+
+G4LogicalVolume *GetEUROBALL_CCrystal_LV()
+{
+    static G4LogicalVolume *pClusCrystal = 0x0;
+    
+    if ( pClusCrystal ) {
+        return pClusCrystal;
+    }
+
+	G4int nbSlice = 4;
+	
+	G4double  zSlice[4] =
+        { 0.0*CLHEP::mm, ClusCrystalHoleDepth, ClusCrystalHoleDepth + 0.1*CLHEP::mm, ClusCrystalLength};
+	G4double  InnRad[4] =
+        { 0.0*CLHEP::mm, 0.0*CLHEP::mm, ClusCrystalHoleRadius, ClusCrystalHoleRadius };
+	G4double  OutRad[4]=
+        { ClusCrystalRadiusOut, ClusCrystalRadiusOut, ClusCrystalRadiusOut, ClusCrystalRadiusOut };
+    
+	G4int nbCutSlice = 2;
+	G4double  zSliceCut[2]= { -0.5*CLHEP::mm, ClusCrystalLength+0.5*CLHEP::mm};
+    G4double  CutInnRad[2]=
+        { ClusCrystalRadiuFace1, ClusCrystalRadiuFace2};
+	G4double  CutOutRad[2]=
+        { ClusCrystalRadiuFace1+20.0*CLHEP::mm, ClusCrystalRadiuFace2+20.0*CLHEP::mm};
+    // 20 mm should be large enough to remove correctly all the Ge
+    
+    G4Polycone *Clus =
+    new G4Polycone(G4String("ShapeBaseCrysCluster"),
+                   0.*CLHEP::deg, 360.*CLHEP::deg, nbSlice, zSlice, InnRad, OutRad);
+    
+    G4Polyhedra *CutClus =
+    new G4Polyhedra(G4String("ShapeCutCluster"),
+                    0.*CLHEP::deg, 360.*CLHEP::deg, 6, nbCutSlice, zSliceCut, CutInnRad,  CutOutRad);
+    
+    G4RotationMatrix rm;
+    G4SubtractionSolid *Clus1
+        = new G4SubtractionSolid (G4String("ShapeCCrystal"), Clus, CutClus, &rm, G4ThreeVector(0.0,0.0,0.0 ));
+    pClusCrystal  = new G4LogicalVolume(Clus1, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Ge"), G4String("CCrystalLV"), 0, 0, 0 );
+    
+	return 	pClusCrystal;
+}
+
+G4LogicalVolume *GetEUROBALL_CBGO_LV()
+{
+    static G4LogicalVolume *pClusBGO = 0x0;
+    
+    if ( pClusBGO ) {
+        return pClusBGO;
+    }
+    
+	char sName[40];
+	G4int nbSlice=3;
+	G4double  zSlice[3]={ 0.0, ClusBGOLength - 15*CLHEP::mm , ClusBGOLength};
+    // deduced for an inclinaison angle equal to the crystal one (=7.657 deg)
+    // and a BGO starting at position 425 mm form the target with a length equal to ClusBGORearLength = 125 mm
+    //	G4double  InnRad[2]={ 90.84*CLHEP::mm, 117.6*CLHEP::mm}; // minimum to not have Ge crystals cuts
+    //	G4double  InnRad[2]={ 0.0*CLHEP::mm, 0.0*CLHEP::mm};     // full at the beginning
+    //	G4double  InnRad[2]={ 57.05*CLHEP::mm,85.6*CLHEP::mm};   // fan empty one at the beginning
+	G4double  InnRad[3]={ 57.05*CLHEP::mm,  91.5*CLHEP::mm ,0.0*CLHEP::mm};
+	G4double  OutRad[3]={ 97.05*CLHEP::mm, 122.0*CLHEP::mm ,125.6*CLHEP::mm };
+    
+    G4double  LocalAngleClusCutCapotToCutCapot = 8.05*CLHEP::deg;
+    G4int nbSliceCut = 2;
+	G4double  zSliceCut[2]=
+    { 0.0, ClusBGOLength-15*CLHEP::mm};
+    //		{ 0.0, ClusBGOLength+15*CLHEP::mm};
+	G4double  InnRadCut[2]=
+    { 0.0,0.0};
+	G4double  OutRadCut[2]=
+    { 29.9*CLHEP::mm, 37.64*CLHEP::mm}; // tan(8.05*CLHEP::deg/2)* {425,550}
+    
+	G4double DeltaX = 0.0, DeltaY =  59.19*CLHEP::mm, DeltaZ = -4.187*CLHEP::mm; // DeltaZ = -10*CLHEP::mm;
+	
+    sprintf(sName, "ShapeBaseCBGO");
+    G4Polyhedra *BGORear =
+    new G4Polyhedra(G4String(sName),0.*CLHEP::deg, 360.*CLHEP::deg, 6, nbSlice, zSlice, InnRad, OutRad);
+    
+    sprintf(sName, "ShapeCutCBGO");
+    G4Polyhedra *aCut =
+    new G4Polyhedra(G4String(sName), 0.*CLHEP::deg, 360.*CLHEP::deg, 6, nbSliceCut, zSliceCut, InnRadCut,  OutRadCut);
+    
+    // add three aCut to form a solid that will be rotated and substracted after to the FullBGORear
+    sprintf(sName, "ShapeCutCBGO1");
+    G4RotationMatrix rmu1;
+    rmu1.rotateX(LocalAngleClusCutCapotToCutCapot);
+    G4UnionSolid* unicut1 = new G4UnionSolid(G4String(sName), aCut, aCut, &rmu1, G4ThreeVector(DeltaX,DeltaY,DeltaZ));
+    
+    sprintf(sName, "ShapeCutCBGO2");
+    G4RotationMatrix rmu2;
+    rmu2.rotateX(-LocalAngleClusCutCapotToCutCapot);
+    G4UnionSolid* unicut2 = new G4UnionSolid(G4String(sName), unicut1, aCut, &rmu2,G4ThreeVector(DeltaX,-DeltaY,DeltaZ));
+    
+    sprintf(sName, "ShapeCBGORear_1");
+    G4RotationMatrix rm1;
+    G4SubtractionSolid *BGORearCut1 = new G4SubtractionSolid (G4String(sName), BGORear, unicut2, &rm1,G4ThreeVector(0.0,0.0,-5*CLHEP::mm));
+    
+    sprintf(sName, "ShapeCBGORear_2");
+    G4RotationMatrix rm2;
+    rm2.rotateZ(60.0*CLHEP::deg);
+    G4SubtractionSolid *BGORearCut2 = new G4SubtractionSolid (G4String(sName), BGORearCut1,unicut2, &rm2,G4ThreeVector(0.0,0.0,-5*CLHEP::mm));
+    
+    sprintf(sName, "ShapeCBGORear_3");
+    G4RotationMatrix rm3;
+    rm3.rotateZ(-60.0*CLHEP::deg);
+    G4SubtractionSolid *BGORearCut3 = new G4SubtractionSolid (G4String(sName), BGORearCut2,unicut2, &rm3,G4ThreeVector(0.0,0.0,-5*CLHEP::mm));
+    
+    // additionnal hexagonam shape at the back
+    sprintf(sName, "ShapeCBGORear_4");
+    G4RotationMatrix rm4;
+    G4SubtractionSolid *BGORearCut4 = new G4SubtractionSolid (G4String(sName), BGORearCut3,aCut, &rm4,G4ThreeVector(0.0,0.0,ClusBGOLength-15*CLHEP::mm));
+    
+    /*
+     sprintf(sName, "aCut_1");
+     G4RotationMatrix rm1;
+     G4SubtractionSolid *BGORearCut1 =
+     new G4SubtractionSolid(G4String(sName),BGORear,aCut,G4Transform3D(rm1,G4ThreeVector(0.0,0.0,0.0)));
+     
+     sprintf(sName, "aCut_2");
+     G4RotationMatrix rm2;
+     rm2.rotateX(LocalAngleClusCutCapotToCutCapot);
+     G4SubtractionSolid *BGORearCut2 =
+     new G4SubtractionSolid(G4String(sName),BGORearCut1,aCut,G4Transform3D(rm2,G4ThreeVector(DeltaX,DeltaY,DeltaZ)));
+     
+     sprintf(sName, "aCut_3");html/
+     G4RotationMatrix rm3;
+     rm3.rotateX(LocalAngleClusCutCapotToCutCapot); rm3.rotateZ(60.0*CLHEP::deg);
+     G4SubtractionSolid *BGORearCut3 =
+     new G4SubtractionSolid(G4String(sName),BGORearCut2,aCut,G4Transform3D(rm3,G4ThreeVector(DeltaX,DeltaY,DeltaZ)));
+     
+     sprintf(sName, "aCut_4");
+     G4RotationMatrix rm4;
+     rm4.rotateX(LocalAngleClusCutCapotToCutCapot); rm4.rotateZ(120.0*CLHEP::deg);
+     G4SubtractionSolid *BGORearCut4 =
+     new G4SubtractionSolid(G4String(sName),BGORearCut3,aCut,G4Transform3D(rm4,G4ThreeVector(DeltaX,DeltaY,DeltaZ)));
+     
+     sprintf(sName, "aCut_5");
+     G4RotationMatrix rm5;
+     rm5.rotateX(LocalAngleClusCutCapotToCutCapot); rm5.rotateZ(180.0*CLHEP::deg);
+     G4SubtractionSolid *BGORearCut5 =
+     new G4SubtractionSolid(G4String(sName),BGORearCut4,aCut,G4Transform3D(rm5,G4ThreeVector(DeltaX,DeltaY,DeltaZ)));
+     
+     sprintf(sName, "aCut_6");
+     G4RotationMatrix rm6;
+     rm6.rotateX(LocalAngleClusCutCapotToCutCapot); rm6.rotateZ(240.0*CLHEP::deg);
+     G4SubtractionSolid *BGORearCut6 =
+     new G4SubtractionSolid(G4String(sName),BGORearCut5,aCut,G4Transform3D(rm6,G4ThreeVector(DeltaX,DeltaY,DeltaZ)));
+     
+     sprintf(sName, "aCut_7");
+     G4RotationMatrix rm7;
+     rm7.rotateX(LocalAngleClusCutCapotToCutCapot); rm7.rotateZ(320.0*CLHEP::deg);
+     G4SubtractionSolid *BGORearCut7 =
+     new G4SubtractionSolid(G4String(sName),BGORearCut6,aCut,G4Transform3D(rm7,G4ThreeVector(DeltaX,DeltaY,DeltaZ))); */
+    
+    /*
+     sprintf(sName, "aCut_1");
+     G4RotationMatrix rmV1; G4ThreeVector V1(0.0,0.0,0.0);
+     G4RotationMatrix rm1;
+     G4SubtractionSolid *BGORearCut1 =
+     new G4SubtractionSolid(G4String(sName),BGORear,aCut,&rm1,V1);
+     
+     sprintf(sName, "aCut_2");
+     G4RotationMatrix rmV2; G4ThreeVector V2(DeltaX,DeltaY,DeltaZ);
+     G4RotationMatrix rm2;
+     rm2.rotateX(LocalAngleClusCutCapotToCutCapot);
+     G4SubtractionSolid *BGORearCut2 =
+     new G4SubtractionSolid(G4String(sName),BGORearCut1,aCut,&rm2,V2);
+     
+     sprintf(sName, "aCut_3");
+     G4RotationMatrix rmV3; rmV3.rotateZ(60.0*CLHEP::deg); G4ThreeVector V3(DeltaX,DeltaY,DeltaZ); V3 = rmV3 * V3;
+     G4RotationMatrix rm3;
+     // rm3.rotateZ(60.0*CLHEP::deg);
+     rm3.rotateX(LocalAngleClusCutCapotToCutCapot); rm3.rotateZ(60.0*CLHEP::deg);
+     G4SubtractionSolid *BGORearCut3 =
+     new G4SubtractionSolid(G4String(sName),BGORearCut2,aCut,&rm3,V2);
+     
+     sprintf(sName, "aCut_4");
+     G4RotationMatrix rmV4; rmV4.rotateZ(120.0*CLHEP::deg); G4ThreeVector V4(DeltaX,DeltaY,DeltaZ); V4 = rmV4 * V4;
+     G4RotationMatrix rm4;
+     // rm4.rotateZ(120.0*CLHEP::deg);
+     rm4.rotateX(LocalAngleClusCutCapotToCutCapot);rm4.rotateZ(120.0*CLHEP::deg);
+     G4SubtractionSolid *BGORearCut4 =
+     new G4SubtractionSolid(G4String(sName),BGORearCut3,aCut,&rm4,V2);
+     
+     sprintf(sName, "aCut_5");
+     G4RotationMatrix rmV5; rmV5.rotateZ(180.0*CLHEP::deg); G4ThreeVector V5(DeltaX,DeltaY,DeltaZ); V5 = rmV5 * V5;
+     G4RotationMatrix rm5;
+     // rm5.rotateZ(180.0*CLHEP::deg);
+     rm5.rotateX(LocalAngleClusCutCapotToCutCapot); rm5.rotateZ(180.0*CLHEP::deg);
+     G4SubtractionSolid *BGORearCut5 =
+     new G4SubtractionSolid(G4String(sName),BGORearCut4,aCut,&rm5,V2);
+     
+     sprintf(sName, "aCut_6");
+     G4RotationMatrix rmV6; rmV6.rotateZ(240.0*CLHEP::deg); G4ThreeVector V6(DeltaX,DeltaY,DeltaZ); V6 = rmV6 * V6;
+     G4RotationMatrix rm6;
+     //rm6.rotateZ(240.0*CLHEP::deg);
+     rm6.rotateX(LocalAngleClusCutCapotToCutCapot); rm6.rotateZ(240.0*CLHEP::deg);
+     G4SubtractionSolid *BGORearCut6 =
+     new G4SubtractionSolid(G4String(sName),BGORearCut5,aCut,&rm6,V2);
+     
+     sprintf(sName, "aCut_7");
+     G4RotationMatrix rmV7; rmV7.rotateZ(300.0*CLHEP::deg); G4ThreeVector V7(DeltaX,DeltaY,DeltaZ); V7 = rmV7 * V7;
+     G4RotationMatrix rm7;
+     //rm7.rotateZ(300.0*CLHEP::deg);
+     rm7.rotateX(LocalAngleClusCutCapotToCutCapot); rm7.rotateZ(300.0*CLHEP::deg);
+     G4SubtractionSolid *BGORearCut7 =
+     new G4SubtractionSolid(G4String(sName),BGORearCut6,aCut,&rm7,V2); */
+    
+    
+    
+    // 		------------------------------
+    /*
+     G4RotationMatrix rm1;
+     sprintf(sName, "Cut1_n");
+     rm1.rotateX(LocalAngleClusCutCapotToCutCapot);
+     G4UnionSolid* Cut1 = new G4UnionSolid(G4String(sName), ClusCapotCut, ClusCapotCut, &rm1, G4ThreeVector(
+     0.0,59.19*CLHEP::mm,-4.187*CLHEP::mm));
+     
+     sprintf(sName, "Cut2_n");
+     rm1.rotateX(-2*LocalAngleClusCutCapotToCutCapot);
+     G4UnionSolid* Cut2 = new G4UnionSolid(G4String(sName), Cut1, ClusCapotCut, &rm1,
+     G4ThreeVector(0.0,-59.19*CLHEP::mm,-4.187*CLHEP::mm));
+     
+     G4RotationMatrix rm2;
+     sprintf(sName, "Clus1_n");
+     G4SubtractionSolid *Clus1 = new G4SubtractionSolid (G4String(sName), ClusCapot,Cut2, &rm2,G4ThreeVector(0.0,0.0,0.0));
+     
+     G4RotationMatrix rm3;
+     sprintf(sName, "Clus2_n");
+     rm3.rotateZ(60.0*CLHEP::deg);
+     G4SubtractionSolid *Clus2 = new G4SubtractionSolid (G4String(sName), Clus1,Cut2, &rm3,G4ThreeVector(0.0,0.0,0.0));
+     
+     G4RotationMatrix rm4;
+     sprintf(sName, "Clus3_n");
+     rm4.rotateZ(-60.0*CLHEP::deg);
+     G4SubtractionSolid *Clus3 = new G4SubtractionSolid (G4String(sName), Clus2,Cut2, &rm4,G4ThreeVector(0.0,0.0,0.0));
+     */
+    sprintf(sName, "CBGOLV");
+    pClusBGO  = new G4LogicalVolume( BGORearCut4, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("BGO"), G4String(sName), 0, 0, 0 );
+    //pClusBGO  = new G4LogicalVolume( BGORearCut3, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("BGO"), G4String(sName), 0, 0, 0 );
+    
+	return 	pClusBGO;
+}
+
+
+G4LogicalVolume *GetEUROBALL_CCOLLIMATOR_LV()
+{
+    static G4LogicalVolume *pClusColimator = 0x0;
+    
+    if ( pClusColimator ) {
+        return pClusColimator;
+    }
+    
+	char sName[40];
+	G4int nbSlice=2;
+	G4double  zSlice[2]={ 0.0, ClusColiLength};
+    // deduced for an inclinaison angle equal to the crystal one (=7.657 + 0.386 deg)
+    // and a colimatorstarting at position 390 mm form the target with a length equal to ClusColiLength = 30 mm
+    //	G4double  InnRad[2]={ 0.0*CLHEP::mm, 0.0*CLHEP::mm};
+	G4double  InnRad[2]={ 73.35*CLHEP::mm, 79.76*CLHEP::mm}; // -10mm
+	G4double  OutRad[2]={ 88.*CLHEP::mm, 96.*CLHEP::mm };
+    
+	G4double  LocalAngle = 8.05*CLHEP::deg;
+	G4double  zSliceCut[2]=
+    { 0.0, ClusColiLength + 10*CLHEP::mm};
+	G4double  InnRadCut[2]=
+    { 0.0,0.0};
+	G4double  OutRadCut[2]=
+    { 27.44*CLHEP::mm, 29.55*CLHEP::mm}; // tan(8.05*CLHEP::deg/2)* {390,420}
+    
+	// DeltaZ = - 27.44*CLHEP::mm * sin(8.05)
+	// DeltaY =  (390+DeltaZ)*tan(8.05)
+	G4double DeltaX = 0.0, DeltaY = 54.61*CLHEP::mm, DeltaZ = -3.843*CLHEP::mm;
+	
+    sprintf(sName, "ShapeBaseCColli");
+    G4Polyhedra *Coli =
+    new G4Polyhedra(G4String(sName),0.*CLHEP::deg, 360.*CLHEP::deg, 6, nbSlice, zSlice, InnRad, OutRad);
+    
+    sprintf(sName, "ShapeCCut");
+    G4Polyhedra *aCut =
+    new G4Polyhedra(G4String(sName), 0.*CLHEP::deg, 360.*CLHEP::deg, 6, nbSlice, zSliceCut, InnRadCut,  OutRadCut);
+    
+    // add three aCut to form a solid that will be rotated and substracted after to the FullBGORear
+    sprintf(sName, "ShapeCCutP1");
+    G4RotationMatrix rmu1;
+    rmu1.rotateX(LocalAngle);
+    G4UnionSolid* unicut1 = new G4UnionSolid(G4String(sName), aCut, aCut, &rmu1, G4ThreeVector(DeltaX,DeltaY,DeltaZ));
+    
+    sprintf(sName, "ShapeCCutP2");
+    G4RotationMatrix rmu2;
+    rmu2.rotateX(-LocalAngle);
+    G4UnionSolid* unicut2 = new G4UnionSolid(G4String(sName), unicut1, aCut, &rmu2,G4ThreeVector(DeltaX,-DeltaY,DeltaZ));
+    
+    sprintf(sName, "ShapeCCutColli1");
+    G4RotationMatrix rm1;
+    G4SubtractionSolid *Coli1 = new G4SubtractionSolid (G4String(sName), Coli, unicut2, &rm1,G4ThreeVector(0.0,0.0,-5*CLHEP::mm));
+    
+    sprintf(sName, "ShapeCCutColli2");
+    G4RotationMatrix rm2;
+    rm2.rotateZ(60.0*CLHEP::deg);
+    G4SubtractionSolid *Coli2 = new G4SubtractionSolid (G4String(sName), Coli1,unicut2, &rm2,G4ThreeVector(0.0,0.0,-5*CLHEP::mm));
+    
+    sprintf(sName, "ShapeCCutColli3");
+    G4RotationMatrix rm3;
+    rm3.rotateZ(-60.0*CLHEP::deg);
+    G4SubtractionSolid *Coli3 = new G4SubtractionSolid (G4String(sName), Coli2,unicut2, &rm3,G4ThreeVector(0.0,0.0,-5*CLHEP::mm));
+    
+    
+    sprintf(sName, "CColliLV");
+    pClusColimator  = new G4LogicalVolume(Coli3, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("W"), G4String(sName), 0, 0, 0 );
+	return 	pClusColimator;
+}
+
+/*
+G4LogicalVolume *GetEUROBALL_CGECAN_LV()
+{
+    static G4LogicalVolume *pClusCapsule = 0x0;
+    
+    if ( pClusCapsule ) {
+        return pClusCapsule;
+    }
+    
+	G4int nbslice1 =2;
+	G4double zSlice1[2]={ClusCapsulePosition, ClusCapsulePosition+ClusCapsuleLength};
+	G4double InnRad1[2]={0.0,0.0};
+	G4double OutRad1[2]={ClusCapsuleFace2,ClusCapsuleFace2};
+	
+	G4int nbslice2 =2;
+	G4double zSlice2[2]={ClusCapsulePosition-0.1*CLHEP::mm, ClusCapsulePosition+ClusCapsuleCutLength};
+	G4double InnRad2[2]={ClusCapsuleFace1,ClusCapsuleFace2};
+	G4double OutRad2[2]={ClusCapsuleFace1+20.0*CLHEP::mm,ClusCapsuleFace2+20.0*CLHEP::mm};
+	
+	G4int nbslice3 =2;
+	G4double zSlice3[2]={ClusCapsulePosition+ClusCapsuleWidth, ClusCapsulePosition+ClusCapsuleLength-ClusCapsuleWidth+10.0*CLHEP::mm};
+	G4double InnRad3[2]={0.0,0.0};
+	G4double OutRad3[2]={ClusCapsuleFace2-ClusCapsuleWidth,ClusCapsuleFace2-ClusCapsuleWidth};
+	
+	G4int nbslice4 =2;
+	G4double zSlice4[2]={ClusCapsulePosition+ClusCapsuleWidth-0.1*CLHEP::mm, ClusCapsulePosition+ClusCapsuleCutLength+10.0*CLHEP::mm};
+	G4double InnRad4[2]={ClusCapsuleFace1-ClusCapsuleWidth,ClusCapsuleFace2-ClusCapsuleWidth};
+	G4double OutRad4[2]={ClusCapsuleFace1-ClusCapsuleWidth+20.0*CLHEP::mm,ClusCapsuleFace2-ClusCapsuleWidth+20.0*CLHEP::mm};
+    
+	G4int nbslice5 =2;
+	G4double zSlice5[2]={ClusCapsulePosition-10.0*CLHEP::mm, ClusCapsulePosition+ClusCapsuleLength+10.0*CLHEP::mm};
+	G4double InnRad5[2]={0.0,0.0};
+	G4double OutRad5[2]={ClusCapsuleFace2,ClusCapsuleFace2};
+	
+    G4Polycone *Tube1
+        = new G4Polycone(G4String("ShapeEUROCCAPSBase1"),0.0*CLHEP::deg, 360.0*CLHEP::deg, nbslice1, zSlice1, InnRad1, OutRad1);
+    //G4Polyhedra *box
+    //    = new G4Polyhedra(G4String("ShapeEUROCCAPSBaseB"),0.0*CLHEP::deg,360.0*CLHEP::deg,4,nbslice5, zSlice5,InnRad5,OutRad5);
+    
+    G4RotationMatrix rm, rm1, rm2;
+    G4Polyhedra *Cut1
+        = new G4Polyhedra(G4String("ShapeEUROCCAPSCut1"),0.0*CLHEP::deg, 360.0*CLHEP::deg, 6, nbslice2, zSlice2, InnRad2, OutRad2);
+    G4Polycone *Tube2
+        = new G4Polycone(G4String("ShapeEUROCCAPSBase2"),0.0*CLHEP::deg, 360.0*CLHEP::deg, nbslice3, zSlice3, InnRad3, OutRad3);
+    G4Polyhedra *Cut2
+        = new G4Polyhedra(G4String("ShapeEUROCCAPSCut2"),0.0*CLHEP::deg, 360.0*CLHEP::deg, 6,nbslice4, zSlice4, InnRad4, OutRad4);
+    G4SubtractionSolid *form1
+        = new G4SubtractionSolid(G4String("ShapeEUROCCAPSStage1"),Tube1,Cut1,&rm, G4ThreeVector(0.0,0.0,0.0));
+    G4SubtractionSolid *form2
+        = new G4SubtractionSolid(G4String("ShapeEUROCCAPSStage2"),Tube2,Cut2,&rm1, G4ThreeVector(0.0,0.0,0.0));
+    G4SubtractionSolid *form3
+        = new G4SubtractionSolid(G4String("ShapeEUROCCAPSStage13"),form1,form2,&rm2, G4ThreeVector(0.0,0.0,0.0));
+    
+    pClusCapsule=new G4LogicalVolume(form3, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al") , G4String("EUROClusterCAPSLV"), 0, 0, 0 );
+	return pClusCapsule;
+}
+
+
+G4LogicalVolume *GetEUROBALL_CBACK1_LV()
+{
+    static G4LogicalVolume *pClusArre = 0x0;
+    
+    if ( pClusArre ) {
+        return pClusArre;
+    }
+    
+	G4int nbslice1 =2;
+	G4double zSlice1[2]=
+    {ClusCapsulePosition+ClusCapsuleLength+0.01*CLHEP::mm, ClusCapsulePosition+ClusCapsuleLength+ClusCapsuleWidth+0.01*CLHEP::mm};
+	G4double InnRad1[2]={0.0,0.0};
+	G4double OutRad1[2]={ClusCapsuleFace2,ClusCapsuleFace2};
+    G4Polycone *Tube1=new G4Polycone(G4String("ShapeCBACK1"),0.0*CLHEP::deg, 360.0*CLHEP::deg, nbslice1, zSlice1, InnRad1, OutRad1);
+    pClusArre=new G4LogicalVolume(Tube1, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"), G4String("CBACK1LV"), 0,0,0);
+    
+	return pClusArre;
+}
+
+G4LogicalVolume *GetEUROBALL_CBACK2_LV()
+{
+    static G4LogicalVolume *pClusBack = 0x0;
+    
+    if ( pClusBack ) {
+        return pClusBack;
+    }
+    
+	char sName[40];
+	G4int nbSlice=5;
+ 	G4double  zSlice[5]={ClusBackFace1Position,ClusBackFace2Position,ClusBackFace3Position,
+        ClusBackFace4Position,ClusBackFace5Position};
+  	G4double  InnRad[5]={ClusBackInnRad,ClusBackInnRad,ClusBackInnRad,ClusBackInnRad,ClusBackInnRad};
+ 	G4double  OutRad[5]={ClusBackFace1,ClusBackFace2,ClusBackFace3,ClusBackFace4,ClusBackFace5};
+    sprintf(sName, "ShapeCBACK2");
+    G4Polyhedra *form =new G4Polyhedra(G4String(sName), 0.*CLHEP::deg, 360.*CLHEP::deg, 6, nbSlice, zSlice, InnRad,  OutRad);
+    sprintf(sName, "CBACK2LV");
+    pClusBack  = new G4LogicalVolume( form, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"), G4String(sName), 0, 0, 0 );
+	return pClusBack;
+}
+
+G4LogicalVolume *GetEUROBALL_CCAPSOUT_LV()
+{
+    static G4LogicalVolume *pClusCapotBase = 0x0;
+    
+    if ( pClusCapotBase ) {
+        return pClusCapotBase;
+    }
+    
+	char sName[40];
+	G4int nbSlice=2;
+	G4double  zSlice[2]={ClusBaseFace1Position,ClusBaseFace2Position};
+ 	G4double  InnRad[2]={ClusBaseInnRad1,ClusBaseInnRad2};
+	G4double  OutRad[2]={ClusBaseFace1,ClusBaseFace2};
+    sprintf(sName, "FinalCapot");
+    G4Polyhedra *Base =new G4Polyhedra(G4String(sName), 0.*CLHEP::deg, 360.*CLHEP::deg, 6, nbSlice, zSlice, InnRad, OutRad);
+    
+    sprintf(sName, "aClusCapotBase");
+    pClusCapotBase  = new G4LogicalVolume( Base, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("Al"), G4String(sName), 0, 0, 0 );
+    
+	return 	pClusCapotBase;
+}
+
+G4LogicalVolume *GetEUROBALL_CBGOBACK_LV()
+{
+    static G4LogicalVolume *pClusBGOBack = 0x0;
+    
+    if ( pClusBGOBack ) {
+        return pClusBGOBack;
+    }
+    
+	char sName[40];
+	G4int nbSlice=2;
+ 	G4double  zSlice[2]={ClusCsIBackFace1Position,ClusCsIBackFace2Position};
+  	G4double  InnRad[5]={0.0,0.0};
+ 	G4double  OutRad[5]={ClusCsIBackOutRad,ClusCsIBackOutRad};
+    sprintf(sName, "ClusBGOBack");
+    G4Polyhedra *form =new G4Polyhedra(G4String(sName), 0.*CLHEP::deg, 360.*CLHEP::deg, 6, nbSlice, zSlice, InnRad,  OutRad);
+    sprintf(sName, "aClusCsIBack");
+    pClusBGOBack  = new G4LogicalVolume( form, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("BGO"), G4String(sName), 0, 0, 0 );
+	
+	return pClusBGOBack;
+}
+ */
+

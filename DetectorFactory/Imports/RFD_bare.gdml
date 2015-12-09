@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd">
+
+  <define/>
+
+  <materials>
+    <isotope N="12" Z="6" name="C12">
+      <atom unit="g/mole" value="12"/>
+    </isotope>
+    <isotope N="13" Z="6" name="C13">
+      <atom unit="g/mole" value="13.0034"/>
+    </isotope>
+    <element name="AGATA_C">
+      <fraction n="0.9893" ref="C12"/>
+      <fraction n="0.0107" ref="C13"/>
+    </element>
+    <isotope N="1" Z="1" name="H1">
+      <atom unit="g/mole" value="1.00782503081372"/>
+    </isotope>
+    <isotope N="2" Z="1" name="H2">
+      <atom unit="g/mole" value="2.01410199966617"/>
+    </isotope>
+    <element name="AGATA_H">
+      <fraction n="0.999885" ref="H1"/>
+      <fraction n="0.000115" ref="H2"/>
+    </element>
+    <isotope N="16" Z="8" name="O16">
+      <atom unit="g/mole" value="15.9949"/>
+    </isotope>
+    <isotope N="17" Z="8" name="O17">
+      <atom unit="g/mole" value="16.9991"/>
+    </isotope>
+    <isotope N="18" Z="8" name="O18">
+      <atom unit="g/mole" value="17.9992"/>
+    </isotope>
+    <element name="AGATA_O">
+      <fraction n="0.99757" ref="O16"/>
+      <fraction n="0.00038" ref="O17"/>
+      <fraction n="0.00205" ref="O18"/>
+    </element>
+    <material name="AGATA_Mylar" state="solid">
+      <MEE unit="eV" value="75.9672951304696"/>
+      <D unit="g/cm3" value="1.397"/>
+      <fraction n="0.624801104981581" ref="AGATA_C"/>
+      <fraction n="0.0419841350503423" ref="AGATA_H"/>
+      <fraction n="0.333214759968077" ref="AGATA_O"/>
+    </material>
+    <isotope N="14" Z="7" name="N14">
+      <atom unit="g/mole" value="14.0031"/>
+    </isotope>
+    <isotope N="15" Z="7" name="N15">
+      <atom unit="g/mole" value="15.0001"/>
+    </isotope>
+    <element name="AGATA_N">
+      <fraction n="0.99632" ref="N14"/>
+      <fraction n="0.00368" ref="N15"/>
+    </element>
+    <isotope N="16" Z="8" name="O16">
+      <atom unit="g/mole" value="15.9949"/>
+    </isotope>
+    <isotope N="17" Z="8" name="O17">
+      <atom unit="g/mole" value="16.9991"/>
+    </isotope>
+    <isotope N="18" Z="8" name="O18">
+      <atom unit="g/mole" value="17.9992"/>
+    </isotope>
+    <element name="AGATA_O">
+      <fraction n="0.99757" ref="O16"/>
+      <fraction n="0.00038" ref="O17"/>
+      <fraction n="0.00205" ref="O18"/>
+    </element>
+    <material name="AGATA_AIR" state="gas">
+      <MEE unit="eV" value="85.7025495761375"/>
+      <D unit="g/cm3" value="0.00129"/>
+      <fraction n="0.7" ref="AGATA_N"/>
+      <fraction n="0.3" ref="AGATA_O"/>
+    </material>
+  </materials>
+
+  <solids>
+    <tube aunit="deg" deltaphi="360" lunit="mm" name="ShapeMylarFoil" rmax="25" rmin="0" startphi="0" z="0.0008"/>
+    <box lunit="mm" name="hallBox" x="20000" y="20000" z="100000"/>
+  </solids>
+
+  <structure>
+    <volume name="MylarFoilLV">
+      <materialref ref="AGATA_Mylar"/>
+      <solidref ref="ShapeMylarFoil"/>
+    </volume>
+    <volume name="RFD">
+      <materialref ref="AGATA_AIR"/>
+      <solidref ref="hallBox"/>
+      <physvol name="Ring:0:Foil:00:">
+        <volumeref ref="MylarFoilLV"/>
+        <position name="Ring:0:Foil:00:_pos" unit="mm" x="-33.9605110264938" y="58.8213305488904" z="1340.78073701977"/>
+        <rotation name="Ring:0:Foil:00:_rot" unit="deg" x="13.098625134454" y="7.30699719935019" z="1.69510693815366"/>
+      </physvol>
+      <physvol name="Ring:0:Foil:01:">
+        <volumeref ref="MylarFoilLV"/>
+        <position name="Ring:0:Foil:01:_pos" unit="mm" x="-67.9210220529876" y="4.1589631126004e-15" z="1340.78073701977"/>
+        <rotation name="Ring:0:Foil:01:_rot" unit="deg" x="0" y="15" z="0"/>
+      </physvol>
+      <physvol name="Ring:0:Foil:02:">
+        <volumeref ref="MylarFoilLV"/>
+        <position name="Ring:0:Foil:02:_pos" unit="mm" x="-33.9605110264938" y="-58.8213305488904" z="1340.78073701977"/>
+        <rotation name="Ring:0:Foil:02:_rot" unit="deg" x="-13.098625134454" y="7.30699719935019" z="-1.69510693815366"/>
+      </physvol>
+      <physvol name="Ring:0:Foil:03:">
+        <volumeref ref="MylarFoilLV"/>
+        <position name="Ring:0:Foil:03:_pos" unit="mm" x="33.9605110264938" y="-58.8213305488904" z="1340.78073701977"/>
+        <rotation name="Ring:0:Foil:03:_rot" unit="deg" x="-13.098625134454" y="-7.30699719935019" z="1.69510693815366"/>
+      </physvol>
+      <physvol name="Ring:0:Foil:04:">
+        <volumeref ref="MylarFoilLV"/>
+        <position name="Ring:0:Foil:04:_pos" unit="mm" x="67.9210220529876" y="-1.24768893378012e-14" z="1340.78073701977"/>
+        <rotation name="Ring:0:Foil:04:_rot" unit="deg" x="0" y="-15" z="0"/>
+      </physvol>
+      <physvol name="Ring:0:Foil:05:">
+        <volumeref ref="MylarFoilLV"/>
+        <position name="Ring:0:Foil:05:_pos" unit="mm" x="33.9605110264938" y="58.8213305488904" z="1340.78073701977"/>
+        <rotation name="Ring:0:Foil:05:_rot" unit="deg" x="13.098625134454" y="-7.3069971993502" z="-1.69510693815366"/>
+      </physvol>
+      <physvol name="Ring:1:Foil:00:">
+        <volumeref ref="MylarFoilLV"/>
+        <position name="Ring:1:Foil:00:_pos" unit="mm" x="0" y="119.071246551812" z="1321.14506707046"/>
+        <rotation name="Ring:1:Foil:00:_rot" unit="deg" x="27" y="0" z="0"/>
+      </physvol>
+      <physvol name="Ring:1:Foil:01:">
+        <volumeref ref="MylarFoilLV"/>
+        <position name="Ring:1:Foil:01:_pos" unit="mm" x="-103.118724374149" y="59.535623275906" z="1321.14506707046"/>
+        <rotation name="Ring:1:Foil:01:_rot" unit="deg" x="14.6578757515072" y="22.6999336188653" z="5.76374766950725"/>
+      </physvol>
+      <physvol name="Ring:1:Foil:02:">
+        <volumeref ref="MylarFoilLV"/>
+        <position name="Ring:1:Foil:02:_pos" unit="mm" x="-103.118724374149" y="-59.535623275906" z="1321.14506707046"/>
+        <rotation name="Ring:1:Foil:02:_rot" unit="deg" x="-14.6578757515072" y="22.6999336188653" z="-5.76374766950725"/>
+      </physvol>
+      <physvol name="Ring:1:Foil:03:">
+        <volumeref ref="MylarFoilLV"/>
+        <position name="Ring:1:Foil:03:_pos" unit="mm" x="-1.45820220960162e-14" y="-119.071246551812" z="1321.14506707046"/>
+        <rotation name="Ring:1:Foil:03:_rot" unit="deg" x="-27" y="0" z="0"/>
+      </physvol>
+      <physvol name="Ring:1:Foil:04:">
+        <volumeref ref="MylarFoilLV"/>
+        <position name="Ring:1:Foil:04:_pos" unit="mm" x="103.118724374149" y="-59.5356232759061" z="1321.14506707046"/>
+        <rotation name="Ring:1:Foil:04:_rot" unit="deg" x="-14.6578757515072" y="-22.6999336188653" z="5.76374766950726"/>
+      </physvol>
+      <physvol name="Ring:1:Foil:05:">
+        <volumeref ref="MylarFoilLV"/>
+        <position name="Ring:1:Foil:05:_pos" unit="mm" x="103.118724374149" y="59.535623275906" z="1321.14506707046"/>
+        <rotation name="Ring:1:Foil:05:_rot" unit="deg" x="14.6578757515072" y="-22.6999336188653" z="-5.76374766950725"/>
+      </physvol>
+      <physvol name="Ring:2:Foil:00:">
+        <volumeref ref="MylarFoilLV"/>
+        <position name="Ring:2:Foil:00:_pos" unit="mm" x="-65.4909420028557" y="113.433638984493" z="1314.59079414939"/>
+        <rotation name="Ring:2:Foil:00:_rot" unit="deg" x="26.7712962735139" y="13.4539103958035" z="6.6947622915158"/>
+      </physvol>
+      <physvol name="Ring:2:Foil:01:">
+        <volumeref ref="MylarFoilLV"/>
+        <position name="Ring:2:Foil:01:_pos" unit="mm" x="-130.981884005711" y="8.02032724969422e-15" z="1314.59079414939"/>
+        <rotation name="Ring:2:Foil:01:_rot" unit="deg" x="0" y="30" z="0"/>
+      </physvol>
+      <physvol name="Ring:2:Foil:02:">
+        <volumeref ref="MylarFoilLV"/>
+        <position name="Ring:2:Foil:02:_pos" unit="mm" x="-65.4909420028557" y="-113.433638984493" z="1314.59079414939"/>
+        <rotation name="Ring:2:Foil:02:_rot" unit="deg" x="-26.7712962735139" y="13.4539103958035" z="-6.6947622915158"/>
+      </physvol>
+      <physvol name="Ring:2:Foil:03:">
+        <volumeref ref="MylarFoilLV"/>
+        <position name="Ring:2:Foil:03:_pos" unit="mm" x="65.4909420028557" y="-113.433638984493" z="1314.59079414939"/>
+        <rotation name="Ring:2:Foil:03:_rot" unit="deg" x="-26.7712962735139" y="-13.4539103958035" z="6.6947622915158"/>
+      </physvol>
+      <physvol name="Ring:2:Foil:04:">
+        <volumeref ref="MylarFoilLV"/>
+        <position name="Ring:2:Foil:04:_pos" unit="mm" x="130.981884005711" y="-2.40609817490827e-14" z="1314.59079414939"/>
+        <rotation name="Ring:2:Foil:04:_rot" unit="deg" x="0" y="-30" z="0"/>
+      </physvol>
+      <physvol name="Ring:2:Foil:05:">
+        <volumeref ref="MylarFoilLV"/>
+        <position name="Ring:2:Foil:05:_pos" unit="mm" x="65.4909420028558" y="113.433638984493" z="1314.59079414939"/>
+        <rotation name="Ring:2:Foil:05:_rot" unit="deg" x="26.7712962735139" y="-13.4539103958036" z="-6.69476229151581"/>
+      </physvol>
+    </volume>
+  </structure>
+
+  <setup name="Default" version="1.0">
+    <world ref="RFD"/>
+  </setup>
+
+</gdml>

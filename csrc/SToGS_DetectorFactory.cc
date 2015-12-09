@@ -973,7 +973,7 @@ G4int SToGS::DetectorFactory::Set(G4String basename, G4VPhysicalVolume *mother,
     // load from factory the detector, remove the envelop and move the content into mother with all its attribute
     thefullDetector = Get(basename);
     if ( thefullDetector == 0x0 ) {
-        return 0;
+        return -1;
     }
     else { volume_to_copy = thefullDetector->GetLogicalVolume();  }
     
@@ -1082,7 +1082,6 @@ G4int SToGS::DetectorFactory::Set(G4String basename, G4VPhysicalVolume *mother,
                     << top_copy_number_offset + subdetector->GetCopyNo()<< G4endl;
         }
     }
-    
     return phycical_active.size();
 }
 
@@ -1299,12 +1298,12 @@ G4VPhysicalVolume * SToGS::DetectorFactory::MakeAnArrayFromFactory(G4String inpu
             if ( where_to_load ) {
                 G4int nb_added = 0;
                 nb_added = where_to_load->Set(subdetector_name, theDetector, SToGS::DetectorFactory::GetGCopyNb(), &T, R);
-                if ( nb_added == 0 ) {
+                if ( nb_added < 0 ) { // volume not found in the Store
                     cout << "[+..] Reading " << input_file << endl;
                     cout << "  *** !! *** " << subdetector_name << " DOES NOT EXIST IN THE FACTORY " << where_to_load->GetFactoryName() << endl;
                     cout << "[..+] Reading " << input_file << endl;
                 }
-                SToGS::DetectorFactory::SetGCopyNb( SToGS::DetectorFactory::GetGCopyNb() + nb_added );
+                else SToGS::DetectorFactory::SetGCopyNb( SToGS::DetectorFactory::GetGCopyNb() + nb_added );
                 // to do : Set return the number of active volumes
             }
             else {
