@@ -344,7 +344,12 @@ G4Material *SToGS::MaterialConsultant::BuildMaterial(G4String name_material)
         mat->AddElement(BuildElement("SToGS_O") , natoms = 2);
         theMaterials.push_back(mat);
     }
-    
+    if ( name_material == "SToGS_Vacuum_Ge" ) {
+         density = 2.376e-15*CLHEP::g/CLHEP::cm3, nel = 2; mat = new G4Material(name="SToGS_Vacuum_Ge", density, nel);
+         mat->AddElement(BuildElement("SToGS_N"), 70);
+         mat->AddElement(BuildElement("SToGS_O"), 30);
+         theMaterials.push_back(mat);
+     }
     // must have the right composition for stainless steel
     
     //  density = 8.96*CLHEP::g/CLHEP::cm3;

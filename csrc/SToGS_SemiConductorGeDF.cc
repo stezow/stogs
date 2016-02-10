@@ -85,10 +85,10 @@ G4VPhysicalVolume * SToGS::SemiConductorGeDF::MakeEXOCLOVER(G4String detname, G4
     
     G4VPhysicalVolume *theDetector = 0x0; //it means is a pointer
     
-    const G4double world_x = 20.*CLHEP::cm;
-    const G4double world_y = 20.*CLHEP::cm;
-    const G4double world_z = 50.*CLHEP::cm;
-    
+    const G4double world_x = 50.*CLHEP::cm;
+    const G4double world_y = 50.*CLHEP::cm;
+    const G4double world_z = 100.*CLHEP::cm;
+
     // use a physical as a container to describe the detector
     G4Box *detWorld= new G4Box(detname,world_x,world_y,world_z);
     G4LogicalVolume *detlogicWorld= new G4LogicalVolume(detWorld, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("AIR"), detname, 0, 0, 0);
@@ -108,36 +108,672 @@ G4VPhysicalVolume * SToGS::SemiConductorGeDF::MakeEXOCLOVER(G4String detname, G4
                                     -1);              // copy number
     
     //here is where you construct your clover EXOGAM
-    
+
     // **************************************************************************
-    // *                             CLOVER EXOGAM                              *
+    // *                      CLOVER EXOGAM   VR PLANS GANIL                    *
     // **************************************************************************
-    
+
     const G4double CrystalLength       = 90.0*CLHEP::mm; // Ge crystal length
     const G4double CrystalHoleDepth    = 15.0*CLHEP::mm; // depth at which starts the hole
-    
+
     const G4double CrystalOuterRadius  = 30.0*CLHEP::mm; // outer radius for crystal
     const G4double CrystalInnerRadius  =  5.0*CLHEP::mm; // inner radius for hole in crystal
-    
-    const G4double CrystalEdgeOffset1  = 26.0*CLHEP::mm; // distance of the edge from the center of the crystal
-    const G4double CrystalEdgeOffset2  = 28.5*CLHEP::mm; // distance of the edge from the center of the crystal
-	
+
+    const G4double CrystalEdgeOffset1  = 24.5*CLHEP::mm; // distance of the edge from the center of the crystal
+    const G4double CrystalEdgeOffset2  = 29*CLHEP::mm; // distance of the edge from the center of the crystal
+
     const G4double CrystalEdgeDepth    = 30.0*CLHEP::mm;  // depth to which the crystal is shaped
     const G4double CrystalEdgeAngle    = 22.5*CLHEP::deg; // bevel angle
-    
+
+    const G4double CapsuleWidth1        = 1.5*CLHEP::mm;   // capsule width
+    const G4double CapsuleWidth2        = 2.0*CLHEP::mm;   // capsule width
+    const G4double CapsuleLength        = 147.*CLHEP::mm;   // capsule length
+    const G4double CapsuleEdgeDepth     = 43.25*CLHEP::mm;   // not the same as crystal !!!
+    const G4double CrystalToCapsuleTOP  = 7.*CLHEP::mm;   // to be adjusted ..
+    const G4double CrystalToCapsuleLATERAL   = 8.*CLHEP::mm;   // to be adjusted ..
+
+    const G4double BGOLength                 = 132.893*CLHEP::mm;
+    const G4double BGOWidth                  = 25.0*CLHEP::mm;
+
+    const G4double CsILength	             = 38.8*CLHEP::mm;
+
+    const G4double Tolerance                 = 0.1*CLHEP::mm; // distance between crystals
+    const G4double Space                     = 1.0*CLHEP::mm; // distance between Al capsule and BGO
+    const G4double AlcapstoBGO               = 52.907*CLHEP::mm; // distance between the TOP Al capsule to the top of BGO
+
+
+
+    // declaration of all Physical Volumes
+
+    G4VPhysicalVolume *CrystalA_phys = 0x0;
+    G4VPhysicalVolume *CrystalB_phys = 0x0;
+    G4VPhysicalVolume *CrystalC_phys = 0x0;
+    G4VPhysicalVolume *CrystalD_phys = 0x0;
+    G4VPhysicalVolume *Capsule_phys = 0x0;
+    G4VPhysicalVolume *Capsule_OUT_phys = 0x0;
+    G4VPhysicalVolume *Capsule_IN_phys = 0x0;
+    G4VPhysicalVolume *CFPlate_phys= 0x0;
+    G4VPhysicalVolume *CF_int_phys = 0x0;
+    G4VPhysicalVolume *CF_OUT_phys= 0x0;
+    G4VPhysicalVolume *physiIntEnvColdFinger =0x0;
+    G4VPhysicalVolume *Dewar_phys=0x0;
+    G4VPhysicalVolume *IntDewar_phys=0x0;
+    G4VPhysicalVolume *physiCloverCan= 0x0;
+    G4VPhysicalVolume *BGO_phys = 0x0;
+    G4VPhysicalVolume *CsIBack_phys = 0x0;
+
+    // define a coaxial shape that will be modify with SubstractSolid
+    // the Ge crystal dimensions
+    G4int nbZplanes = 4;
+    G4double zPlaneGe[4] = { 0.0*CLHEP::mm,
+                             CrystalHoleDepth,
+                             CrystalHoleDepth + 3.0*CLHEP::mm,
+                             CrystalLength};  // depth where is the hole
+    G4double rInnerGe[4] = { 0.0*CLHEP::mm,
+                             0.0*CLHEP::mm,
+                             CrystalInnerRadius,
+                             CrystalInnerRadius};       // to define the hole in the crystal
+    G4double rOuterGe[4] = { CrystalOuterRadius,
+                             CrystalOuterRadius,
+                             CrystalOuterRadius,
+                             CrystalOuterRadius};  // to define the external surface
+
+
+    char sName[40]; // generic for named objects
+    sprintf(sName, "Crystal");
+
+    G4Polycone *detCrystal= new G4Polycone(G4String(sName),  //name
+                                           0.*CLHEP::deg,     //phi Start
+                                           360.*CLHEP::deg,   //phiTotal
+                                           nbZplanes, // number of sides
+                                           zPlaneGe,     // number of Z planes
+                                           rInnerGe,     // inner radius
+                                           rOuterGe);    // outer radius
+
+
+    // box definition to remove some matter to the crystal
+
+    G4double Edge[3];
+
+    sprintf(sName, "LongEdge1");
+    Edge[0] = (CrystalOuterRadius-CrystalEdgeOffset1);	// x half-width
+    Edge[1] = 1.001*CLHEP::mm*CrystalOuterRadius;			// y half-width
+    Edge[2] = 1.001*CLHEP::mm*CrystalLength/2.0;			// z half-width
+    G4Box *cutEdge1  = new G4Box(G4String(sName),Edge[0],Edge[1],Edge[2]);
+
+    sprintf(sName, "LongEdge2");
+    Edge[0] = (CrystalOuterRadius-CrystalEdgeOffset2);	// x half-width
+    Edge[1] = 1.001*CLHEP::mm*CrystalOuterRadius;			// y half-width
+    Edge[2] = 1.001*CLHEP::mm*CrystalLength/2.0;			// z half-width
+    G4Box *cutEdge2  = new G4Box(G4String(sName),Edge[0],Edge[1],Edge[2]);
+
+    sprintf(sName, "Bevel");
+    Edge[0] = 1.001*CLHEP::mm*CrystalOuterRadius;
+    Edge[1] = sin(CrystalEdgeAngle)*(CrystalEdgeDepth);
+    Edge[2] = 1.001*CLHEP::mm*CrystalLength/2.0;
+    G4Box *cutBevel = new G4Box(G4String(sName),Edge[0],Edge[1],Edge[2]);
+
+
+    // **************************************************************************
+    // *                             SUBSTRACTIONS                              *
+    // **************************************************************************
+
+    // now remove previously defined box from coax. The box must be placed correctly before
+    // since the box definition goes from negative to positive values.
+
+    G4RotationMatrix rm; //  rm.SetName(G4String("RotationEdge"));
+    sprintf(sName, "coax_cut1_edge");
+    G4SubtractionSolid *coax_cut1
+            = new G4SubtractionSolid (G4String(sName),  detCrystal, cutEdge1, &rm, G4ThreeVector(-CrystalOuterRadius,0.0,CrystalLength/2.0));
+
+    sprintf(sName, "coax_cut2_edge");
+    G4SubtractionSolid *coax_cut2
+            = new G4SubtractionSolid (G4String(sName), coax_cut1, cutEdge2, &rm, G4ThreeVector(CrystalOuterRadius,0.0,CrystalLength/2.0));
+
+    sprintf(sName, "coax_cut3_edge");
+    rm.rotateZ(90.0*CLHEP::deg);
+    G4SubtractionSolid *coax_cut3
+            = new G4SubtractionSolid (G4String(sName), coax_cut2, cutEdge2, &rm, G4ThreeVector(0.0,CrystalOuterRadius,CrystalLength/2.0));
+
+    sprintf(sName, "coax_cut4_edge");
+    G4SubtractionSolid *coax_cut4
+            = new G4SubtractionSolid (G4String(sName), coax_cut3, cutEdge1, &rm, G4ThreeVector(0.0,-CrystalOuterRadius,CrystalLength/2.0));
+    rm.rotateZ(-90.0*CLHEP::deg);
+
+    sprintf(sName, "coax_cut5_edge");
+    rm.rotateX(CrystalEdgeAngle);
+    G4SubtractionSolid *coax_cut5
+            = new G4SubtractionSolid (G4String(sName), coax_cut4, cutBevel, &rm, G4ThreeVector(0.,CrystalEdgeOffset2,0.));
+    // rm.rotateX(-CrystalEdgeAngle);
+    //Bevel is already rotated X with CrystalEdgeAngle soyou have to put it in place to continu
+
+    rm.rotateX(-CrystalEdgeAngle);
+    sprintf(sName, "coax_cut6_edge");
+    rm.rotateZ(90.0*CLHEP::deg);
+    rm.rotateX(CrystalEdgeAngle);
+    G4SubtractionSolid *coax_cut6
+            = new G4SubtractionSolid (G4String(sName), coax_cut5, cutBevel, &rm, G4ThreeVector(CrystalEdgeOffset2,0.,0.));
+    //rotation back
+    rm.rotateX(-CrystalEdgeAngle);
+    rm.rotateZ(-90.0*CLHEP::deg);
+
+    //end substraction
+
+
+    // **************************************************************************
+    // *                         Al CAPSULE PLANS GANIL VIDE                    *
+    // **************************************************************************
+
+    //  The Aluminum Clover can ( "CloverCan" )
+
+    G4int nbslice = 3;
+    const G4double widthface = 44.085*CLHEP::mm;
+
+
+    const G4double HalfCapsuleLength = CapsuleLength/2.*CLHEP::mm;//7.35*cm;
+    const G4double HalfCapsule_in_Length = (CapsuleLength-CapsuleWidth1-CapsuleWidth1)/2.*CLHEP::mm;//71.75mm;
+    const G4double TaperLength_in_Can = 40.842*CLHEP::mm;
+
+    G4double zSlice_IN[3] = {  1.5*CLHEP::mm,
+                               CapsuleEdgeDepth,
+                               CapsuleLength-2.0*CLHEP::mm,
+                            };
+
+
+    G4double InnRad_IN[3] = {  0.0*CLHEP::mm,
+                               0.0*CLHEP::mm,
+                               0.0*CLHEP::mm,
+
+                            };
+
+    G4double OutRad_IN[3] = {   43.084*CLHEP::mm,
+                                60.0*CLHEP::mm,
+                                60.0*CLHEP::mm,
+                            };
+
+
+    G4double zSlice_OUT[3] = {  0.0*CLHEP::mm,
+                                CapsuleEdgeDepth,
+                                CapsuleLength,
+                             };
+
+
+    G4double InnRad_OUT[3] = {  0.0*CLHEP::mm,
+                                0.0*CLHEP::mm,
+                                0.0*CLHEP::mm,
+                             };
+
+    G4double OutRad_OUT[3] = { widthface,
+                               62.*CLHEP::mm,
+                               62*CLHEP::mm,
+                             };
+
+
+    G4RotationMatrix* Cap_45deg = new G4RotationMatrix();
+    Cap_45deg -> rotateZ(45*CLHEP::deg);
+
+    if ( do_caps )
+    {
+        G4Polyhedra *caps_OUT = new G4Polyhedra(G4String("Capsule_OUT"),
+                                                0.*CLHEP::deg,
+                                                360.*CLHEP::deg,
+                                                4,
+                                                nbslice,
+                                                zSlice_OUT,
+                                                InnRad_OUT,
+                                                OutRad_OUT);
+        sprintf(sName, "Capsule_OUT");
+        G4LogicalVolume * pCapsule_OUT  = new G4LogicalVolume( caps_OUT, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("SToGS_Al"), G4String(sName), 0, 0, 0 );
+
+
+        Capsule_OUT_phys = new G4PVPlacement(Cap_45deg,         // no rotation
+                                             G4ThreeVector(), // at (0,0,0)
+                                             pCapsule_OUT,      // its logical volume
+                                             "Capsule_OUT_P",      // its name
+                                             detlogicWorld,               // its mother  volume
+                                             false,           // no boolean operations
+                                             -1);              // copy number
+
+
+        G4VisAttributes *Capsule_OUT_VisAtt= new G4VisAttributes(G4Colour(0.5,0.5,0.5,0.75)); //grey
+        pCapsule_OUT  ->SetVisAttributes(Capsule_OUT_VisAtt);
+
+        G4Polyhedra *caps_IN = new G4Polyhedra(G4String("Capsule_IN"),
+                                               0.*CLHEP::deg,
+                                               360.*CLHEP::deg,
+                                               4,
+                                               nbslice,
+                                               zSlice_IN,
+                                               InnRad_IN,
+                                               OutRad_IN);
+        sprintf(sName, "Capsule_IN");
+        G4LogicalVolume * pCapsule_IN  = new G4LogicalVolume( caps_IN, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("SToGS_Vacuum_Ge"), G4String(sName), 0, 0, 0 );
+
+
+        Capsule_IN_phys = new G4PVPlacement(0,         // no rotation
+                                            G4ThreeVector(), // at (0,0,0)
+                                            pCapsule_IN,      // its logical volume
+                                            "Capsule_IN_P",      // its name
+                                            pCapsule_OUT,               // its mother  volume
+                                            false,           // no boolean operations
+                                            -1);              // copy number
+
+
+        G4VisAttributes *Capsule_IN_VisAtt= new G4VisAttributes(G4Colour(0.0,1.0,1.0)); //cyan0.5,0.5,0.5,0.75)); //grey
+        pCapsule_IN  ->SetVisAttributes(Capsule_IN_VisAtt);
+
+        //Crystal A
+        G4RotationMatrix* Crystal_45deg = new G4RotationMatrix();
+        Crystal_45deg -> rotateZ(45*CLHEP::deg);
+
+        sprintf(sName, "ShapedCrystalA");
+        G4LogicalVolume *pCrystalA  = new G4LogicalVolume( coax_cut6, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("SToGS_Ge"), G4String(sName), 0, 0, 0 );
+        pCrystalA->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );
+
+        CrystalA_phys = new G4PVPlacement(Crystal_45deg,         // no rotation
+                                          G4ThreeVector(34.75*CLHEP::mm+Tolerance,-Tolerance,CrystalToCapsuleTOP), // at (0,0,0)
+                                          pCrystalA,      // its logical volume
+                                          "CrystalA_P",      // its name
+                                          pCapsule_IN,               // its mother  volume
+                                          false,           // no boolean operations
+                                          0);              // copy n
+        G4VisAttributes *CrystalA_VisAtt= new G4VisAttributes(G4Colour(0.0,0.0,1.0)); //blue
+        pCrystalA ->SetVisAttributes(CrystalA_VisAtt);
+
+        // Testing detCrystal Volume
+        G4double CrystalVol = pCrystalA->GetSolid()->GetCubicVolume();
+       // G4cout << "Volume of  Crystal A= " << CrystalVol/mm3 << " mm^3" << G4endl;
+
+
+
+        //Crystal B
+        G4RotationMatrix* Crystal_135deg = new G4RotationMatrix();
+        Crystal_135deg -> rotateZ(135*CLHEP::deg);
+
+        sprintf(sName, "ShapedCrystalB");
+        G4LogicalVolume *pCrystalB  = new G4LogicalVolume( coax_cut6, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("SToGS_Ge"), G4String(sName), 0, 0, 0 );
+        pCrystalB->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );
+
+        CrystalB_phys = new G4PVPlacement(Crystal_135deg ,         // no rotation
+                                          G4ThreeVector(-Tolerance,-34.75*CLHEP::mm-Tolerance,CrystalToCapsuleTOP), // at (-26*mm,-26*mm,3.5*mm)
+                                          pCrystalB,      // its logical volume
+                                          "CrystalB_P",      // its name
+                                          pCapsule_IN,               // its mother  volume
+                                          false,           // no boolean operations
+                                          1);              // copy n
+        G4VisAttributes *CrystalB_VisAtt= new G4VisAttributes(G4Colour(0.0,1.0,0.0)); //green
+        pCrystalB ->SetVisAttributes(CrystalB_VisAtt);
+
+
+        //Crystal C
+
+        G4RotationMatrix* Crystal_225deg = new G4RotationMatrix();
+        Crystal_225deg -> rotateZ(225*CLHEP::deg);
+        sprintf(sName, "ShapedCrystalC");
+        G4LogicalVolume *pCrystalC  = new G4LogicalVolume( coax_cut6, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("SToGS_Ge"), G4String(sName), 0, 0, 0 );
+        pCrystalC->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );
+
+        CrystalC_phys = new G4PVPlacement(Crystal_225deg,         // no rotation
+                                          G4ThreeVector(-34.75*CLHEP::mm-Tolerance,Tolerance,CrystalToCapsuleTOP), // at (0,0,0)
+                                          pCrystalC,      // its logical volume
+                                          "CrystalC_P",      // its name
+                                          pCapsule_IN,               // its mother  volume
+                                          false,           // no boolean operations
+                                          2);              // copy n
+        G4VisAttributes *CrystalC_VisAtt= new G4VisAttributes(G4Colour(1.0,0.0,0.0)); //red
+        pCrystalC ->SetVisAttributes(CrystalC_VisAtt);
+
+
+        //Crystal D
+
+        G4RotationMatrix* Crystal_315deg = new G4RotationMatrix();
+        Crystal_315deg -> rotateZ(315*CLHEP::deg);
+        sprintf(sName, "ShapedCrystalD");
+        G4LogicalVolume *pCrystalD  = new G4LogicalVolume( coax_cut6, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("SToGS_Ge"), G4String(sName), 0, 0, 0 );
+
+        pCrystalD->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );
+
+        CrystalD_phys = new G4PVPlacement(Crystal_315deg,         // no rotation
+                                          G4ThreeVector(Tolerance,34.75*CLHEP::mm+Tolerance,CrystalToCapsuleTOP), // at (26*mm,26*mm,3.5*mm)
+                                          pCrystalD,      // its logical volume
+                                          "CrystalD_P",      // its name
+                                          pCapsule_IN,               // its mother  volume
+                                          false,           // no boolean operations
+                                          3);              // copy n
+        G4VisAttributes *CrystalD_VisAtt= new G4VisAttributes(G4Colour(1.0,1.0,0.0)); //yellow
+        pCrystalD ->SetVisAttributes(CrystalD_VisAtt);
+
+        // **************************************************************************
+        // *                               COLD FINGER                              *
+        // **************************************************************************
+        //
+        // The copper plate at the bottom of Ge cristals
+        //
+
+        G4double x_CFPlate = 100.80*CLHEP::mm;//5.04*cm;
+        G4double y_CFPlate = 100.80*CLHEP::mm;//5.04*cm;
+        G4double z_CFPlate = 2.*CLHEP::mm;
+
+        G4Box* CFPlate = new G4Box("CFPlate",x_CFPlate/2,y_CFPlate/2,z_CFPlate/2);
+
+        G4LogicalVolume* logicCFPlate = new G4LogicalVolume(CFPlate,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("SToGS_Cu"),"CFPlate");
+
+        CFPlate_phys= new G4PVPlacement(Crystal_45deg,         // no rotation
+                                        G4ThreeVector(0,0,CapsuleLength-48.999*CLHEP::mm), // at (0,0,0) //very close to the Ge cristals
+                                        logicCFPlate,      // its logical volume
+                                        "CFPlate_P",      // its name
+                                        pCapsule_IN,               // its mother  volume
+                                        false,           // no boolean operations
+                                        -1);              // copy number
+
+        G4VisAttributes *CFPlate_VisAtt= new G4VisAttributes(G4Colour(0.45,0.25,0.0)); //brown
+        logicCFPlate->SetVisAttributes(CFPlate_VisAtt);
+
+        // The cold finger (part inside the Al Capsule)
+        //
+
+        G4double InnRadiusCF_Int = 0.*CLHEP::mm;
+        G4double OutRadiusCF_Int = 15*CLHEP::mm;
+        G4double HalfLengtCF_Int = 23.0*CLHEP::mm;
+        G4double startPhiCF_Int = 0.*CLHEP::deg;
+        G4double spanningAngleCF_Int = 360.*CLHEP::deg;
+
+        G4Tubs* CF_int = new G4Tubs(G4String("ColdFinger"),
+                                    InnRadiusCF_Int,
+                                    OutRadiusCF_Int,
+                                    HalfLengtCF_Int,
+                                    startPhiCF_Int,
+                                    spanningAngleCF_Int);
+
+        sprintf(sName,"ColdFinger");
+        G4LogicalVolume * pCF_int  = new G4LogicalVolume(CF_int, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("SToGS_Cu"), G4String(sName), 0, 0, 0 );
+
+        CF_int_phys = new G4PVPlacement(0,         // no rotation
+                                        G4ThreeVector(0,0,CapsuleLength-24.999*CLHEP::mm), // at (0,0,0) //very close to the Ge cristals
+                                        pCF_int,      // its logical volume
+                                        "CF_int_P",      // its name
+                                        pCapsule_IN,               // its mother  volume
+                                        false,           // no boolean operations
+                                        -1);              // copy number
+
+
+        G4VisAttributes *CF_int_VisAtt= new G4VisAttributes(G4Colour(0.45,0.25,0.0)); //brown
+        pCF_int  ->SetVisAttributes(CF_int_VisAtt);
+
+
+        // The enveloppe of the cold finger from the outside of the Al capsule to the Dewar
+        //
+
+        G4double zPlaneEnvColdFinger[6];
+        G4double rInnerEnvColdFinger[6];
+        G4double rOuterEnvColdFinger[6];
+
+        G4double PhiStart = 0.*CLHEP::deg;
+        G4double PhiTot = 360.*CLHEP::deg;
+        G4double EnvColdFingerHalfLength = 72.5*CLHEP::mm;
+
+        zPlaneEnvColdFinger[0] = -EnvColdFingerHalfLength;
+        zPlaneEnvColdFinger[1] = -EnvColdFingerHalfLength+70.5*CLHEP::mm;//41*CLHEP::mm;//AGATA
+        zPlaneEnvColdFinger[2] = -EnvColdFingerHalfLength+70.5*CLHEP::mm;//41*CLHEP::mm;
+        zPlaneEnvColdFinger[3] = -EnvColdFingerHalfLength+78.5*CLHEP::mm;//49*CLHEP::mm;
+        zPlaneEnvColdFinger[4] = -EnvColdFingerHalfLength+78.5*CLHEP::mm;//49*CLHEP::mm;
+        zPlaneEnvColdFinger[5] =  EnvColdFingerHalfLength;
+
+        rInnerEnvColdFinger[0]=rInnerEnvColdFinger[1]=rInnerEnvColdFinger[2]=0.*CLHEP::mm;
+        rInnerEnvColdFinger[3]=rInnerEnvColdFinger[4]=rInnerEnvColdFinger[5]=0.*CLHEP::mm;
+
+        rOuterEnvColdFinger[0]=22.25*CLHEP::mm;//2.225*cm;
+        rOuterEnvColdFinger[1]=22.25*CLHEP::mm;//2.225*cm;
+        rOuterEnvColdFinger[2]=31.*CLHEP::mm;//3.1*cm;
+        rOuterEnvColdFinger[3]=31.*CLHEP::mm;//3.1*cm;
+        rOuterEnvColdFinger[4]=22.25*CLHEP::mm;//2.225*cm;
+        rOuterEnvColdFinger[5]=22.25*CLHEP::mm;//2.225*cm;
+
+        G4Polycone* solidEnvColdFinger = new G4Polycone("ShapeEnvColdFinger",PhiStart,PhiTot,6,
+                                                        zPlaneEnvColdFinger,rInnerEnvColdFinger,rOuterEnvColdFinger);
+
+        G4LogicalVolume *logicEnvColdFinger = new G4LogicalVolume(solidEnvColdFinger,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("SToGS_Al"),"EnvColdFinger");
+
+        CF_OUT_phys = new G4PVPlacement(0,         // no rotation
+                                        G4ThreeVector(0,0,CapsuleLength+EnvColdFingerHalfLength+0.001*CLHEP::mm), // at (0,0,0)
+                                        logicEnvColdFinger,      // its logical volume
+                                        "CF_OUT_P",      // its name
+                                        detlogicWorld,               // its mother  volume
+                                        false,           // no boolean operations
+                                        -1);              // copy number
+
+
+        G4VisAttributes *CF_OUT_VisAtt= new G4VisAttributes(G4Colour(0.45,0.25,0.0)); //brown
+        logicEnvColdFinger->SetVisAttributes(CF_OUT_VisAtt);
+
+        // The position of the cold finger enveloppe in the SupClover:
+
+
+        // Its internal vacuum...
+
+        G4double minRadiusIntEnvColdFinger = 0.*CLHEP::mm;//0.*cm;
+        G4double maxRadiusIntEnvColdFinger = 20.25*CLHEP::mm;//2.025*cm;
+        G4double HalfLengthIntEnvColdFinger = 72.4*CLHEP::mm;//7.24*cm;
+        G4double startPhiIntEnvColdFinger = 0.*CLHEP::deg;
+        G4double deltaPhiIntEnvColdFinger = 360.*CLHEP::deg;
+
+        G4Tubs* solidIntEnvColdFinger = new G4Tubs("ShapeIntEnvColdFinger",minRadiusIntEnvColdFinger,maxRadiusIntEnvColdFinger,
+                                                   HalfLengthIntEnvColdFinger,startPhiIntEnvColdFinger,deltaPhiIntEnvColdFinger);
+
+        G4LogicalVolume* logicIntEnvColdFinger =
+                new G4LogicalVolume(solidIntEnvColdFinger,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("SToGS_Vacuum_Ge"),"IntEnvColdFinger");
+
+        // and its position in the cold finger enveloppe.
+
+        physiIntEnvColdFinger = new G4PVPlacement(0,         // no rotation
+                                                  G4ThreeVector(0,0,0), // at (0,0,0)
+                                                  logicIntEnvColdFinger,      // its logical volume
+                                                  "CF_intOUT_P",      // its name
+                                                  logicEnvColdFinger,               // its mother  volume
+                                                  false,           // no boolean operations
+                                                  -1);              // copy number
+
+
+        G4VisAttributes *CF_intOUT_VisAtt= new G4VisAttributes(G4Colour(0.0,1.0,1.0)); //cyan 0.75,0.55,0.0)); //brown
+        logicIntEnvColdFinger->SetVisAttributes(CF_intOUT_VisAtt);
+
+        // **************************************************************************
+        // *                                THE DEWAR                               *
+        // **************************************************************************
+        G4double minRadiusDewar = 111.*CLHEP::mm;
+        G4double maxRadiusDewar = 125.*CLHEP::mm;
+        const G4double HalfLengthDewar = 186.5*CLHEP::mm;//15.2*cm;
+        G4double startPhiDewar = 0.*CLHEP::deg;
+        G4double deltaPhiDewar = 360.*CLHEP::deg;
+
+        G4int nbZDewar = 4;
+
+
+
+        G4double ZDewar[4] = {  0.0*CLHEP::mm,
+                                120*CLHEP::mm,
+                                120*CLHEP::mm,
+                                HalfLengthDewar*2
+                             };
+        G4double InnRadDewar[4] = { 0.0*CLHEP::mm,
+                                    0.0*CLHEP::mm,
+                                    0.0*CLHEP::mm,
+                                    0.0*CLHEP::mm
+
+                                  };
+
+        G4double OutRadDewar[4] = {maxRadiusDewar,
+                                   maxRadiusDewar,
+                                   minRadiusDewar,
+                                   minRadiusDewar
+
+                                  };
+
+        G4Polycone* solidDewar = new G4Polycone("Dewar_OUT",
+                                                startPhiDewar,
+                                                deltaPhiDewar,
+                                                nbZDewar,
+                                                ZDewar,
+                                                InnRadDewar,
+                                                OutRadDewar);
+
+
+
+
+        G4LogicalVolume *logicDewar = new G4LogicalVolume(solidDewar,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("SToGS_Al"),"Dewar_OUT");
+        Dewar_phys== new G4PVPlacement(0,         // no rotation
+                                       G4ThreeVector(0,0,CapsuleLength+EnvColdFingerHalfLength*2+0.001*CLHEP::mm), // at (0,0,0)
+                                       logicDewar,      // its logical volume
+                                       "Dewar_P",      // its name
+                                       detlogicWorld,               // its mother  volume
+                                       false,           // no boolean operations
+                                       -1);              // copy number
+
+
+        G4VisAttributes *Dewar_VisAtt= new G4VisAttributes(G4Colour(0.0,1.0,1.0)); //cyan
+        logicDewar->SetVisAttributes(Dewar_VisAtt);
+
+
+        // Its internal vacuum...
+
+        G4double minRadiusIntDewar = 0.*CLHEP::mm;//0.*cm;
+        G4double maxRadiusIntDewar = 106.*CLHEP::mm;//10.4*cm;
+        G4double HalfLengthIntDewar = 181.*CLHEP::mm;//14.7*cm;
+        G4double startPhiIntDewar = 0.*CLHEP::deg;
+        G4double deltaPhiIntDewar = 360.*CLHEP::deg;
+
+        G4Tubs* IntDewar = new G4Tubs("Int_Dewar",minRadiusIntDewar,maxRadiusIntDewar,
+                                      HalfLengthIntDewar,startPhiIntDewar,deltaPhiIntDewar);
+
+        G4LogicalVolume* logicIntDewar = new G4LogicalVolume(IntDewar,SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("SToGS_Vacuum_Ge"),"Int_Dewar");
+        IntDewar_phys== new G4PVPlacement(0,         // no rotation
+                                          G4ThreeVector(0,0,HalfLengthDewar), // at (0,0,0)
+                                          logicIntDewar,      // its logical volume
+                                          "IntDewar_P",      // its name
+                                          logicDewar,               // its mother  volume
+                                          false,           // no boolean operations
+                                          -1);              // copy number
+
+
+        G4VisAttributes *IntDewar_VisAtt= new G4VisAttributes(G4Colour( 1.0,0.0,1.0)); //magenta
+        logicIntDewar->SetVisAttributes(IntDewar_VisAtt);
+
+
+        // **************************************************************************
+        // *                            BGO AntiCompton1                            *
+        // **************************************************************************
+
+        // define a coaxial shape that will be modify with SubstractSolid
+
+        G4int numZplane = 3;
+        G4double zSides[3] = { 0.0*CLHEP::mm,
+                               0.0*CLHEP::mm,
+                               BGOLength};
+        G4double rInnerBGO[3] = { CrystalEdgeOffset1 + CrystalEdgeOffset2 + CrystalToCapsuleLATERAL + Space,
+                                  CrystalEdgeOffset1 + CrystalEdgeOffset2 + CrystalToCapsuleLATERAL + Space ,
+                                  CrystalEdgeOffset1 + CrystalEdgeOffset2 + CrystalToCapsuleLATERAL + Space };
+        G4double rOuterBGO[3] = { CrystalEdgeOffset1 + CrystalEdgeOffset2 + CrystalToCapsuleLATERAL + Space+4.0*CLHEP::mm,
+                                  CrystalEdgeOffset1 + CrystalEdgeOffset2 + CrystalToCapsuleLATERAL +BGOWidth,
+                                  CrystalEdgeOffset1 + CrystalEdgeOffset2 + CrystalToCapsuleLATERAL + BGOWidth};
+
+
+        zSides[1] = BGOWidth / tan(CrystalEdgeAngle);
+
+        G4Polyhedra *bgo = new G4Polyhedra(G4String("BGO"),  //pName
+                                           0.*CLHEP::deg,           //phiStart
+                                           360.*CLHEP::deg,         //phiTotal
+                                           4,                //numSide
+                                           numZplane,        //numZPlanes
+                                           zSides,           //zPlane[]
+                                           rInnerBGO,        //rInner[]
+                                           rOuterBGO);       //rOuter[]
+
+        // G4Polyhedra *bgo = new G4Polyhedra(G4String("BGO"), 0.*deg, 360.*deg, 4, numZplane, zSides, rInnerBGO, rOuterBGO);
+        sprintf(sName, "BGORear");
+        G4LogicalVolume *pBGO  = new G4LogicalVolume( bgo, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("SToGS_BGO"), G4String(sName), 0, 0, 0 );
+        pBGO->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );
+
+        BGO_phys = new G4PVPlacement(Cap_45deg,         // no rotation
+                                     G4ThreeVector(0.0*CLHEP::mm,0.0*CLHEP::mm,AlcapstoBGO), // at (0,0,0)
+                                     pBGO,      // its logical volume
+                                     "BGO_P",      // its name
+                                     detlogicWorld,               // its mother  volume
+                                     false,           // no boolean operations
+                                     4);              // copy number
+
+
+        G4VisAttributes *BGO_VisAtt= new G4VisAttributes(G4Colour(0.0,0.0,1.0)); //blue
+        pBGO  ->SetVisAttributes(BGO_VisAtt);
+
+        // **************************************************************************
+        // *                        CsIBack Anticompton2                            *
+        // **************************************************************************
+
+        G4Tubs *hole= new G4Tubs(G4String("ShapeCsI_hole"),
+                                 0.0*CLHEP::mm,
+                                 22.3*CLHEP::mm,//22.25mm Rout cold finger outside the Al capsule
+                                 CsILength+0.3*CLHEP::mm,
+                                 0.0*CLHEP::deg,
+                                 360.*CLHEP::deg);
+
+        G4Box  *fullcsi= new G4Box(G4String("FullCsIBack"),
+                                   CrystalEdgeOffset1 + CrystalEdgeOffset2 + CrystalToCapsuleLATERAL,
+                                   CrystalEdgeOffset1 + CrystalEdgeOffset2 + CrystalToCapsuleLATERAL,
+                                   CsILength/2);
+
+
+        G4SubtractionSolid *hole_cut_csi= new G4SubtractionSolid (G4String("cut_csi"), fullcsi, hole, &rm,G4ThreeVector(0.,0.,0.));
+
+        sprintf(sName, "CsIBack");
+        G4LogicalVolume *pCsIBack= new G4LogicalVolume( hole_cut_csi, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial("SToGS_CsI"), G4String(sName), 0, 0, 0 );
+        pCsIBack->SetSensitiveDetector( SToGS::UserActionInitialization::GetCopClusterSD() );
+        CsIBack_phys = new G4PVPlacement(0,         // no rotation
+                                         G4ThreeVector(0.,0.,CapsuleLength+CsILength/2), // at (0,0,0)
+                                         pCsIBack,      // its logical volume
+                                         "CsIBack_P",      // its name
+                                         detlogicWorld,               // its mother  volume
+                                         false,           // no boolean operations
+                                         5);              // copy number
+
+        G4VisAttributes *CsIBack_VisAtt= new G4VisAttributes(G4Colour(1.0,0.0,1.0)); //magenta
+        pCsIBack  ->SetVisAttributes(CsIBack_VisAtt);
+        // CsIBack_VisAtt->SetForceWireframe(true);
+
+    }
+
+
+
+
+  /*
+    // **************************************************************************
+    // *                             CLOVER EXOGAM OLIVIER                      *
+    // **************************************************************************
+
+    const G4double CrystalLength       = 90.0*CLHEP::mm; // Ge crystal length
+    const G4double CrystalHoleDepth    = 15.0*CLHEP::mm; // depth at which starts the hole
+
+    const G4double CrystalOuterRadius  = 30.0*CLHEP::mm; // outer radius for crystal
+    const G4double CrystalInnerRadius  =  5.0*CLHEP::mm; // inner radius for hole in crystal
+
+    const G4double CrystalEdgeOffset1  = 26.0*CLHEP::mm; // distance of the edge from the center of the crystal
+    const G4double CrystalEdgeOffset2  = 28.5*CLHEP::mm; // distance of the edge from the center of the crystal
+
+    const G4double CrystalEdgeDepth    = 30.0*CLHEP::mm;  // depth to which the crystal is shaped
+    const G4double CrystalEdgeAngle    = 22.5*CLHEP::deg; // bevel angle
+
     const G4double CapsuleWidth        = 1.5*CLHEP::mm;   // capsule width
     const G4double CapsuleLength       = 110.*CLHEP::mm;   // capsule length
     const G4double CapsuleEdgeDepth    = 3.3*CLHEP::cm;   // same as crystal !
     const G4double CrystalToCapsule    = 3.5*CLHEP::mm;   // to be adjusted ..
-    
+
     const G4double BGOLength           = 120.0*CLHEP::mm;
     const G4double BGOWidth            = 25.0*CLHEP::mm;
-    
+
     const G4double CsILength	     = 20.0*CLHEP::mm;
-    
+
     const G4double Tolerance           = 0.1*CLHEP::mm; // distance between crystals
     const G4double Space               = 1.0*CLHEP::mm; // distance between Al capsule and BGO
-  	
+
     // define a coaxial shape that will be modify with SubstractSolid
     
     G4VPhysicalVolume *CrystalA_phys = 0x0;
@@ -462,7 +1098,7 @@ G4VPhysicalVolume * SToGS::SemiConductorGeDF::MakeEXOCLOVER(G4String detname, G4
     G4VisAttributes *CsIBack_VisAtt= new G4VisAttributes(G4Colour(1.0,0.0,1.0)); //magenta
     pCsIBack  ->SetVisAttributes(CsIBack_VisAtt);
     // CsIBack_VisAtt->SetForceWireframe(true);
-
+*/
     return theDetector;
 }
 
@@ -1551,14 +2187,20 @@ void SToGS::SemiConductorGeDF::MakeStore()
     MakeInStore("EURO-PIII",""); // adds a collimator, the euroball3 ones
     SToGS::DetectorFactory::SetGCopyNb(0);
     MakeInStore("EURO-PIII","colli"); // adds a collimator, the euroball3 ones
-    
-// EXOGAM
+
+    // EXOGAM
+    SToGS::DetectorFactory::SetGCopyNb(0);
+    MakeInStore("EXOCLOVER","A-bare-TEST"); //only Ge crystal
+    SToGS::DetectorFactory::SetGCopyNb(0);
+   MakeInStore("EXOCLOVER","A-TEST");//with Aluminium Capsule
+
+ /*   // EXOGAM
     SToGS::DetectorFactory::SetGCopyNb(0);
     MakeInStore("EXOCLOVER","A-bare"); //only Ge crystal
 
     SToGS::DetectorFactory::SetGCopyNb(0);
     MakeInStore("EXOCLOVER","A-AC");//with Aluminium Capsule
-    
+   */
 // AGATA Capsult and Cluster. Full array in Array factory
     SToGS::DetectorFactory::SetGCopyNb(0);
     MakeInStore("AGATA-ARed","bare");

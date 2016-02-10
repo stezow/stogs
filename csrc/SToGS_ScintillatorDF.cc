@@ -802,9 +802,9 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakeFATIMAM(G4String detname, G4String
     }
     
     // those numbers have been extracted from the AGATA code / Geometry of FATIMA implemented by M. Labiche, re-
-    const double    Labr_Length = 45.75*mm;         //length of the crystal (+5mm = 2inch)
-    const double    Labr_Rad    = 19.0*mm;          //radius of the crystal (*2 = 1.5 inch)
-    const double    Window_Length = 5.0*mm;         //quartz window length behind LaBr crystal
+    const double    Labr_Length = 45.75*CLHEP::mm;         //length of the crystal (+5mm = 2inch)
+    const double    Labr_Rad    = 19.0*CLHEP::mm;          //radius of the crystal (*2 = 1.5 inch)
+    const double    Window_Length = 5.0*CLHEP::mm;         //quartz window length behind LaBr crystal
     
     // to build the Al housing and lead shielding
     G4double zPlane1[16] =
@@ -828,10 +828,10 @@ G4VPhysicalVolume *SToGS::ScintillatorDF::MakeFATIMAM(G4String detname, G4String
     G4LogicalVolume *logicShielding = new G4LogicalVolume( solid_Shielding, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matShielding), "FATIMAShieldingLV", 0, 0, 0 );
     
     //Building the LaBr3 crystal + window:
-    G4Tubs *solid_Scintillator = new G4Tubs("ShapeFATIMAScintillator", 0.0*mm, Labr_Rad, Labr_Length/2 ,0, 360.*CLHEP::deg);
+    G4Tubs *solid_Scintillator = new G4Tubs("ShapeFATIMAScintillator", 0.0*CLHEP::mm, Labr_Rad, Labr_Length/2 ,0, 360.*CLHEP::deg);
     G4LogicalVolume *logicScintillator = new G4LogicalVolume( solid_Scintillator, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matSD), "FATIMAScintillatorLV", 0, 0, 0 );
     
-    G4Tubs *solid_Window = new G4Tubs("ShapeFATIMAWindow", 0.0*mm, Labr_Rad, Window_Length/2 ,0, 360.*CLHEP::deg);
+    G4Tubs *solid_Window = new G4Tubs("ShapeFATIMAWindow", 0.0*CLHEP::mm, Labr_Rad, Window_Length/2 ,0, 360.*CLHEP::deg);
     G4LogicalVolume *logicWindow = new G4LogicalVolume( solid_Window, SToGS::MaterialConsultant::theConsultant()->FindOrBuildMaterial(matWindow), "FATIMAWindowLV", 0, 0, 0 );
     
     G4VisAttributes *visatt;
