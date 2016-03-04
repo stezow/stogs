@@ -96,7 +96,7 @@ void SToGS::BaseROOTEventsRun::RecordEvent(const G4Event* evt)
             hit->fPDG =  prim->GetPDGcode();
             //
             //hit->fE = (std::sqrt( prim->GetMomentum().mag2() + prim->GetMass() * prim->GetMass()) - prim->GetMass())/CLHEP::keV;
-            hit->fE = (std::sqrt( prim->GetMomentum().mag2() + prim->GetMass() * prim->GetMass()) - prim->GetMass())/CLHEP::MeV;
+            hit->fE = prim->GetKineticEnergy()/CLHEP::MeV;
             //
  			hit->fX = evt->GetPrimaryVertex(i)->GetX0()/CLHEP::cm;
 			hit->fY = evt->GetPrimaryVertex(i)->GetY0()/CLHEP::cm;
@@ -104,9 +104,10 @@ void SToGS::BaseROOTEventsRun::RecordEvent(const G4Event* evt)
             //
             hit->fT = evt->GetPrimaryVertex(i)->GetT0();
             //
-			hit->fPX = prim->GetPx();
-			hit->fPY = prim->GetPy();
-			hit->fPZ = prim->GetPz();
+            
+			hit->fPX = prim->GetMomentumDirection().x();
+			hit->fPY = prim->GetMomentumDirection().y();
+			hit->fPZ = prim->GetMomentumDirection().z();
 			
 			hit->fFlag = prim->GetTrackID()-1;
 			

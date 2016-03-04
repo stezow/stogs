@@ -131,9 +131,14 @@ void toROOTGPSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         particle =
             new G4PrimaryParticle(aprimary->fPDG);
         
-        particle->SetKineticEnergy( aprimary->fE*CLHEP::MeV );
-        particle_momentum_direction.set(aprimary->fPX,aprimary->fPY,aprimary->fPZ);
-        particle->SetMomentumDirection( particle_momentum_direction.unit() );
+   //     particle->SetKineticEnergy( aprimary->fE*CLHEP::MeV );
+   //     particle_momentum_direction.set(aprimary->fPX,aprimary->fPY,aprimary->fPZ);
+   //     particle->SetMomentumDirection( particle_momentum_direction.unit() );
+   //     particle->SetMomentumDirection( particle_momentum_direction.unit() );
+        particle->Set4Momentum(aprimary->fPX*aprimary->fE*CLHEP::MeV,
+                               aprimary->fPY*aprimary->fE*CLHEP::MeV,
+                               aprimary->fPZ*aprimary->fE*CLHEP::MeV,
+                               aprimary->fE*CLHEP::MeV);
 
         //particle->SetPolarization(0,0,0);
         /*if (verbosityLevel > 1) {
@@ -152,6 +157,8 @@ void toROOTGPSPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
         vertex->SetPrimary(particle);
     }
     anEvent->AddPrimaryVertex(vertex);
+    
+    
     
     /*
     G4AutoLock l(&mutex);
